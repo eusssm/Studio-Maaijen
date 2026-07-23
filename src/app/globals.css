@@ -138,6 +138,7 @@
       transition: all .3s var(--ease);
       overflow: hidden;
       opacity: 0; transform: translateY(-12px);
+      display: none; /* Hidden on desktop, visible on tablet/mobile */
     }
     .nav-actions {
       display: flex;
@@ -1961,6 +1962,9 @@ html, body {
 @media (max-width: 860px) {
   .nav-links {
     display: none !important;
+  }
+  .nav-menu-btn {
+    display: inline-block !important;
   }
 }
 
