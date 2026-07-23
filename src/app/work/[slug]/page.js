@@ -157,18 +157,24 @@ export async function generateStaticParams() {
 
 export default async function ProjectPage({ params }) {
   const { slug } = await params;
-  const { data } = await performRequest({ 
-    query: PROJECT_QUERY,
-    variables: { slug }
-  });
+  let data = null;
+  try {
+    const res = await performRequest({ 
+      query: PROJECT_QUERY,
+      variables: { slug }
+    });
+    data = res?.data || null;
+  } catch (e) {
+    console.error("Project page query error:", e);
+  }
 
   if (!data?.project) {
     notFound();
   }
 
   // Find next project
-  const allProjects = data.allProjects;
+  const allProjects = data.allProjects || [];
   const currentIndex = allProjects.findIndex(p => p.slug === slug);
-  const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
+  const nextProject = allProjects.length > 0 ? allProjects[(currentIndex + 1) % allProjects.length] : null;
   return <CaseClient project={data.project} nextProject={nextProject} />;
 }
