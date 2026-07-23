@@ -458,8 +458,8 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
   <div className="footer-grid">
     <div>
       <div className="footer-logo-txt">Eugène Maaijen</div>
-      <div className="footer-tagline">"Design dat raakt vandaag<br />&amp; inspireert morgen."</div>
-      <div className="footer-loc">📍 Amsterdam, Nederland<br />Beschikbaar voor remote &amp; on-site</div>
+      <div className="footer-tagline" dangerouslySetInnerHTML={{ __html: homepage?.footerTagline?.replace(/\n/g, '<br/>') || `"Design dat raakt vandaag<br />&amp; inspireert morgen."` }} />
+      <div className="footer-loc" dangerouslySetInnerHTML={{ __html: homepage?.footerLocation?.replace(/\n/g, '<br/>') || `📍 Amsterdam, Nederland<br />Beschikbaar voor remote &amp; on-site` }} />
     </div>
     <div>
       <div className="footer-nav-h">Navigatie</div>
@@ -474,14 +474,12 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       <div className="footer-contact-h">Neem contact op</div>
       <a href={`mailto:${homepage?.ctaEmail || "eusssm@gmail.com"}`} className="footer-email">{homepage?.ctaEmail || "eusssm@gmail.com"}</a>
       <div className="footer-socials">
-        <a href="https://instagram.com" target="_blank"><span>Instagram</span><span>↗</span></a>
         <a href={homepage?.ctaLinkedin || "https://linkedin.com"} target="_blank"><span>LinkedIn</span><span>↗</span></a>
-        <a href="https://behance.net" target="_blank"><span>Behance</span><span>↗</span></a>
       </div>
     </div>
   </div>
   <div className="footer-bottom">
-    <span>© 2026 Eugène Maaijen — Alle rechten voorbehouden</span>
+    <span>{homepage?.footerCopyright || "© 2026 Eugène Maaijen — Alle rechten voorbehouden"}</span>
     <a href="#hero" className="back-top">↑</a>
   </div>
 </footer>
