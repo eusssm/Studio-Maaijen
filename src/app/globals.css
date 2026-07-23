@@ -441,6 +441,9 @@
     .work-img {
       width: 100%; height: 100%; transition: transform 0.8s var(--ease);
       display: flex; align-items: center; justify-content: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .work-card:hover .work-img { transform: scale(1.05); }
     .work-meta { display: flex; flex-direction: column; gap: 4px; padding-top: 10px; }
@@ -1421,6 +1424,9 @@ body.is-hovering #cursor-ring { width: 64px; height: 64px; border-color: rgba(24
 .next-project-bg {
   position: absolute; inset: 0;
   transition: transform 1s var(--ease);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .next-project:hover .next-project-bg { transform: scale(1.05); }
 .next-project::before {
