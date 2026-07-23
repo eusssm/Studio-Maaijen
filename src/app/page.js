@@ -1,66 +1,97 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { performRequest } from "../../lib/datocms";
+import HomeClient from "../components/HomeClient";
 
-export default function Home() {
+const PAGE_QUERY = `
+  query HomeQuery {
+    homepage {
+      heroEyebrow
+      heroHeadline
+      aboutIntro
+      
+      # Stats
+      stat1Value
+      stat1Label
+      stat1Sub
+      stat2Value
+      stat2Label
+      stat2Sub
+      stat3Value
+      stat3Label
+      stat3Sub
+      stat4Value
+      stat4Label
+      stat4Sub
+
+      # Services
+      servicesTitle
+      servicesSubtitle
+      service1Title
+      service1Desc
+      service1Tags
+      service2Title
+      service2Desc
+      service2Tags
+      service3Title
+      service3Desc
+      service3Tags
+
+      # About
+      aboutPortrait {
+        url
+      }
+      aboutBlock1Label
+      aboutBlock1Text
+      aboutBlock2Label
+      aboutBlock2Text
+      aboutBlock3Label
+      aboutBlock3Text
+      aboutClients
+
+      # Process
+      processTitle
+      processStep1Name
+      processStep1Desc
+      processStep2Name
+      processStep2Desc
+      processStep3Name
+      processStep3Desc
+
+      # CTA
+      ctaBackdrop
+      ctaEyebrow
+      ctaTitle
+      ctaEmail
+      ctaLinkedin
+    }
+    allProjects(first: 6, filter: { showOnHomepage: { eq: true } }, orderBy: position_ASC) {
+      title
+      slug
+      client
+      projectType
+      introText
+      coverImage {
+        url
+      }
+      categories {
+        name
+      }
+    }
+    allTestimonials {
+      quote
+      authorName
+      authorRole
+      authorAvatarLetter
+    }
+  }
+`;
+
+export default async function Home() {
+  const { data } = await performRequest({ query: PAGE_QUERY });
+  const homepage = data?.homepage;
+  const projects = data?.allProjects || [];
+  const testimonials = data?.allTestimonials || [];
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <HomeClient homepage={homepage} projects={projects} testimonials={testimonials} />
   );
 }
