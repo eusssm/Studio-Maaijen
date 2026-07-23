@@ -86,10 +86,19 @@ const PAGE_QUERY = `
 `;
 
 export default async function Home() {
-  const { data } = await performRequest({ query: PAGE_QUERY });
-  const homepage = data?.homepage;
-  const projects = data?.allProjects || [];
-  const testimonials = data?.allTestimonials || [];
+  let homepage = null;
+  let projects = [];
+  let testimonials = [];
+
+  try {
+    const res = await performRequest({ query: PAGE_QUERY });
+    const data = res?.data || null;
+    homepage = data?.homepage || null;
+    projects = data?.allProjects || [];
+    testimonials = data?.allTestimonials || [];
+  } catch (e) {
+    console.error("Home page query error:", e);
+  }
 
   return (
     <HomeClient homepage={homepage} projects={projects} testimonials={testimonials} />

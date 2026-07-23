@@ -20,8 +20,13 @@ const WORK_PAGE_QUERY = `
 `;
 
 export default async function WorkPage() {
-  const { data } = await performRequest({ query: WORK_PAGE_QUERY });
-  const projects = data?.allProjects || [];
+  let projects = [];
+  try {
+    const res = await performRequest({ query: WORK_PAGE_QUERY });
+    projects = res?.data?.allProjects || [];
+  } catch (e) {
+    console.error("Work page query error:", e);
+  }
 
   return (
     <WorkOverviewClient projects={projects} />
