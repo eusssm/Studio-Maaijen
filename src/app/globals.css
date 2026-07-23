@@ -940,9 +940,11 @@ body.is-hovering #cursor-ring { width: 64px; height: 64px; border-color: rgba(24
 }
 .case-hero-title {
   font-family: var(--ff-d);
-  font-size: clamp(64px, 9vw, 124px);
-  font-weight: 700; line-height: 0.95; margin-bottom: 24px;
+  font-size: clamp(38px, 8vw, 124px);
+  font-weight: 700; line-height: 1; margin-bottom: 24px;
   letter-spacing: -0.04em;
+  word-break: break-word;
+  hyphens: auto;
 }
 .case-hero-title em { font-style: normal; color: var(--accent); }
 .line-wrap { display: block; overflow: hidden; padding-bottom: .06em; }
