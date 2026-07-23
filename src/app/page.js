@@ -62,6 +62,10 @@ const PAGE_QUERY = `
       ctaTitle
       ctaEmail
       ctaLinkedin
+      # Footer
+      footerTagline
+      footerLocation
+      footerCopyright
     }
     allProjects(first: 6, filter: { showOnHomepage: { eq: true } }, orderBy: position_ASC) {
       title
