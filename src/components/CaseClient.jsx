@@ -91,7 +91,7 @@ export default function CaseClient({ project, nextProject }) {
           <div className="menu-footer">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="mailto:eusssm@gmail.com">Email</a>
+            <a href="mailto:info@studio-maaijen.nl">Email</a>
           </div>
         </div>
         <div className="menu-col-right">
@@ -413,7 +413,7 @@ export default function CaseClient({ project, nextProject }) {
           <p className="case-cta-eyebrow">Klaar om samen te werken?</p>
           <h2 className="case-cta-title">Laten we <em>iets moois</em><br />maken.</h2>
           <div className="case-cta-btns">
-            <a href="mailto:eusssm@gmail.com" className="btn btn-primary">Mail mij direct →</a>
+            <a href="mailto:info@studio-maaijen.nl" className="btn btn-primary">Mail mij direct →</a>
             <Link href="/work" className="btn btn-outline">Terug naar portfolio</Link>
           </div>
         </div>

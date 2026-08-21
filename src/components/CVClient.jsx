@@ -241,7 +241,7 @@ export default function CVClient({ cvPage }) {
           <div className="menu-footer">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="mailto:eusssm@gmail.com">Email</a>
+            <a href="mailto:info@studio-maaijen.nl">Email</a>
           </div>
         </div>
         <div className="menu-col-right">
@@ -256,7 +256,7 @@ export default function CVClient({ cvPage }) {
           <p className="cv-print-title">UX/UI Designer & Creative</p>
         </div>
         <div className="cv-print-header-right">
-          <p><strong>Email:</strong> eusssm@gmail.com</p>
+          <p><strong>Email:</strong> info@studio-maaijen.nl</p>
           <p><strong>Website:</strong> www.studiomaaijen.nl</p>
           <p><strong>LinkedIn:</strong> linkedin.com/in/eugene-maaijen</p>
           <p><strong>Locatie:</strong> Nederland</p>

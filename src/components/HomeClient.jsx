@@ -68,7 +68,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     <div className="menu-footer">
       <a href="https://instagram.com" target="_blank">Instagram</a>
       <a href="https://linkedin.com" target="_blank">LinkedIn</a>
-      <a href="mailto:eusssm@gmail.com">Email</a>
+      <a href="mailto:info@studio-maaijen.nl">Email</a>
     </div>
   </div>
   <div 
@@ -307,7 +307,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
         <a href="https://instagram.com" target="_blank">IG</a>
         <a href="https://linkedin.com" target="_blank">LI</a>
         <a href="https://behance.net" target="_blank">BE</a>
-        <a href="mailto:eusssm@gmail.com">Mail</a>
+        <a href="mailto:info@studio-maaijen.nl">Mail</a>
       </div>
     </div>
     <div className="about-right">
@@ -447,7 +447,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       )}
     </h2>
     <div className="cta-btns reveal">
-      <a href={`mailto:${homepage?.ctaEmail || "eusssm@gmail.com"}`} className="btn btn-primary">Mail mij direct →</a>
+      <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="btn btn-primary">Mail mij direct →</a>
       <a href={homepage?.ctaLinkedin || "https://linkedin.com"} target="_blank" className="btn btn-outline">LinkedIn ↗</a>
     </div>
   </div>
@@ -472,7 +472,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     </div>
     <div>
       <div className="footer-contact-h">Neem contact op</div>
-      <a href={`mailto:${homepage?.ctaEmail || "eusssm@gmail.com"}`} className="footer-email">{homepage?.ctaEmail || "eusssm@gmail.com"}</a>
+      <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="footer-email">{homepage?.ctaEmail || "info@studio-maaijen.nl"}</a>
       <div className="footer-socials">
         <a href={homepage?.ctaLinkedin || "https://linkedin.com"} target="_blank"><span>LinkedIn</span><span>↗</span></a>
       </div>

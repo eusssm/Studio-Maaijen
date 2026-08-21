@@ -61,7 +61,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
           <div className="menu-footer">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="mailto:eusssm@gmail.com">Email</a>
+            <a href="mailto:info@studio-maaijen.nl">Email</a>
           </div>
         </div>
         <div className="menu-col-right">
@@ -135,7 +135,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
           </div>
           <div>
             <div className="footer-contact-h">Neem contact op</div>
-            <a href="mailto:eusssm@gmail.com" className="footer-email">eusssm@gmail.com</a>
+            <a href="mailto:info@studio-maaijen.nl" className="footer-email">info@studio-maaijen.nl</a>
             <div className="footer-socials">
               <a href={homepage?.ctaLinkedin || "https://linkedin.com"} target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><span>↗</span></a>
             </div>

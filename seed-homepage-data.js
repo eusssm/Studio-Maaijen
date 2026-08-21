@@ -74,7 +74,7 @@ async function run() {
       cta_backdrop: 'Samen',
       cta_eyebrow: 'Klaar om samen te werken?',
       cta_title: 'Laten we <em>iets moois</em> maken.',
-      cta_email: 'eusssm@gmail.com',
+      cta_email: 'info@studio-maaijen.nl',
       cta_linkedin: 'https://linkedin.com',
     };
 
