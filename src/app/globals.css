@@ -307,9 +307,11 @@
     /* Word-by-word clip reveal */
     .hero-headline {
       font-family: var(--ff-d);
-      font-size: clamp(64px, 9vw, 124px);
+      font-size: clamp(40px, 8.5vw, 124px);
       font-weight: 700; line-height: 0.95;
       margin-bottom: 44px; letter-spacing: -0.04em;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
     .hero-headline em { font-style: normal; color: var(--accent); }
     .word-wrap {
@@ -317,6 +319,7 @@
       overflow: hidden;
       vertical-align: bottom;
       padding-bottom: .05em;
+      max-width: 100%;
     }
     .word-inner {
       display: inline-block;
@@ -1964,6 +1967,22 @@ body.is-hovering #cursor-ring { width: 64px; height: 64px; border-color: rgba(24
 /* ==================== GLOBAL RESPONSIVE ENHANCEMENTS ==================== */
 html, body {
   overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Headings & Text Overflow Safety */
+h1, h2, h3, h4, h5, h6, 
+.hero-headline, .s-title, .cta-title, .case-hero-title, 
+.case-section-title, .case-cta-title, .intro-name, 
+.next-project-title, .cv-header-title {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: manual;
+  max-width: 100%;
+}
+
+.word-wrap {
+  max-width: 100%;
 }
 
 /* Navigation & Mobile Overlay */
@@ -1977,6 +1996,28 @@ html, body {
 }
 
 @media (max-width: 768px) {
+  #nav {
+    padding: 16px 20px !important;
+  }
+  .nav-logo {
+    font-size: 18px !important;
+    letter-spacing: 0.08em !important;
+  }
+  .nav-actions {
+    gap: 8px !important;
+  }
+  .nav-cta-btn {
+    padding: 8px 14px !important;
+    font-size: 10px !important;
+    letter-spacing: 0.06em !important;
+    white-space: nowrap !important;
+  }
+  .nav-menu-btn {
+    padding: 8px 14px !important;
+    font-size: 10px !important;
+    letter-spacing: 0.06em !important;
+  }
+
   #menu-overlay {
     grid-template-columns: 1fr !important;
   }
@@ -1987,61 +2028,95 @@ html, body {
     padding: 32px 24px !important;
   }
   .menu-nav a {
-    font-size: clamp(30px, 7vw, 48px) !important;
+    font-size: clamp(28px, 6.5vw, 44px) !important;
     padding: 14px 0 !important;
   }
   .menu-footer {
     gap: 16px !important;
     margin-top: 24px;
   }
+
+  /* Headings on Tablet/Mobile */
+  .hero-headline, #hero-headline, #hero-h1 {
+    font-size: clamp(34px, 8.5vw, 56px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.03em !important;
+    margin-bottom: 32px !important;
+  }
+  .hero-bottom {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 24px !important;
+  }
+  .hero-disciplines {
+    text-align: left !important;
+  }
+  .hero-cta {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .s-title {
+    font-size: clamp(32px, 7.5vw, 52px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.03em !important;
+  }
+  .cta-title {
+    font-size: clamp(34px, 8.5vw, 58px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.03em !important;
+    margin-bottom: 36px !important;
+  }
+  .case-hero-title, #hero-title {
+    font-size: clamp(30px, 7.5vw, 52px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.03em !important;
+  }
+  .case-section-title, .intro-name {
+    font-size: clamp(28px, 7vw, 48px) !important;
+    line-height: 1.05 !important;
+  }
+  .case-cta-title {
+    font-size: clamp(32px, 8vw, 54px) !important;
+    line-height: 1.05 !important;
+  }
+  .next-project-title {
+    font-size: clamp(28px, 7vw, 48px) !important;
+    line-height: 1.05 !important;
+    bottom: 32px !important;
+    left: 24px !important;
+  }
+  .stat-num {
+    font-size: clamp(40px, 8vw, 64px) !important;
+  }
+  .about-intro {
+    font-size: clamp(20px, 4vw, 32px) !important;
+    line-height: 1.4 !important;
+  }
+  .cta-backdrop {
+    font-size: clamp(56px, 14vw, 120px) !important;
+  }
 }
 
 @media (max-width: 540px) {
   #nav {
-    padding: 16px 20px !important;
+    padding: 14px 18px !important;
   }
   #nav.scrolled {
-    padding: 12px 20px !important;
+    padding: 12px 18px !important;
   }
   .nav-logo {
-    font-size: 20px !important;
-    letter-spacing: 0.1em !important;
+    font-size: 16px !important;
+    letter-spacing: 0.06em !important;
   }
   .nav-cta-btn, .nav-menu-btn {
-    padding: 8px 16px !important;
-    font-size: 10px !important;
-    letter-spacing: 0.08em !important;
+    padding: 7px 12px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0.05em !important;
   }
   .nav-actions {
-    gap: 8px !important;
+    gap: 6px !important;
   }
-}
 
-/* Hero Section */
-#hero {
-  min-height: 100dvh;
-}
-
-@media (max-width: 768px) {
-  #hero-h1 {
-    font-size: clamp(38px, 10vw, 68px) !important;
-    line-height: 1.05 !important;
-  }
-  #hero-tagline {
-    font-size: 16px !important;
-    line-height: 1.5 !important;
-    margin-bottom: 24px !important;
-  }
-}
-
-@media (max-width: 480px) {
-  #hero {
-    padding: 0 20px 40px !important;
-  }
-}
-
-/* Grids & Cards */
-@media (max-width: 540px) {
   .stats-grid {
     grid-template-columns: 1fr !important;
   }
@@ -2073,11 +2148,74 @@ html, body {
   }
 }
 
+/* Extra Small Phones (<= 480px) */
+@media (max-width: 480px) {
+  #hero {
+    padding: 0 20px 40px !important;
+  }
+  .hero-headline, #hero-headline, #hero-h1 {
+    font-size: clamp(28px, 8vw, 42px) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 28px !important;
+  }
+  .s-title {
+    font-size: clamp(26px, 7vw, 38px) !important;
+    line-height: 1.1 !important;
+  }
+  .cta-title {
+    font-size: clamp(26px, 7.5vw, 40px) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 28px !important;
+  }
+  .case-hero-title, #hero-title {
+    font-size: clamp(24px, 7vw, 36px) !important;
+    line-height: 1.1 !important;
+  }
+  .case-section-title, .intro-name {
+    font-size: clamp(24px, 6.8vw, 34px) !important;
+    line-height: 1.1 !important;
+  }
+  .case-cta-title {
+    font-size: clamp(24px, 7vw, 38px) !important;
+    line-height: 1.1 !important;
+  }
+  .next-project-title {
+    font-size: clamp(22px, 6.5vw, 34px) !important;
+    bottom: 20px !important;
+    left: 18px !important;
+  }
+  .final-quote {
+    font-size: clamp(17px, 4.5vw, 24px) !important;
+    line-height: 1.4 !important;
+  }
+  .stat-num {
+    font-size: clamp(32px, 8vw, 46px) !important;
+  }
+  .about-intro {
+    font-size: clamp(17px, 4.5vw, 22px) !important;
+    line-height: 1.45 !important;
+  }
+  .cta-backdrop {
+    font-size: clamp(40px, 13vw, 76px) !important;
+  }
+  .footer-bottom {
+    font-size: 11px !important;
+    line-height: 1.5 !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+}
+
 /* CV Page Responsiveness */
 @media (max-width: 768px) {
   .cv-container {
     padding: 120px 20px 60px !important;
     gap: 48px !important;
+  }
+  .cv-header-title {
+    font-size: clamp(32px, 8vw, 52px) !important;
+    line-height: 1.05 !important;
   }
   .cv-header-subtitle {
     font-size: 16px !important;
@@ -2115,6 +2253,9 @@ html, body {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 16px !important;
+  }
+  .cv-header-title {
+    font-size: clamp(28px, 7.5vw, 40px) !important;
   }
   .cv-quick-info {
     grid-template-columns: 1fr 1fr !important;
