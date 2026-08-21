@@ -142,7 +142,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>{homepage?.footerCopyright || "© 2026 Eugène Maaijen — Alle rechten voorbehouden"}</span>
+          <span>{homepage?.footerCopyright || "© 2026 Eugène Maaijen — Alle rechten voorbehouden"} | KVK-nummer: 92113273</span>
           <a href="#" className="back-top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>↑</a>
         </div>
       </footer>

@@ -376,7 +376,7 @@ export default function CVClient({ cvPage }) {
       </main>
 
       <footer className="no-print" style={{ padding: "80px 24px 40px", borderTop: "1px solid var(--border)", textAlign: "center", color: "var(--dim)", fontSize: "12px", fontFamily: "monospace", letterSpacing: "0.05em" }}>
-        © {new Date().getFullYear()} Eugène Maaijen — UX/UI Designer & Creative
+        © {new Date().getFullYear()} Eugène Maaijen — UX/UI Designer & Creative | KVK-nummer: 92113273
       </footer>
     </div>
   );

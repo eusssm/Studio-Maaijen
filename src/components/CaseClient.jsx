@@ -421,7 +421,7 @@ export default function CaseClient({ project, nextProject }) {
 
       <footer className="case-footer">
         <div className="case-footer-inner">
-          <span>© 2026 Eugène Maaijen</span>
+          <span>© 2026 Eugène Maaijen | KVK-nummer: 92113273</span>
           <Link href="/work">← Werk</Link>
           <a href="#" className="back-top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>↑ Top</a>
         </div>

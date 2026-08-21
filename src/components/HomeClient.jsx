@@ -479,7 +479,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     </div>
   </div>
   <div className="footer-bottom">
-    <span>{homepage?.footerCopyright || "© 2026 Eugène Maaijen — Alle rechten voorbehouden"}</span>
+    <span>{homepage?.footerCopyright || "© 2026 Eugène Maaijen — Alle rechten voorbehouden"} | KVK-nummer: 92113273</span>
     <a href="#hero" className="back-top">↑</a>
   </div>
 </footer>
