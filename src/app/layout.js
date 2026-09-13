@@ -41,7 +41,7 @@ export const jsonLd = {
     "name": "Eugène Maaijen"
   },
   "sameAs": [
-    "https://www.linkedin.com/in/eugene-maaijen"
+    "https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/"
   ]
 };
 

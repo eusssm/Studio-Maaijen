@@ -60,7 +60,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
           </nav>
           <div className="menu-footer">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             <a href="mailto:info@studio-maaijen.nl">Email</a>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
             <div className="footer-contact-h">Neem contact op</div>
             <a href="mailto:info@studio-maaijen.nl" className="footer-email">info@studio-maaijen.nl</a>
             <div className="footer-socials">
-              <a href={homepage?.ctaLinkedin || "https://linkedin.com"} target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><span>↗</span></a>
+              <a href={homepage?.ctaLinkedin || "https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/"} target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><span>↗</span></a>
             </div>
           </div>
         </div>

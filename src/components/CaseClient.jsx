@@ -100,7 +100,7 @@ export default function CaseClient({ project, nextProject }) {
           </nav>
           <div className="menu-footer">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             <a href="mailto:info@studio-maaijen.nl">Email</a>
           </div>
         </div>

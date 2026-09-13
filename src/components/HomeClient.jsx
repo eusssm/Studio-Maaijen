@@ -67,7 +67,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     </nav>
     <div className="menu-footer">
       <a href="https://instagram.com" target="_blank">Instagram</a>
-      <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+      <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank">LinkedIn</a>
       <a href="mailto:info@studio-maaijen.nl">Email</a>
     </div>
   </div>
@@ -305,7 +305,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       </div>
       <div className="about-social">
         <a href="https://instagram.com" target="_blank">IG</a>
-        <a href="https://linkedin.com" target="_blank">LI</a>
+        <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank">LI</a>
         <a href="https://behance.net" target="_blank">BE</a>
         <a href="mailto:info@studio-maaijen.nl">Mail</a>
       </div>
@@ -448,7 +448,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     </h2>
     <div className="cta-btns reveal">
       <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="btn btn-primary">Mail mij direct →</a>
-      <a href={homepage?.ctaLinkedin || "https://linkedin.com"} target="_blank" className="btn btn-outline">LinkedIn ↗</a>
+      <a href={homepage?.ctaLinkedin || "https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/"} target="_blank" className="btn btn-outline">LinkedIn ↗</a>
     </div>
   </div>
 </section>
@@ -474,7 +474,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       <div className="footer-contact-h">Neem contact op</div>
       <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="footer-email">{homepage?.ctaEmail || "info@studio-maaijen.nl"}</a>
       <div className="footer-socials">
-        <a href={homepage?.ctaLinkedin || "https://linkedin.com"} target="_blank"><span>LinkedIn</span><span>↗</span></a>
+        <a href={homepage?.ctaLinkedin || "https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/"} target="_blank"><span>LinkedIn</span><span>↗</span></a>
       </div>
     </div>
   </div>
