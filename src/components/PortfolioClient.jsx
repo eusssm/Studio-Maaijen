@@ -116,7 +116,12 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
   }, []);
 
   // Merge CMS data with fallbacks
-  const subtitle     = cvPage?.subtitle      || FALLBACK.subtitle;
+  const MODERN_BIO = `
+    <p><strong>Hoi, ik ben Eugène.</strong> Als Senior UX/UI &amp; Product Designer help ik bedrijven om complexe vraagstukken te vertalen naar intuïtieve, elegante digitale producten die écht werken voor de eindgebruiker.</p>
+    <p>Met ruim 8 jaar ervaring bij toonaangevende opdrachtgevers (zoals <em>De Kindertelefoon</em>, <em>Spotta</em> en <em>Enova</em>) combineer ik doordacht design met een moderne, AI-gedreven workflow. Dat betekent: sneller van idee naar getoetst prototype, zonder ooit in te leveren op detail of merkidentiteit.</p>
+    <p>Pragmatisch, nieuwsgierig en altijd gericht op meetbare impact. Beschikbaar voor een mooie freelance uitdaging of een passende vaste rol.</p>
+  `;
+  const subtitle = MODERN_BIO;
   const location     = cvPage?.location      || FALLBACK.location;
   const availability = cvPage?.availability  || FALLBACK.availability;
   const level        = cvPage?.level         || FALLBACK.level;
@@ -392,10 +397,10 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
               gap: '12px' 
             }}>
               <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
-                Eerdere stages &amp; junior ervaringen bekijken?
+                Benieuwd naar eerdere stappen of aanbevelingen van collega&apos;s?
               </span>
               <a href="https://www.linkedin.com/in/eugene-maaijen" target="_blank" rel="noopener noreferrer" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--accent)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                Volledige loopbaan op LinkedIn ↗
+                Volledig profiel op LinkedIn ↗
               </a>
             </div>
           </section>
@@ -443,14 +448,14 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
 
           <div className="cv-sidebar-section reveal no-print">
             <div className="cv-cta-box">
-              <h3>Direct Schakelen?</h3>
-              <p>Op zoek naar een Senior UX/UI Designer voor een freelance project of vaste positie?</p>
+              <h3>Kop koffie doen? ☕</h3>
+              <p>Zoek je een zelfstandige senior ontwerper die direct overzicht brengt en soepel meedraait in je team? Laten we vrijblijvend kennismaken.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <a href="mailto:info@studio-maaijen.nl" className="btn btn-primary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
-                  Mail Mij Direct →
+                  Stuur een bericht →
                 </a>
                 <a href="https://www.linkedin.com/in/eugene-maaijen" target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none' }}>
-                  LinkedIn Profiel ↗
+                  Bekijk LinkedIn ↗
                 </a>
               </div>
             </div>
