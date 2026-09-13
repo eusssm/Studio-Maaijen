@@ -122,7 +122,12 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
   const level        = cvPage?.level         || FALLBACK.level;
   const focus        = cvPage?.focus         || FALLBACK.focus;
   const portraitUrl  = cvPage?.portrait?.url  || '/images/eugene-portrait.png';
-  const experience   = cvPage?.experience?.length   ? cvPage.experience   : FALLBACK.experience;
+  const rawExperience = cvPage?.experience?.length ? cvPage.experience : FALLBACK.experience;
+  const cutoffIndex = rawExperience.findIndex(
+    exp => (exp.company && exp.company.toLowerCase().includes('sportcreations')) || 
+           (exp.role && exp.role.toLowerCase().includes('allround grafisch ontwerper (stagiair)'))
+  );
+  const experience = cutoffIndex !== -1 ? rawExperience.slice(0, cutoffIndex) : rawExperience;
   const education    = cvPage?.education?.length     ? cvPage.education    : FALLBACK.education;
   const techSkills   = cvPage?.technicalSkills?.length ? cvPage.technicalSkills : FALLBACK.technicalSkills;
   const softSkills   = cvPage?.softSkills?.length     ? cvPage.softSkills     : FALLBACK.softSkills;
@@ -372,6 +377,26 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
                   <div className="cv-desc">{renderDescription(exp.description)}</div>
                 </div>
               ))}
+            </div>
+            
+            <div className="cv-timeline-more reveal no-print" style={{ 
+              marginTop: '36px', 
+              padding: '18px 22px', 
+              borderRadius: '12px', 
+              background: 'rgba(255,255,255,0.02)', 
+              border: '1px dashed var(--border)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between', 
+              flexWrap: 'wrap', 
+              gap: '12px' 
+            }}>
+              <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
+                Eerdere stages &amp; junior ervaringen bekijken?
+              </span>
+              <a href="https://www.linkedin.com/in/eugene-maaijen" target="_blank" rel="noopener noreferrer" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--accent)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                Volledige loopbaan op LinkedIn ↗
+              </a>
             </div>
           </section>
 
