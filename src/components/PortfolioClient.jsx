@@ -134,8 +134,26 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
   );
   const experience = cutoffIndex !== -1 ? rawExperience.slice(0, cutoffIndex) : rawExperience;
   const education    = cvPage?.education?.length     ? cvPage.education    : FALLBACK.education;
-  const techSkills   = cvPage?.technicalSkills?.length ? cvPage.technicalSkills : FALLBACK.technicalSkills;
-  const softSkills   = cvPage?.softSkills?.length     ? cvPage.softSkills     : FALLBACK.softSkills;
+  const baseTechSkills = cvPage?.technicalSkills?.length ? cvPage.technicalSkills : FALLBACK.technicalSkills;
+  const techSkills = Array.from(new Set([
+    'UX/UI Design',
+    'Figma',
+    'Design Systems',
+    'Prototyping',
+    'User Research & Testing',
+    'Wireframing & Flows',
+    'Design-to-Code',
+    'Branding',
+    'AI Tools & Workflows',
+    ...baseTechSkills.filter(s => !['Research', 'AI tools'].includes(s))
+  ]));
+
+  const softSkills = [
+    { name: 'Creativiteit & Concept', percent: 98 },
+    { name: 'Samenwerking met Developers', percent: 95 },
+    { name: 'Stakeholder Management & Advisering', percent: 92 },
+    { name: 'Strategisch & Product Denken', percent: 90 }
+  ];
 
   // Helper to parse description text with bullet points (*, -, •, +), Markdown bold (**text**), or HTML
   const renderDescription = (text) => {
