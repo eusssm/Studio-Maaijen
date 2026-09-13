@@ -318,7 +318,7 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
               </div>
               <div>
                 <span className="qi-label">Dienstverband</span>
-                <span className="qi-value">Freelance / Interim / Vast</span>
+                <span className="qi-value">Freelance / Vast</span>
               </div>
               <div>
                 <span className="qi-label">Werkvorm</span>
@@ -419,7 +419,7 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
           <div className="cv-sidebar-section reveal no-print">
             <div className="cv-cta-box">
               <h3>Direct Schakelen?</h3>
-              <p>Op zoek naar een Senior UX/UI Designer voor een interim opdracht, freelance project of vaste positie?</p>
+              <p>Op zoek naar een Senior UX/UI Designer voor een freelance project of vaste positie?</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <a href="mailto:info@studio-maaijen.nl" className="btn btn-primary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
                   Mail Mij Direct →
