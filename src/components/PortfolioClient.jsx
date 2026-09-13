@@ -288,27 +288,79 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
               <p className="cv-header-subtitle">{subtitle}</p>
             )}
 
-            <div className="cv-quick-info">
+            
+            {/* Direct Recruiter Actions */}
+            <div className="cv-recruiter-actions no-print" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', margin: '28px 0 36px' }}>
+              <a href="mailto:info@studio-maaijen.nl" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <span>Direct Mailen →</span>
+              </a>
+              <a href="https://www.linkedin.com/in/eugene-maaijen" target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ textDecoration: 'none' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.69-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                <span>LinkedIn ↗</span>
+              </a>
+              <a href="#geselecteerd-werk" className="btn btn-outline" style={{ textDecoration: 'none' }}>
+                <span>Bekijk Werk ↓</span>
+              </a>
+              <a href="#ervaring" className="btn btn-outline" style={{ textDecoration: 'none' }}>
+                <span>Werkervaring ↓</span>
+              </a>
+            </div>
+
+<div className="cv-quick-info" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))' }}>
               <div>
                 <span className="qi-label">Locatie</span>
-                <span className="qi-value">{location}</span>
+                <span className="qi-value">{location || 'Ridderkerk / Randstad'}</span>
               </div>
               <div>
                 <span className="qi-label">Beschikbaarheid</span>
-                <span className="qi-value highlight">{availability}</span>
+                <span className="qi-value highlight">{availability || 'Nu beschikbaar'} (32-40u)</span>
+              </div>
+              <div>
+                <span className="qi-label">Dienstverband</span>
+                <span className="qi-value">Freelance / Interim / Vast</span>
+              </div>
+              <div>
+                <span className="qi-label">Werkvorm</span>
+                <span className="qi-value">Hybride / Remote</span>
               </div>
               <div>
                 <span className="qi-label">Niveau</span>
-                <span className="qi-value">{level}</span>
+                <span className="qi-value">{level || 'Senior Lead'}</span>
               </div>
               <div>
                 <span className="qi-label">Focus</span>
-                <span className="qi-value">{focus}</span>
+                <span className="qi-value">{focus || 'UX/UI & AI Workflows'}</span>
+              </div>
+            </div>
+
+            {/* Recruiter Social Proof Strip */}
+            <div className="cv-social-proof no-print" style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+              gap: '20px', 
+              marginTop: '32px',
+              padding: '24px',
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px'
+            }}>
+              <div>
+                <div style={{ fontSize: '26px', fontWeight: '700', color: 'var(--accent)', fontFamily: 'var(--ff-d)' }}>8+ Jaar</div>
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--dim)', marginTop: '4px' }}>Ervaring in UX/UI</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '26px', fontWeight: '700', color: 'var(--text)', fontFamily: 'var(--ff-d)' }}>30+</div>
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--dim)', marginTop: '4px' }}>Projecten Gerealiseerd</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', marginTop: '4px' }}>Kindertelefoon, Spotta, Enova</div>
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--dim)', marginTop: '4px' }}>Bewezen Track Record</div>
               </div>
             </div>
           </header>
 
-          <section className="cv-experience">
+          <section id="ervaring" className="cv-experience">
             <h2 className="cv-section-title reveal">Werkervaring</h2>
             <div className="cv-timeline">
               {experience.map((exp, i) => (
@@ -366,17 +418,22 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
 
           <div className="cv-sidebar-section reveal no-print">
             <div className="cv-cta-box">
-              <h3>Samenwerken?</h3>
-              <p>Stuur me een bericht via de contactpagina voor projectaanvragen of om direct in contact te komen.</p>
-              <Link href="/#cta" className="cv-cta-link">
-                Naar Contact <span>→</span>
-              </Link>
+              <h3>Direct Schakelen?</h3>
+              <p>Op zoek naar een Senior UX/UI Designer voor een interim opdracht, freelance project of vaste positie?</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <a href="mailto:info@studio-maaijen.nl" className="btn btn-primary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
+                  Mail Mij Direct →
+                </a>
+                <a href="https://www.linkedin.com/in/eugene-maaijen" target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none' }}>
+                  LinkedIn Profiel ↗
+                </a>
+              </div>
             </div>
           </div>
         </aside>
       </main>
 
-      <section className="portfolio-full-width no-print" style={{ padding: '80px 24px', borderTop: '1px solid var(--border)' }}>
+      <section id="geselecteerd-werk" className="portfolio-full-width no-print" style={{ padding: '80px 24px', borderTop: '1px solid var(--border)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h2 className="cv-section-title reveal" style={{ marginBottom: '60px', textAlign: 'center', fontSize: 'clamp(32px, 5vw, 48px)' }}>Geselecteerd Werk</h2>
           <div className="work-grid">
