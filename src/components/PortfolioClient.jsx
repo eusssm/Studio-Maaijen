@@ -449,7 +449,7 @@ export default function PortfolioClient({ cvPage, projects = [] }) {
           <div className="cv-sidebar-section reveal no-print">
             <div className="cv-cta-box">
               <h3>Kop koffie doen? ☕</h3>
-              <p>Zoek je een zelfstandige senior ontwerper die direct overzicht brengt en soepel meedraait in je team? Laten we vrijblijvend kennismaken.</p>
+              <p>Direct senior designkracht nodig die vanaf dag één tempo maakt en waarde toevoegt? Stuur gerust een berichtje voor een snelle kennismaking.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <a href="mailto:info@studio-maaijen.nl" className="btn btn-primary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
                   Stuur een bericht →
