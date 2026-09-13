@@ -49,7 +49,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     <li><a href="#cta">Contact</a></li>
   </ul>
   <div className="nav-actions">
-    <Link href="/cv" className="nav-cta-btn">Bekijk mijn CV</Link>
+    <Link href="/portfolio" className="nav-cta-btn">Portfolio & CV</Link>
     <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
   </div>
 </nav>
@@ -62,7 +62,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       <Link href="/work" onClick={() => {}}><span>Werk</span><span className="arrow">→</span></Link>
       <a href="#services" onClick={() => {}}><span>Disciplines</span><span className="arrow">→</span></a>
       <a href="#about" onClick={() => {}}><span>Over Mij</span><span className="arrow">→</span></a>
-      <Link href="/cv" onClick={() => {}}><span>CV</span><span className="arrow">→</span></Link>
+      <Link href="/portfolio" onClick={() => {}}><span>Portfolio & CV</span><span className="arrow">→</span></Link>
       <a href="#cta" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></a>
     </nav>
     <div className="menu-footer">

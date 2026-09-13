@@ -103,7 +103,7 @@ const FALLBACK = {
   ]
 };
 
-export default function CVClient({ cvPage }) {
+export default function PortfolioClient({ cvPage, projects = [] }) {
   const containerRef = useRef();
 
   useEffect(() => {
@@ -211,7 +211,7 @@ export default function CVClient({ cvPage }) {
       <div id="cursor-ring" className="no-print"></div>
 
       <div id="loader" className="no-print">
-        <div id="loader-name">Eugène Maaijen — CV</div>
+        <div id="loader-name">Eugène Maaijen — Portfolio & CV</div>
         <div id="loader-bar"><div id="loader-fill"></div></div>
         <div id="loader-count">0%</div>
       </div>
@@ -224,7 +224,7 @@ export default function CVClient({ cvPage }) {
           <li><Link href="/#cta">Contact</Link></li>
         </ul>
         <div className="nav-actions">
-          <Link href="/cv" className="nav-cta-btn">Bekijk mijn CV</Link>
+          <Link href="/portfolio" className="nav-cta-btn">Portfolio & CV</Link>
           <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
         </div>
       </nav>
@@ -235,7 +235,7 @@ export default function CVClient({ cvPage }) {
           <nav className="menu-nav">
             <Link href="/work" onClick={() => {}}><span>Werk</span><span className="arrow">→</span></Link>
             <Link href="/#services" onClick={() => {}}><span>Disciplines</span><span className="arrow">→</span></Link>
-            <Link href="/cv" onClick={() => {}}><span>CV</span><span className="arrow">→</span></Link>
+            <Link href="/portfolio" onClick={() => {}}><span>Portfolio & CV</span><span className="arrow">→</span></Link>
             <Link href="/#cta" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></Link>
           </nav>
           <div className="menu-footer">
@@ -272,7 +272,7 @@ export default function CVClient({ cvPage }) {
                 <img src={portraitUrl} alt="Eugène Maaijen" />
               </div>
               <div className="cv-header-title-container">
-                <h1 className="cv-header-title">Curriculum<br/>Vitae</h1>
+                <h1 className="cv-header-title">Portfolio<br/>& CV</h1>
                 <button onClick={() => window.print()} className="cv-print-btn no-print" title="Print of bewaar als PDF">
                   <svg className="print-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
@@ -322,7 +322,8 @@ export default function CVClient({ cvPage }) {
               ))}
             </div>
           </section>
-        </div>
+
+                  </div>
 
         {/* Sidebar: Skills, Education & Contact */}
         <aside className="cv-sidebar">
@@ -374,6 +375,36 @@ export default function CVClient({ cvPage }) {
           </div>
         </aside>
       </main>
+
+      <section className="portfolio-full-width no-print" style={{ padding: '80px 24px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 className="cv-section-title reveal" style={{ marginBottom: '60px', textAlign: 'center', fontSize: 'clamp(32px, 5vw, 48px)' }}>Geselecteerd Werk</h2>
+          <div className="work-grid">
+            {projects.length > 0 ? projects.map((proj, index) => (
+              <Link key={proj.slug + index} href={`/work/${proj.slug}?from=portfolio`} className="work-card reveal" style={{ textDecoration: 'none' }}>
+                <div className="work-img-wrap">
+                  <div className="work-img" style={{ backgroundImage: proj.coverImage ? `url(${proj.coverImage.url})` : 'none', backgroundColor: '#222' }}>
+                    <span style={{ fontFamily: "var(--ff-d)", fontSize: "clamp(40px,6vw,80px)", fontWeight: "600", color: "rgba(240,237,230,.1)" }}>
+                      {proj.title.substring(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+                <div className="work-meta" style={{ marginTop: '16px' }}>
+                  <span className="work-client" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--dim)', marginBottom: '8px' }}>
+                    {proj.client} — {proj.categories?.map(c => c.name).join(', ') || proj.projectType}
+                  </span>
+                  <span className="work-name" style={{ display: 'block', fontSize: '24px', fontWeight: '500' }}>
+                    {proj.title}
+                  </span>
+                </div>
+              </Link>
+            )) : (
+              <div style={{ color: 'var(--muted)', textAlign: 'center' }}>Geen projecten beschikbaar.</div>
+            )}
+          </div>
+        </div>
+      </section>
+
 
       <footer className="no-print" style={{ padding: "80px 24px 40px", borderTop: "1px solid var(--border)", textAlign: "center", color: "var(--dim)", fontSize: "12px", fontFamily: "monospace", letterSpacing: "0.05em" }}>
         © {new Date().getFullYear()} Eugène Maaijen — UX/UI Designer & Creative | KVK-nummer: 92113273

@@ -142,6 +142,31 @@ const PROJECT_QUERY = `
   }
 `;
 
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  try {
+    const { data } = await performRequest({ 
+      query: `query { project(filter: { slug: { eq: "${slug}" } }) { title introText coverImage { url } } }`
+    });
+    const p = data?.project;
+    if (p) {
+      return {
+        title: p.title,
+        description: p.introText?.substring(0, 160) || "Project case study door Studio Maaijen.",
+        openGraph: {
+          title: `${p.title} | Studio Maaijen`,
+          description: p.introText?.substring(0, 160) || "Project case study door Studio Maaijen.",
+          images: p.coverImage ? [{ url: p.coverImage.url }] : [],
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Metadata fetch error:", e);
+  }
+  return { title: 'Project' };
+}
+
 export async function generateStaticParams() {
   try {
     const { data } = await performRequest({

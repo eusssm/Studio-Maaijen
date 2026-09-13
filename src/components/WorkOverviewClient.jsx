@@ -43,7 +43,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
           <li><Link href="/#cta">Contact</Link></li>
         </ul>
         <div className="nav-actions">
-          <Link href="/cv" className="nav-cta-btn">Bekijk mijn CV</Link>
+          <Link href="/portfolio" className="nav-cta-btn">Portfolio & CV</Link>
           <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
         </div>
       </nav>
@@ -55,7 +55,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
             <Link href="/work" onClick={() => {}}><span>Werk</span><span className="arrow">→</span></Link>
             <Link href="/#services" onClick={() => {}}><span>Disciplines</span><span className="arrow">→</span></Link>
             <Link href="/#about" onClick={() => {}}><span>Over Mij</span><span className="arrow">→</span></Link>
-            <Link href="/cv" onClick={() => {}}><span>CV</span><span className="arrow">→</span></Link>
+            <Link href="/portfolio" onClick={() => {}}><span>Portfolio & CV</span><span className="arrow">→</span></Link>
             <Link href="/#cta" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></Link>
           </nav>
           <div className="menu-footer">

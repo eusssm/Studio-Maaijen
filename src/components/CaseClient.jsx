@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
@@ -49,6 +49,16 @@ function renderCtaButton(url, label, defaultText = 'Bekijk live website') {
 }
 
 export default function CaseClient({ project, nextProject }) {
+  const [hideCta, setHideCta] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('from') === 'portfolio') {
+        setHideCta(true);
+      }
+    }
+  }, []);
+
   const containerRef = useRef();
 
   useEffect(() => {
@@ -408,6 +418,7 @@ export default function CaseClient({ project, nextProject }) {
         </Link>
       )}
 
+      { !hideCta && (
       <section className="case-cta">
         <div className="case-cta-inner reveal">
           <p className="case-cta-eyebrow">Klaar om samen te werken?</p>
@@ -418,6 +429,7 @@ export default function CaseClient({ project, nextProject }) {
           </div>
         </div>
       </section>
+      ) }
 
       <footer className="case-footer">
         <div className="case-footer-inner">

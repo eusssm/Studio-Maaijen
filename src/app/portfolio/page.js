@@ -1,9 +1,9 @@
 import { performRequest } from "../../../lib/datocms";
-import CVClient from "../../components/CVClient";
+import PortfolioClient from "../../components/PortfolioClient";
 
 export const metadata = {
-  title: "CV | Eugène Maaijen",
-  description: "Curriculum Vitae van Eugène Maaijen, UX/UI Designer en Creative.",
+  title: "Portfolio & CV | Eugène Maaijen",
+  description: "Portfolio en Curriculum Vitae van Eugène Maaijen, UX/UI Designer en Creative.",
 };
 
 const CV_QUERY = `
@@ -35,18 +35,33 @@ const CV_QUERY = `
         }
       }
     }
+    allProjects(first: 100, orderBy: position_ASC) {
+      title
+      slug
+      client
+      projectType
+      introText
+      coverImage {
+        url
+      }
+      categories {
+        name
+      }
+    }
   }
 `;
 
 export default async function CVPage() {
   let cvPage = null;
+  let projects = [];
   try {
     const { data } = await performRequest({ query: CV_QUERY });
     cvPage = data?.cvPage || null;
+    projects = data?.allProjects || [];
   } catch (e) {
     // CMS model may not exist yet – fall back to hardcoded data
     console.log("CV DatoCMS query failed, using fallback data:", e.message);
   }
 
-  return <CVClient cvPage={cvPage} />;
+  return <PortfolioClient cvPage={cvPage} projects={projects} />;
 }
