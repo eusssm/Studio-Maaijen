@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
+import HeroVisual from './HeroVisual';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -87,10 +88,9 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
 
 
 <section id="hero">
-  <div className="hero-bg"></div>
+  <div className="hero-bg hero-bg--motion"></div>
+  <HeroVisual projects={projects} />
   <div className="hero-grid"></div>
-  <div className="hero-orb hero-orb-1"></div>
-  <div className="hero-orb hero-orb-2"></div>
   <div className="hero-side-label">UX · Brand · Video · NL</div>
 
   <div className="hero-content">
@@ -104,10 +104,8 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
         <div dangerouslySetInnerHTML={{ __html: homepage.heroHeadline }} />
       ) : (
         <>
-          <div><span className="word-wrap"><span className="word-inner">Design&nbsp;dat</span></span></div>
-          <div><span className="word-wrap"><span className="word-inner"><em>raakt&nbsp;vandaag</em></span></span></div>
-          <div><span className="word-wrap"><span className="word-inner">&amp;&nbsp;<em>inspireert</em></span></span></div>
-          <div><span className="word-wrap"><span className="word-inner">morgen.</span></span></div>
+          <div><span className="word-wrap"><span className="word-inner">Impactvolle UX/UI</span></span></div>
+          <div><span className="word-wrap"><span className="word-inner">&amp; <em>Merkidentiteiten</em></span></span></div>
         </>
       )}
     </h1>

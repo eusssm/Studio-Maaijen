@@ -276,6 +276,44 @@
       bottom: 100px; left: 100px;
     }
 
+    /* ---------- Hero visual: interactive mouse-follow glow & grid spotlight ---------- */
+    .hero-bg--motion { background: #0a0a0a; }
+    .hero-bg--motion::after {
+      background:
+        radial-gradient(ellipse at 20% 100%, rgba(10,10,10,0.88) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(10,10,10,0) 60%, #0a0a0a 100%);
+      z-index: 1;
+    }
+    .hv-canvas {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%;
+      filter: blur(42px) saturate(1.15);
+      opacity: 0;
+      animation: hv-fade 1.8s var(--ease-out) .2s forwards;
+      pointer-events: none;
+    }
+    .hv-grid-spotlight {
+      position: absolute; inset: 0; z-index: 1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 100, 30, 0.24) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 100, 30, 0.24) 1px, transparent 1px);
+      background-size: 80px 80px;
+      -webkit-mask-image: radial-gradient(380px circle at var(--mx, 55%) var(--my, 45%), #000 0%, transparent 100%);
+      mask-image: radial-gradient(380px circle at var(--mx, 55%) var(--my, 45%), #000 0%, transparent 100%);
+    }
+    .hv-noise {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      opacity: .07; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    #hero .hero-grid { z-index: 1; }
+    @keyframes hv-fade { to { opacity: 1; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hv-canvas { animation: none; opacity: 1; }
+    }
+
     .hero-side-label {
       position: absolute; top: 50%; right: 40px;
       transform: translateY(-50%) rotate(90deg);
@@ -284,7 +322,7 @@
       transform-origin: center;
     }
 
-    .hero-content { position: relative; z-index: 2; }
+    .hero-content { position: relative; z-index: 2; text-align: left; }
 
     .hero-eyebrow {
       display: flex; align-items: center; gap: 10px;
@@ -307,11 +345,13 @@
     /* Word-by-word clip reveal */
     .hero-headline {
       font-family: var(--ff-d);
-      font-size: clamp(40px, 8.5vw, 124px);
-      font-weight: 700; line-height: 0.95;
-      margin-bottom: 44px; letter-spacing: -0.04em;
+      font-size: clamp(52px, 10.5vw, 172px);
+      font-weight: 700; line-height: 0.91;
+      margin-bottom: 40px; letter-spacing: -0.045em;
+      text-align: left;
       word-break: break-word;
       overflow-wrap: break-word;
+      will-change: transform;
     }
     .hero-headline em { font-style: normal; color: var(--accent); }
     .word-wrap {
@@ -320,6 +360,7 @@
       vertical-align: bottom;
       padding-bottom: .05em;
       max-width: 100%;
+      white-space: nowrap;
     }
     .word-inner {
       display: inline-block;
@@ -2140,10 +2181,11 @@ h1, h2, h3, h4, h5, h6,
 
   /* Headings on Tablet/Mobile */
   .hero-headline, #hero-headline, #hero-h1 {
-    font-size: clamp(34px, 8.5vw, 56px) !important;
-    line-height: 1.05 !important;
-    letter-spacing: -0.03em !important;
-    margin-bottom: 32px !important;
+    font-size: clamp(44px, 9.5vw, 84px) !important;
+    line-height: 0.95 !important;
+    letter-spacing: -0.04em !important;
+    text-align: left !important;
+    margin-bottom: 34px !important;
   }
   .hero-bottom {
     flex-direction: column !important;
@@ -2256,10 +2298,11 @@ h1, h2, h3, h4, h5, h6,
     padding: 0 20px 40px !important;
   }
   .hero-headline, #hero-headline, #hero-h1 {
-    font-size: clamp(28px, 8vw, 42px) !important;
-    line-height: 1.1 !important;
-    letter-spacing: -0.02em !important;
-    margin-bottom: 28px !important;
+    font-size: clamp(34px, 9.4vw, 54px) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.035em !important;
+    text-align: left !important;
+    margin-bottom: 26px !important;
   }
   .s-title {
     font-size: clamp(26px, 7vw, 38px) !important;

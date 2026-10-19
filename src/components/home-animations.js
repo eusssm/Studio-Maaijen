@@ -78,16 +78,20 @@ export function initHomeAnimations(container) {
     gsap.from('.scroll-hint', { opacity:0, duration:1, ease:'power2.out', delay:1.4 });
 
     /* --- Hero parallax --- */
-    gsap.to('.hero-orb-1', {
-      y: -120, scrollTrigger: {
-        trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5
-      }
-    });
-    gsap.to('.hero-orb-2', {
-      y: -60, scrollTrigger: {
-        trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2
-      }
-    });
+    if (document.querySelector('.hv-cards')) {
+      gsap.to('.hv-cards', {
+        y: -160, scrollTrigger: {
+          trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5
+        }
+      });
+    }
+    if (document.querySelector('.hv-canvas')) {
+      gsap.to('.hv-canvas', {
+        y: -60, scale: 1.1, scrollTrigger: {
+          trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2
+        }
+      });
+    }
     gsap.to('.hero-content', {
       y: 80, opacity: .3, scrollTrigger: {
         trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1
@@ -203,12 +207,14 @@ export function initHomeAnimations(container) {
     });
 
     /* ============ SERVICES IMAGE PARALLAX ============ */
-    gsap.to('.services-img-block', {
-      y: -40,
-      scrollTrigger: {
-        trigger: '#services', start: 'top bottom', end: 'bottom top', scrub: 2
-      }
-    });
+    if (document.querySelector('.services-img-block')) {
+      gsap.to('.services-img-block', {
+        y: -40,
+        scrollTrigger: {
+          trigger: '#services', start: 'top bottom', end: 'bottom top', scrub: 2
+        }
+      });
+    }
 
     /* ============ MARQUEE SPEED ON SCROLL ============ */
     let scrollVel = 0;
