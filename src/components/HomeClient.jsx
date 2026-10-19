@@ -44,12 +44,13 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
   <a href="#hero" className="nav-logo">STUDIO MAAIJEN</a>
   <ul className="nav-links">
     <li><Link href="/work">Werk</Link></li>
+    <li><Link href="/pakketten">Pakketten</Link></li>
     <li><a href="#services">Disciplines</a></li>
     <li><a href="#about">Over</a></li>
-    <li><a href="#cta">Contact</a></li>
+    <li><Link href="/contact">Contact</Link></li>
   </ul>
   <div className="nav-actions">
-    <Link href="/portfolio" className="nav-cta-btn">Portfolio & CV</Link>
+    <Link href="/contact" className="nav-cta-btn">Start een project</Link>
     <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
   </div>
 </nav>
@@ -60,10 +61,10 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     <button className="menu-close" id="menu-close-btn">Sluiten ✕</button>
     <nav className="menu-nav">
       <Link href="/work" onClick={() => {}}><span>Werk</span><span className="arrow">→</span></Link>
+      <Link href="/pakketten" onClick={() => {}}><span>Pakketten</span><span className="arrow">→</span></Link>
       <a href="#services" onClick={() => {}}><span>Disciplines</span><span className="arrow">→</span></a>
       <a href="#about" onClick={() => {}}><span>Over Mij</span><span className="arrow">→</span></a>
-      <Link href="/portfolio" onClick={() => {}}><span>Portfolio & CV</span><span className="arrow">→</span></Link>
-      <a href="#cta" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></a>
+      <Link href="/contact" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></Link>
     </nav>
     <div className="menu-footer">
       <a href="https://instagram.com" target="_blank">Instagram</a>
@@ -243,7 +244,11 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
 
   <div className="services-list reveal">
     <div className="service-row">
-      <div className="service-index">"01" {homepage?.service1Title || "UX/UI Design"} —</div>
+      <div className="service-index">
+        <span className="service-index-num">&quot;01&quot;</span>
+        <span className="service-index-title">{homepage?.service1Title || "UX/UI Design"}</span>
+        <span className="service-index-dash">—</span>
+      </div>
       <div className="service-desc">
         {homepage?.service1Desc || "Van wireframe tot high-fidelity prototype — ik ontwerp digitale ervaringen die intuïtief aanvoelen en gebruikers meenemen van A naar B."}
       </div>
@@ -255,7 +260,11 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     </div>
     
     <div className="service-row">
-      <div className="service-index">"02" {homepage?.service2Title || "Brand Identity"} —</div>
+      <div className="service-index">
+        <span className="service-index-num">&quot;02&quot;</span>
+        <span className="service-index-title">{homepage?.service2Title || "Brand Identity"}</span>
+        <span className="service-dash">—</span>
+      </div>
       <div className="service-desc">
         {homepage?.service2Desc || "Merken die niet alleen mooi zijn — maar ook iets zeggen. Ik bouw identiteiten die emotioneel resoneren én visueel consistent zijn."}
       </div>
@@ -267,7 +276,11 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     </div>
     
     <div className="service-row">
-      <div className="service-index">"03" {homepage?.service3Title || "Video Editing"} —</div>
+      <div className="service-index">
+        <span className="service-index-num">&quot;03&quot;</span>
+        <span className="service-index-title">{homepage?.service3Title || "Video Editing"}</span>
+        <span className="service-dash">—</span>
+      </div>
       <div className="service-desc">
         {homepage?.service3Desc || "Van rauwe opnames naar een gepolijste productie — met oog voor ritme, sfeer en impact. Bewegend beeld dat het verhaal versterkt."}
       </div>
@@ -316,7 +329,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
           <span dangerouslySetInnerHTML={{ __html: homepage.aboutIntro }} />
         ) : (
           <>
-            Ik ben <em>Eugène Maaijen</em> — UX/UI designer, video editor en brand creator. Met meer dan 20 jaar ervaring help ik merken om <em>digitale ervaringen te creëren</em> die raken, overtuigen en blijven hangen.
+            Ik ben <em>Eugène Maaijen</em> — senior UX/UI designer, front-end developer en brand creator. Met ruim 20 jaar ervaring help ik bedrijven en merken om <em>digitale ervaringen te creëren</em> die raken, helder communiceren en converteren.
           </>
         )}
       </p>
@@ -326,29 +339,56 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
           {homepage?.aboutBlock1Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock1Text) ? (
             <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock1Text }} />
           ) : (
-            <div className="about-block-txt">{homepage?.aboutBlock1Text || "Ik ontwerp websites, huisstijlen en video's voor zowel grote organisaties als ambitieuze startups. Elk project begin ik met één vraag: wat moet de gebruiker voelen?"}</div>
+            <div className="about-block-txt">
+              {homepage?.aboutBlock1Text || `Al meer dan twintig jaar beweeg ik me op het snijvlak van design, psychologie en technologie. Wat begon met een fascinatie voor interactieve interfaces en multimedia, is uitgegroeid tot een allround studio voor merken en bedrijven die online willen uitblinken.
+
+Mijn kracht ligt in de combinatie: ik ontwerp niet alleen een aantrekkelijke en intuïtieve interface in Figma, maar begrijp ook exact hoe interacties, animaties en moderne webcode onder de motorkap functioneren. Geen ontwerpen die in de praktijk sneuvelen of technisch onhaalbaar blijken, maar doordachte oplossingen die direct tot leven komen, razendsnel laden en écht resultaat opleveren.`}
+            </div>
           )}
         </div>
+
         <div className="about-block reveal">
-          <div className="about-block-lbl">{homepage?.aboutBlock2Label || "Werkwijze"}</div>
+          <div className="about-block-lbl">{homepage?.aboutBlock2Label || "Werkwijze & Filosofie"}</div>
           {homepage?.aboutBlock2Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock2Text) ? (
             <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock2Text }} />
           ) : (
-            <div className="about-block-txt">{homepage?.aboutBlock2Text || "Geen stijve praatjes of standaard templates. Korte lijnen, relaxed sparren en strakke uitwerkingen — van het eerste idee tot het eindresultaat live staat."}</div>
+            <div className="about-block-txt">
+              {homepage?.aboutBlock2Text || `Geen stroperige bureauprocessen, accountmanagers of onnodige vergaderlagen. Bij Studio Maaijen werk je rechtstreeks samen met degene die jouw project bedenkt, ontwerpt en bouwt. Korte communicatielijnen, heldere afspraken en een nuchtere, transparante aanpak.
+
+Elk traject begint met luisteren: wat is het doel, wie is de doelgroep en wat moet de bezoeker ervaren en doen? Vervolgens vertalen we dat snel naar tastbare wireframes, interactieve prototypes en een strakke visuele stijl. Van het eerste idee tot een sleutelklare livegang inclusief gebruiksvriendelijk CMS.`}
+            </div>
           )}
         </div>
+
         <div className="about-block reveal">
-          <div className="about-block-lbl">{homepage?.aboutBlock3Label || "Tools"}</div>
+          <div className="about-block-lbl">{homepage?.aboutBlock3Label || "Disciplines & Expertise"}</div>
           {homepage?.aboutBlock3Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock3Text) ? (
             <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock3Text }} />
           ) : (
-            <div className="about-block-txt">{homepage?.aboutBlock3Text || "Figma, Adobe Creative Suite, Webflow, After Effects, Premiere Pro, DaVinci Resolve & diverse AI tools."}</div>
+            <div className="about-block-txt">
+              {homepage?.aboutBlock3Text || `• UX & UI Design — User research, wireframing, interactieve Figma-prototypes en complete design systems.
+• Front-end & Web — Snelle, responsive websites gebouwd met moderne frameworks (Next.js, React) en eenvoudig te beheren CMS-systemen.
+• Branding & Visuele Identiteit — Logo-ontwerp, complete merkidentiteit, typografie en stijlgidsen.
+• Video & Motion Graphics — Dynamische animaties, video editing en social content in Premiere Pro en After Effects.`}
+            </div>
+          )}
+        </div>
+
+        <div className="about-block reveal">
+          <div className="about-block-lbl">{homepage?.aboutBlock4Label || "Tools & Stack"}</div>
+          {homepage?.aboutBlock4Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock4Text) ? (
+            <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock4Text }} />
+          ) : (
+            <div className="about-block-txt">
+              {homepage?.aboutBlock4Text || "Figma, Adobe Creative Cloud (Photoshop, Illustrator, InDesign), After Effects, Premiere Pro, DaVinci Resolve, Next.js, HTML/CSS, Webflow en moderne AI-gedreven workflows."}
+            </div>
           )}
         </div>
       </div>
+
       <div className="clients-lbl reveal">Gewerkt voor</div>
       <div className="clients-list reveal">
-        {(homepage?.aboutClients ? homepage.aboutClients.split(',').map(c => c.trim()) : ["Blubricks", "Spotta", "De Kindertelefoon", "& meer"]).map((client, idx) => (
+        {(homepage?.aboutClients ? homepage.aboutClients.split(',').map(c => c.trim()) : ["Blubricks", "Spotta", "De Kindertelefoon", "PostNL", "Gemeenten", "& meer"]).map((client, idx) => (
           <span key={idx} className="client-badge">{client}</span>
         ))}
       </div>
@@ -448,7 +488,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
     </h2>
     <div className="cta-btns reveal">
       <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="btn btn-primary">Mail mij direct →</a>
-      <a href={homepage?.ctaLinkedin || "https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/"} target="_blank" className="btn btn-outline">LinkedIn ↗</a>
+      <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" className="btn btn-outline">LinkedIn ↗</a>
     </div>
   </div>
 </section>
@@ -465,16 +505,17 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       <div className="footer-nav-h">Navigatie</div>
       <div className="footer-nav-links">
         <Link href="/work">Werk</Link>
+        <Link href="/pakketten">Pakketten</Link>
         <a href="#services">Disciplines</a>
         <a href="#about">Over Mij</a>
-        <a href="#cta">Contact</a>
+        <Link href="/contact">Contact</Link>
       </div>
     </div>
     <div>
       <div className="footer-contact-h">Neem contact op</div>
       <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="footer-email">{homepage?.ctaEmail || "info@studio-maaijen.nl"}</a>
       <div className="footer-socials">
-        <a href={homepage?.ctaLinkedin || "https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/"} target="_blank"><span>LinkedIn</span><span>↗</span></a>
+        <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank"><span>LinkedIn</span><span>↗</span></a>
       </div>
     </div>
   </div>

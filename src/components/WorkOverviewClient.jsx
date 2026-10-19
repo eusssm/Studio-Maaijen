@@ -38,12 +38,13 @@ export default function WorkOverviewClient({ projects, homepage }) {
         <Link href="/" className="nav-logo">STUDIO MAAIJEN</Link>
         <ul className="nav-links">
           <li><Link href="/work">Werk</Link></li>
+          <li><Link href="/pakketten">Pakketten</Link></li>
           <li><Link href="/#services">Disciplines</Link></li>
           <li><Link href="/#about">Over</Link></li>
-          <li><Link href="/#cta">Contact</Link></li>
+          <li><Link href="/contact">Contact</Link></li>
         </ul>
         <div className="nav-actions">
-          <Link href="/portfolio" className="nav-cta-btn">Portfolio & CV</Link>
+          <Link href="/contact" className="nav-cta-btn">Start een project</Link>
           <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
         </div>
       </nav>
@@ -53,10 +54,10 @@ export default function WorkOverviewClient({ projects, homepage }) {
           <button className="menu-close" id="menu-close-btn">Sluiten ✕</button>
           <nav className="menu-nav">
             <Link href="/work" onClick={() => {}}><span>Werk</span><span className="arrow">→</span></Link>
+            <Link href="/pakketten" onClick={() => {}}><span>Pakketten</span><span className="arrow">→</span></Link>
             <Link href="/#services" onClick={() => {}}><span>Disciplines</span><span className="arrow">→</span></Link>
             <Link href="/#about" onClick={() => {}}><span>Over Mij</span><span className="arrow">→</span></Link>
-            <Link href="/portfolio" onClick={() => {}}><span>Portfolio & CV</span><span className="arrow">→</span></Link>
-            <Link href="/#cta" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></Link>
+            <Link href="/contact" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></Link>
           </nav>
           <div className="menu-footer">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
@@ -137,7 +138,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
             <div className="footer-contact-h">Neem contact op</div>
             <a href="mailto:info@studio-maaijen.nl" className="footer-email">info@studio-maaijen.nl</a>
             <div className="footer-socials">
-              <a href={homepage?.ctaLinkedin || "https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/"} target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><span>↗</span></a>
+              <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><span>↗</span></a>
             </div>
           </div>
         </div>

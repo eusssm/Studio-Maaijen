@@ -45,6 +45,8 @@ const PAGE_QUERY = `
       aboutBlock2Text
       aboutBlock3Label
       aboutBlock3Text
+      aboutBlock4Label
+      aboutBlock4Text
       aboutClients
 
       # Process

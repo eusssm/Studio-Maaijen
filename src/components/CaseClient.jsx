@@ -81,10 +81,11 @@ export default function CaseClient({ project, nextProject }) {
       <nav id="nav">
         <Link href="/" className="nav-logo">STUDIO MAAIJEN</Link>
         <ul className="nav-links">
-          <li><Link href="/#work-section">Werk</Link></li>
+          <li><Link href="/work">Werk</Link></li>
+          <li><Link href="/pakketten">Pakketten</Link></li>
           <li><Link href="/#services">Disciplines</Link></li>
           <li><Link href="/#about">Over</Link></li>
-          <li><Link href="/#cta">Contact</Link></li>
+          <li><Link href="/contact">Contact</Link></li>
         </ul>
         <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
       </nav>
@@ -93,10 +94,11 @@ export default function CaseClient({ project, nextProject }) {
         <div className="menu-col-left">
           <button className="menu-close" id="menu-close-btn">Sluiten ✕</button>
           <nav className="menu-nav">
-            <Link href="/#work-section"><span>Werk</span><span className="arrow">→</span></Link>
+            <Link href="/work"><span>Werk</span><span className="arrow">→</span></Link>
+            <Link href="/pakketten"><span>Pakketten</span><span className="arrow">→</span></Link>
             <Link href="/#services"><span>Disciplines</span><span className="arrow">→</span></Link>
             <Link href="/#about"><span>Over Mij</span><span className="arrow">→</span></Link>
-            <Link href="/#cta"><span>Contact</span><span className="arrow">→</span></Link>
+            <Link href="/contact"><span>Contact</span><span className="arrow">→</span></Link>
           </nav>
           <div className="menu-footer">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
