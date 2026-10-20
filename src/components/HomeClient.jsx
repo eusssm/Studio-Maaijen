@@ -168,7 +168,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
 
   <div className="work-grid">
     {projects.length > 0 ? projects.map(proj => (
-      <Link key={proj.slug} href={`/work/${proj.slug}`} className="work-card reveal">
+      <Link key={proj.slug} href={`/work/${proj.slug}`} className="work-card">
         <div className="work-img-wrap">
           <div className="work-img" style={{ backgroundImage: proj.coverImage ? `url(${proj.coverImage.url})` : 'none', backgroundColor: '#222' }}>
             <span style={{ fontFamily: "var(--ff-d)", fontSize: "clamp(40px,6vw,80px)", fontWeight: "600", color: "rgba(240,237,230,.1)" }}>
@@ -177,26 +177,27 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
           </div>
         </div>
         <div className="work-meta">
-          <span className="work-client">{proj.client} — {proj.categories?.map(c => c.name).join(', ') || proj.projectType}</span>
-          <span className="work-name">{proj.title}</span>
+          <div className="work-meta-left">
+            <span className="work-client">{proj.client} — {proj.categories?.map(c => c.name).join(', ') || proj.projectType}</span>
+            <span className="work-name">{proj.title}</span>
+          </div>
+          <span className="work-arrow" aria-hidden="true">↗</span>
         </div>
       </Link>
     )) : (
       <>
-        <Link href="/work/blubricks" className="work-card reveal">
+        <Link href="/work/blubricks" className="work-card">
           <div className="work-img-wrap"><div className="work-img bg-blubricks"><span style={{"fontFamily":"var(--ff-d)","fontSize":"clamp(40px,6vw,80px)","fontWeight":"600","color":"rgba(240,237,230,.1)"}}>BB</span></div></div>
           <div className="work-meta">
-            <span className="work-client">Brand Identity & Web</span>
-            <span className="work-name">Blubricks (Voorbeeld)</span>
+            <div className="work-meta-left">
+              <span className="work-client">Brand Identity & Web</span>
+              <span className="work-name">Blubricks (Voorbeeld)</span>
+            </div>
+            <span className="work-arrow" aria-hidden="true">↗</span>
           </div>
         </Link>
       </>
     )}
-    
-    <div className="work-card reveal" style={{"justifyContent":"center","alignItems":"center","display":"flex"}}>
-      <h3 style={{"fontFamily":"var(--ff-d)","fontSize":"clamp(32px,4vw,48px)","fontWeight":"500","marginBottom":"20px"}}>Klaar om samen iets<br /><em style={{"fontStyle":"normal","color":"var(--accent)"}}>bijzonders te maken?</em></h3>
-      <a href="#cta" className="btn btn-primary" style={{"alignSelf":"center"}}>Neem contact op →</a>
-    </div>
   </div>
 </div>
 
@@ -322,7 +323,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       </div>
     </div>
     <div className="about-right">
-      <p className="about-intro reveal">
+      <p className="about-intro">
         {homepage?.aboutIntro ? (
           <span dangerouslySetInnerHTML={{ __html: homepage.aboutIntro }} />
         ) : (

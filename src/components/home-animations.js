@@ -142,6 +142,120 @@ export function initHomeAnimations(container) {
       }
     );
 
+    /* ============ WORK CARDS CURTAIN REVEAL & PARALLAX ============ */
+    qsa('.work-card').forEach((card, i) => {
+      const imgWrap = card.querySelector('.work-img-wrap');
+      const img = card.querySelector('.work-img');
+      const meta = card.querySelector('.work-meta');
+
+      if (imgWrap) {
+        gsap.fromTo(imgWrap,
+          {
+            clipPath: 'inset(18% 6% 18% 6% round 14px)',
+            y: 48,
+            opacity: 0
+          },
+          {
+            clipPath: 'inset(0% 0% 0% 0% round 6px)',
+            y: 0,
+            opacity: 1,
+            duration: 1.35,
+            ease: 'expo.out',
+            delay: (i % 2) * 0.12,
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 86%',
+              toggleActions: 'play none none none'
+            }
+          }
+        );
+      }
+
+      if (img) {
+        gsap.fromTo(img,
+          { yPercent: -8 },
+          {
+            yPercent: 8,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true
+            }
+          }
+        );
+      }
+
+      if (meta) {
+        gsap.fromTo(meta,
+          { y: 20, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: 'power3.out',
+            delay: 0.18 + (i % 2) * 0.12,
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 86%',
+              toggleActions: 'play none none none'
+            }
+          }
+        );
+      }
+    });
+
+    /* ============ ABOUT INTRO WORD-BY-WORD SCROLL SCRUB ============ */
+    const aboutIntro = qs('.about-intro');
+    if (aboutIntro) {
+      if (!aboutIntro.dataset.scrubSplit) {
+        aboutIntro.dataset.scrubSplit = 'true';
+        const wrapWords = (node) => {
+          if (node.nodeType === 3) {
+            const text = node.textContent;
+            if (!text || !text.trim()) return;
+            const frag = document.createDocumentFragment();
+            const parts = text.split(/(\s+)/);
+            parts.forEach(part => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) {
+                frag.appendChild(document.createTextNode(part));
+              } else {
+                const span = document.createElement('span');
+                span.className = 'scrub-word';
+                span.textContent = part;
+                frag.appendChild(span);
+              }
+            });
+            node.parentNode.replaceChild(frag, node);
+          } else if (node.nodeType === 1) {
+            Array.from(node.childNodes).forEach(wrapWords);
+          }
+        };
+        Array.from(aboutIntro.childNodes).forEach(wrapWords);
+      }
+
+      const scrubWords = aboutIntro.querySelectorAll('.scrub-word');
+      if (scrubWords.length > 0) {
+        gsap.fromTo(scrubWords,
+          { opacity: 0.18, y: 4 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.05,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: aboutIntro,
+              start: 'top 84%',
+              end: 'bottom 48%',
+              scrub: 0.5
+            }
+          }
+        );
+      }
+    }
+
     /* ============ SECTION REVEALS ============ */
     qsa('.reveal').forEach((el, i) => {
       gsap.to(el, {

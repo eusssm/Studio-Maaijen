@@ -97,7 +97,7 @@ export default function WorkOverviewClient({ projects, homepage }) {
 
         <div className="work-grid">
           {filteredProjects.length > 0 ? filteredProjects.map((proj, index) => (
-            <Link key={proj.slug + index} href={`/work/${proj.slug}`} className="work-card reveal">
+            <Link key={proj.slug + index} href={`/work/${proj.slug}`} className="work-card">
               <div className="work-img-wrap">
                 <div className="work-img" style={{ backgroundImage: proj.coverImage ? `url(${proj.coverImage.url})` : 'none', backgroundColor: '#222' }}>
                   <span style={{ fontFamily: "var(--ff-d)", fontSize: "clamp(40px,6vw,80px)", fontWeight: "600", color: "rgba(240,237,230,.1)" }}>
@@ -106,8 +106,11 @@ export default function WorkOverviewClient({ projects, homepage }) {
                 </div>
               </div>
               <div className="work-meta">
-                <span className="work-client">{proj.client} — {proj.categories?.map(c => c.name).join(', ') || proj.projectType}</span>
-                <span className="work-name">{proj.title}</span>
+                <div className="work-meta-left">
+                  <span className="work-client">{proj.client} — {proj.categories?.map(c => c.name).join(', ') || proj.projectType}</span>
+                  <span className="work-name">{proj.title}</span>
+                </div>
+                <span className="work-arrow" aria-hidden="true">↗</span>
               </div>
             </Link>
           )) : (
