@@ -262,7 +262,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       <div className="service-index">
         <span className="service-index-num">&quot;02&quot;</span>
         <span className="service-index-title">{homepage?.service2Title || "Brand Identity"}</span>
-        <span className="service-dash">—</span>
+        <span className="service-index-dash">—</span>
       </div>
       <div className="service-desc">
         {homepage?.service2Desc || "Merken die niet alleen mooi zijn — maar ook iets zeggen. Ik bouw identiteiten die emotioneel resoneren én visueel consistent zijn."}
@@ -278,7 +278,7 @@ export default function HomeClient({ homepage, projects, testimonials = [] }) {
       <div className="service-index">
         <span className="service-index-num">&quot;03&quot;</span>
         <span className="service-index-title">{homepage?.service3Title || "Video Editing"}</span>
-        <span className="service-dash">—</span>
+        <span className="service-index-dash">—</span>
       </div>
       <div className="service-desc">
         {homepage?.service3Desc || "Van rauwe opnames naar een gepolijste productie — met oog voor ritme, sfeer en impact. Bewegend beeld dat het verhaal versterkt."}

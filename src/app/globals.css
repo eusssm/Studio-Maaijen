@@ -646,13 +646,15 @@
       color: #121212;
       transition: color 0.25s ease;
     }
-    .service-index-dash {
+    .service-index-dash,
+    .service-dash {
       color: rgba(0, 0, 0, 0.25);
       font-weight: 300;
       display: inline-block;
       transition: transform 0.3s ease, color 0.3s ease;
     }
-    .service-row:hover .service-index-dash {
+    .service-row:hover .service-index-dash,
+    .service-row:hover .service-dash {
       color: var(--accent);
       transform: translateX(8px);
     }
