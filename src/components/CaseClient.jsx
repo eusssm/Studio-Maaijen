@@ -1,445 +1,502 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { EMAIL, LINKEDIN, sized, CropMarks, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import '../app/drukklaar.css';
 
-gsap.registerPlugin(ScrollTrigger);
+/* ─────────────────────────────────────────────────────────────
+   Casepagina in dezelfde "Drukklaar"-taal als de homepage.
+   Alle inhoud komt uit de DatoCMS page builder; elk bloktype heeft
+   een vaste, rustige vorm zodat elke case er verzorgd uitziet,
+   hoe de inhoud ook is opgebouwd.
+   ───────────────────────────────────────────────────────────── */
 
-function parseVideoUrl(url, isHero = false) {
+const pad = n => String(n).padStart(2, '0');
+
+const isVideoFile = media =>
+  !!media && (media.mimeType?.startsWith('video/') || /\.(mp4|webm|mov|ogg)(\?|$)/i.test(media.url || ''));
+const videoSrcOf = media => media?.video?.mp4Url || media?.url;
+
+/* Vimeo/YouTube → embed-URL. background=true geeft een stille, loopende speler zonder bediening. */
+function parseVideoUrl(url, background = true) {
   if (!url) return null;
-  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([a-zA-Z0-9]+))?/);
-  const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/);
-
-  if (vimeoMatch) {
-    const id = vimeoMatch[1];
-    const hash = vimeoMatch[2];
-    let embed = `https://player.vimeo.com/video/${id}?autoplay=1&loop=1&muted=1&background=1&quality=auto`;
-    if (hash) embed += `&h=${hash}`;
-    return embed;
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([a-zA-Z0-9]+))?/);
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/);
+  if (vimeo) {
+    let src = `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&loop=1&muted=1&quality=auto&dnt=1`;
+    if (background) src += '&background=1';
+    if (vimeo[2]) src += `&h=${vimeo[2]}`;
+    return src;
   }
-
-  if (youtubeMatch) {
-    const id = youtubeMatch[1];
-    const extra = isHero ? '&modestbranding=1' : '';
-    return `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&mute=1&playlist=${id}&controls=0&showinfo=0&rel=0${extra}`;
+  if (yt) {
+    const id = yt[1];
+    return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&loop=1&mute=1&playlist=${id}&controls=0&rel=0&modestbranding=1&playsinline=1`;
   }
-
   return null;
 }
 
-function renderCtaButton(url, label, defaultText = 'Bekijk live website') {
-  if (!url) return null;
-  const isVimeo = url.includes('vimeo.com');
-  const isYoutube = url.includes('youtube.com') || url.includes('youtu.be');
-  let fallback = defaultText;
-  if (isVimeo) fallback = 'Bekijk op Vimeo';
-  else if (isYoutube) fallback = 'Bekijk op YouTube';
-  
-  const text = label || fallback;
+/* Tekst uit het CMS: HTML blijft HTML; platte tekst wordt opgesplitst in alinea's.
+   Harde regelafbrekingen midden in een zin (geplakt uit een PDF) worden samengevoegd. */
+function toParagraphs(text) {
+  if (!text) return [];
+  return text
+    .replace(/\r/g, '')
+    .split(/\n{2,}/)
+    .flatMap(block => {
+      const out = [];
+      let cur = '';
+      block.split('\n').forEach(line => {
+        const l = line.trim();
+        if (!l) return;
+        cur = cur ? `${cur} ${l}` : l;
+        if (/[.!?:;)"”’]$/.test(l)) {
+          out.push(cur);
+          cur = '';
+        }
+      });
+      if (cur) out.push(cur);
+      return out;
+    });
+}
 
+function RichText({ text, className = '' }) {
+  if (!text || typeof text !== 'string') return null;
+  if (/<[a-z][\s\S]*>/i.test(text)) {
+    return <div className={`h-prose ${className}`} dangerouslySetInnerHTML={{ __html: text }} />;
+  }
   return (
-    <div className="case-block-cta reveal">
-      <a href={url} target="_blank" rel="noopener noreferrer" className="btn btn-primary cta-block-btn">
+    <div className={`h-prose ${className}`}>
+      {toParagraphs(text).map((p, i) => (
+        <p key={i}>{p}</p>
+      ))}
+    </div>
+  );
+}
+
+function Cta({ url, label, fallback = 'Bekijk resultaat online', dark }) {
+  if (!url) return null;
+  let text = label || fallback;
+  if (!label && /vimeo\.com/.test(url)) text = 'Bekijk op Vimeo';
+  if (!label && /youtu/.test(url)) text = 'Bekijk op YouTube';
+  return (
+    <div className="h-case-cta-row" data-h="up">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`h-btn ${dark ? 'h-btn--spot' : 'h-btn--ink'}`}
+        data-h-magnet
+      >
         <span>{text}</span>
-        <span className="cta-btn-arrow">↗</span>
+        <i aria-hidden="true">↗</i>
       </a>
     </div>
   );
 }
 
-export default function CaseClient({ project, nextProject }) {
-  const [hideCta, setHideCta] = useState(false);
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('from') === 'portfolio') {
-        setHideCta(true);
-      }
+/* Eén mediadrager voor beeld, video-bestand of embed — altijd in een kader met snijtekens. */
+function Media({ image, embed, alt = '', caption, ratio, parallax = true, eager = false, width = 1800 }) {
+  if (!image && !embed) return null;
+  let inner = null;
+  let style;
+  if (embed) {
+    style = { aspectRatio: ratio || '16 / 9' };
+    inner = (
+      <iframe
+        src={embed}
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowFullScreen
+        loading={eager ? 'eager' : 'lazy'}
+        title={alt || 'Video'}
+      />
+    );
+  } else if (isVideoFile(image)) {
+    inner = (
+      <video autoPlay loop muted playsInline preload="metadata" aria-label={alt || undefined}>
+        <source src={videoSrcOf(image)} type={image.mimeType || 'video/mp4'} />
+      </video>
+    );
+  } else {
+    inner = (
+      <img
+        src={sized(image.url, width)}
+        alt={image.alt || alt}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    );
+  }
+
+  return (
+    <figure className={`h-fig ${embed ? 'h-fig--embed' : ''}`}>
+      <div className="h-fig-box">
+        <div className="h-fig-frame" data-h-media {...(parallax && !embed ? { 'data-h-parallax': '' } : {})} style={style}>
+          <div className="h-fig-in" data-h-media-in>
+            {inner}
+          </div>
+        </div>
+        <CropMarks className="h-crop--out" />
+      </div>
+      {caption && <figcaption className="h-fig-cap h-mono">{caption}</figcaption>}
+    </figure>
+  );
+}
+
+function alignClass(a) {
+  if (a === 'Midden') return 'is-center';
+  if (a === 'Rechts') return 'is-right';
+  return '';
+}
+
+/* Page builder vooraf plannen: thema's en nummering.
+   Tekstblokken hebben hun eigen thema; mediablokken nemen het thema
+   van het voorgaande blok over, zodat de pagina in rustige banen loopt. */
+function planBlocks(pageBuilder = []) {
+  const out = [];
+  let prevTheme = 'paper';
+  let sectionNo = 0;
+  let figNo = 1; /* Fig. 01 is de hero */
+  for (const block of pageBuilder || []) {
+    const key = block._modelApiKey;
+    let theme = prevTheme;
+    if (key === 'block_text' || key === 'block_zebra') theme = block.darkTheme ? 'dark' : 'paper';
+    if (key === 'block_image_text') theme = block.darkTheme !== false ? 'dark' : 'paper';
+    prevTheme = theme;
+    const hasHeading = ['block_text', 'block_zebra', 'block_image_text'].includes(key) && block.title;
+    if (hasHeading) sectionNo += 1;
+    const figs = [];
+    let nFigs = 0;
+    if (key === 'block_image' || key === 'block_video') nFigs = 1;
+    if (key === 'block_double_image') nFigs = 2;
+    if ((key === 'block_zebra' || key === 'block_image_text') && (block.image || block.externalVideoUrl)) nFigs = 1;
+    for (let k = 0; k < nFigs; k++) {
+      figNo += 1;
+      figs.push(figNo);
     }
-  }, []);
+    out.push({ block, key, theme, no: hasHeading ? sectionNo : null, figs });
+  }
+  return out;
+}
 
-  const containerRef = useRef();
+export default function CaseClient({ project, nextProject, index = 0, total = 0 }) {
+  const rootRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  /* Motion (gedeeld met de homepage) */
+  useEffect(() => {
+    let cleanup = null;
+    let cancelled = false;
+    const root = rootRef.current;
+    /* Nieuwe case altijd bovenaan openen (Next behoudt soms de scrollpositie) */
+    if (!window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    import('./home-animations').then(mod => {
+      if (cancelled || !rootRef.current) return;
+      cleanup = mod.initHomeMotion(rootRef.current);
+    });
+    return () => {
+      cancelled = true;
+      if (cleanup) cleanup();
+    };
+  }, []);
 
   useEffect(() => {
-    import('./case-animations').then((mod) => {
-      let ctx = gsap.context(() => {
-        mod.initCaseAnimations(containerRef.current);
-      }, containerRef);
-      return () => ctx.revert();
-    });
-  }, []);
+    document.body.classList.toggle('menu-open', menuOpen);
+    return () => document.body.classList.remove('menu-open');
+  }, [menuOpen]);
 
   if (!project) return null;
 
+  const name = project.client || project.title;
+  const cats = project.categories?.map(c => c.name).filter(Boolean) || [];
+  const discipline = project.projectType || cats[0] || 'Case';
+
+  /* ── Hero-media: eigen video, embed of coverbeeld ── */
+  const heroEmbed = parseVideoUrl(project.headerVideoUrl, true);
+  const heroImage = !heroEmbed && project.headerVideo ? project.headerVideo : project.coverImage;
+
+  const blocks = planBlocks(project.pageBuilder);
+
+  /* Kop van een sectie: nummer + (optioneel) ondertitel links, titel rechts */
+  const renderHead = (block, no, theme) => (
+    <div className="h-cs-head">
+      <div className="h-cs-meta" data-h="up">
+        {no != null && <span className="h-mono h-cs-no">({pad(no)})</span>}
+        {block.showSubtitle !== false && block.subtitle ? (
+          <span className="h-mono h-cs-sub">{block.subtitle}</span>
+        ) : null}
+      </div>
+      {block.title ? (
+        <h2 className={`h-cs-title ${theme === 'dark' ? '' : 'h-cs-title--ink'}`} data-h-lines>
+          {block.title}
+        </h2>
+      ) : null}
+    </div>
+  );
+
+  const capOf = n => `Fig. ${pad(n)} — ${name}`;
+
   return (
-    <div ref={containerRef} className="case-page-container">
-      <div id="scroll-bar"></div>
-      <div id="cursor"></div>
-      <div id="cursor-ring"></div>
+    <div className="h-root h-case-page" ref={rootRef} id="top">
+      <SiteOverlays />
+      <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <nav id="nav">
-        <Link href="/" className="nav-logo">STUDIO MAAIJEN</Link>
-        <ul className="nav-links">
-          <li><Link href="/work">Werk</Link></li>
-          <li><Link href="/pakketten">Pakketten</Link></li>
-          <li><Link href="/#services">Disciplines</Link></li>
-          <li><Link href="/#about">Over</Link></li>
-          <li><Link href="/contact">Contact</Link></li>
-        </ul>
-        <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
-      </nav>
+      {/* ───────── HERO ───────── */}
+      <section className="h-chero h-dark" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">
+              Case {total ? `${pad(index + 1)} / ${pad(total)}` : ''} — {discipline}
+            </span>
+            <Link href="/work" className="h-mono h-chero-back">
+              ← Alle cases
+            </Link>
+          </div>
 
-      <div id="menu-overlay">
-        <div className="menu-col-left">
-          <button className="menu-close" id="menu-close-btn">Sluiten ✕</button>
-          <nav className="menu-nav">
-            <Link href="/work"><span>Werk</span><span className="arrow">→</span></Link>
-            <Link href="/pakketten"><span>Pakketten</span><span className="arrow">→</span></Link>
-            <Link href="/#services"><span>Disciplines</span><span className="arrow">→</span></Link>
-            <Link href="/#about"><span>Over Mij</span><span className="arrow">→</span></Link>
-            <Link href="/contact"><span>Contact</span><span className="arrow">→</span></Link>
-          </nav>
-          <div className="menu-footer">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="mailto:info@studio-maaijen.nl">Email</a>
+          <div className="h-chero-top">
+            <h1 className="h-chero-title" data-h-lines>
+              {project.title}
+            </h1>
+            {total ? (
+              <span className="h-chero-index" aria-hidden="true" data-h="up">
+                {pad(index + 1)}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="h-chero-grid">
+            {project.introText ? (
+              <p className="h-chero-intro" data-h="up">
+                {project.introText.replace(/\s*\n\s*/g, ' ')}
+              </p>
+            ) : (
+              <span />
+            )}
+            <dl className="h-chero-ledger" data-h="up">
+              <div>
+                <dt className="h-mono">Klant</dt>
+                <dd>{name}</dd>
+              </div>
+              <div>
+                <dt className="h-mono">Type project</dt>
+                <dd>{discipline}</dd>
+              </div>
+              {cats.length > 0 && cats.join(', ') !== discipline ? (
+                <div>
+                  <dt className="h-mono">Disciplines</dt>
+                  <dd>{cats.join(', ')}</dd>
+                </div>
+              ) : null}
+            </dl>
           </div>
         </div>
-        <div className="menu-col-right">
-          <div className="menu-col-right-inner"></div>
-        </div>
-      </div>
 
-      <section id="case-hero">
-        {(() => {
-          const embedSrc = parseVideoUrl(project.headerVideoUrl, true);
-          const hasUploadedVideo = project.headerVideo;
-          const hasCoverImage = project.coverImage;
-
-          return (
-            <div className="case-hero-bg" style={!embedSrc && !hasUploadedVideo && hasCoverImage ? { backgroundImage: `url(${project.coverImage.url})` } : {}}>
-              {embedSrc ? (
-                <iframe
-                  src={embedSrc}
-                  style={{ position: 'absolute', top: '50%', left: '50%', width: '300%', height: '300%', transform: 'translate(-50%, -50%)', border: 0, pointerEvents: 'none', zIndex: 0 }}
-                  allow="autoplay; fullscreen"
-                  allowFullScreen
-                  title="Hero video"
-                />
-              ) : hasUploadedVideo ? (
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                >
-                  <source src={project.headerVideo.video?.mp4Url || project.headerVideo.url} type={project.headerVideo.mimeType || 'video/mp4'} />
-                </video>
-              ) : null}
-              <div className="case-hero-noise" style={{ zIndex: 2 }}></div>
-              <div className="case-hero-parallax-bg" id="hero-parallax"></div>
-            </div>
-          );
-        })()}
-
-        <div className="case-hero-content">
-          <h1 className="case-hero-title" id="hero-title">
-            <div className="line-wrap"><span className="line-inner">{project.title}</span></div>
-          </h1>
-          <p className="case-hero-sub" id="hero-sub">{project.introText}</p>
-        </div>
-
-        <div className="case-hero-scroll-hint">
-          <span></span>Scroll
+        <div className="h-wrap h-wrap--wide h-chero-media">
+          <Media
+            image={heroImage}
+            embed={heroEmbed}
+            alt={project.title}
+            caption={capOf(1)}
+            eager
+            width={2200}
+            ratio="16 / 9"
+          />
         </div>
       </section>
 
-      <div className="info-strip" id="info-strip">
-        <div className="info-item">
-          <div className="info-label">Klant</div>
-          <div className="info-value">{project.client}</div>
-        </div>
-        <div className="info-item">
-          <div className="info-label">Type project</div>
-          <div className="info-value">{project.categories?.map(c => c.name).join(', ') || project.projectType}</div>
-        </div>
-      </div>
+      {/* ───────── PAGE BUILDER ───────── */}
+      <main className="h-cs-main">
+        {blocks.map(({ block, key, theme, no, figs }, i) => {
+          const next = blocks[i + 1];
+          const joinNext = next && next.theme === theme;
+          const cls = `h-cs h-${theme} h-cs--${key.replace('block_', '')} ${joinNext ? 'is-joined' : ''}`;
+          const dark = theme === 'dark';
 
-      <main className="case-main">
-        {project.pageBuilder?.map((block, index) => {
-          switch (block._modelApiKey) {
-            case 'block_text': {
-              let alignClass = 'align-left';
-              if (block.textAlignment === 'Midden') alignClass = 'align-center';
-              if (block.textAlignment === 'Rechts') alignClass = 'align-right';
+          switch (key) {
+            case 'block_text':
               return (
-                <section key={block.id} className={`case-section ${block.darkTheme ? 'case-section--dark' : 'module--light'}`}>
-                  <div className={`case-section-inner ${alignClass}`}>
-                    {block.showSubtitle !== false && (
-                      <div className="project-section-label reveal">{block.subtitle || project.title}</div>
-                    )}
-                    <h3 className="case-section-title reveal">{block.title}</h3>
-                    <div className="case-section-body reveal" dangerouslySetInnerHTML={{ __html: block.content }} />
-                    {renderCtaButton(block.ctaUrl, block.ctaLabel, 'Bekijk resultaat online')}
+                <section key={block.id} className={cls} data-theme={theme}>
+                  <div className={`h-wrap h-cs-grid ${alignClass(block.textAlignment)}`}>
+                    {renderHead(block, no, theme)}
+                    <div className="h-cs-body">
+                      <RichText text={block.content} />
+                      <Cta url={block.ctaUrl} label={block.ctaLabel} dark={dark} />
+                    </div>
+                  </div>
+                </section>
+              );
+
+            case 'block_image':
+              if (!block.image) return null;
+              return (
+                <section key={block.id} className={cls} data-theme={theme}>
+                  <div className="h-wrap h-wrap--wide">
+                    <Media image={block.image} caption={capOf(figs[0])} />
+                  </div>
+                </section>
+              );
+
+            case 'block_video': {
+              const embed = parseVideoUrl(block.externalVideoUrl, true);
+              const hasFile = block.video && (block.video.video?.mp4Url || block.video.url);
+              if (!embed && !hasFile) return null;
+              return (
+                <section key={block.id} className={cls} data-theme={theme}>
+                  <div className="h-wrap h-wrap--wide">
+                    {block.title ? (
+                      <p className="h-mono h-cs-vtitle" data-h="up">
+                        {block.title}
+                      </p>
+                    ) : null}
+                    <Media
+                      image={embed ? null : { ...block.video, mimeType: block.video?.mimeType || 'video/mp4' }}
+                      embed={embed}
+                      alt={block.title}
+                      caption={capOf(figs[0])}
+                      parallax={false}
+                    />
+                    <Cta url={block.ctaUrl} label={block.ctaLabel} fallback="Bekijk de video" dark={dark} />
                   </div>
                 </section>
               );
             }
-            case 'block_image': {
-              const isVideo = block.image?.mimeType?.startsWith('video/') || block.image?.url?.match(/\.(mp4|webm|mov|ogg)$/i);
+
+            case 'block_double_image':
               return (
-                <div key={block.id} className="full-image-wrap">
-                  {isVideo ? (
-                    <video
-                      className="full-image parallax-img"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    >
-                      <source src={videoSrc} type={block.image.mimeType || 'video/mp4'} />
-                    </video>
-                  ) : (
-                    <div className="full-image parallax-img" style={{ backgroundImage: `url(${block.image?.url})` }}>
-                      <div className="img-inner-text">{project.title}</div>
-                    </div>
-                  )}
-                </div>
+                <section key={block.id} className={cls} data-theme={theme}>
+                  <div className="h-wrap h-wrap--wide h-cs-duo">
+                    <Media image={block.imageLeft} caption={capOf(figs[0])} width={1200} />
+                    <Media image={block.imageRight} caption={capOf(figs[1])} width={1200} />
+                  </div>
+                </section>
               );
-            }
+
             case 'block_zebra': {
-              const isVideo = block.image?.mimeType?.startsWith('video/') || block.image?.url?.match(/\.(mp4|webm|mov|ogg)$/i);
-              const videoSrc = block.image?.video?.mp4Url || block.image?.url;
-              let alignClass = 'align-left';
-              if (block.textAlignment === 'Midden') alignClass = 'align-center';
-              if (block.textAlignment === 'Rechts') alignClass = 'align-right';
-
               const showImage = block.image && block.displayLayout !== 'Alleen Tekst (Verberg beeld)';
-
               return (
-                <section key={block.id} className={`case-section ${block.darkTheme ? 'case-section--dark' : 'module--light'}`}>
-                   <div className={`case-section-inner ${alignClass}`}>
-                    {block.showSubtitle !== false && (
-                      <div className="project-section-label reveal">{block.subtitle || project.title}</div>
-                    )}
-                    <h3 className="case-section-title reveal">{block.title}</h3>
-                    {typeof block.text === 'string' && /<[a-z][\s\S]*>/i.test(block.text) ? (
-                      <div className="case-section-lead reveal" dangerouslySetInnerHTML={{ __html: block.text }} />
-                    ) : (
-                      <p className="case-section-lead reveal">{block.text}</p>
-                    )}
-                    {renderCtaButton(block.ctaUrl, block.ctaLabel, 'Bekijk resultaat online')}
+                <section key={block.id} className={cls} data-theme={theme}>
+                  <div className={`h-wrap h-cs-grid ${alignClass(block.textAlignment)}`}>
+                    {renderHead(block, no, theme)}
+                    <div className="h-cs-body">
+                      <RichText text={block.text} className="h-prose--lead" />
+                      <Cta url={block.ctaUrl} label={block.ctaLabel} dark={dark} />
+                    </div>
                   </div>
                   {showImage && (
-                    <div className="full-image-wrap" style={{ marginTop: '40px' }}>
-                      {isVideo ? (
-                        <video
-                          className="reveal"
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          style={{ width: '100%', height: 'auto', display: 'block' }}
-                        >
-                          <source src={videoSrc} type={block.image.mimeType || 'video/mp4'} />
-                        </video>
-                      ) : (
-                        <img src={block.image.url} alt={block.title} className="reveal" style={{ width: '100%', height: 'auto', display: 'block' }} />
-                      )}
+                    <div className="h-wrap h-wrap--wide h-cs-after">
+                      <Media image={block.image} alt={block.title} caption={capOf(figs[0])} />
                     </div>
                   )}
                 </section>
               );
             }
-            case 'block_video': {
-              const embedSrc = parseVideoUrl(block.externalVideoUrl);
-              const videoSrc = block.video?.video?.mp4Url || block.video?.url;
 
-              return (
-                <div key={block.id} className="full-image-wrap">
-                  {embedSrc ? (
-                    <div className="reveal" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
-                      <iframe
-                        src={embedSrc}
-                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowFullScreen
-                        title={block.title || 'Video'}
-                      />
-                    </div>
-                  ) : videoSrc ? (
-                    <video
-                      className="reveal"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
-                    >
-                      <source src={videoSrc} type={block.video.mimeType || 'video/mp4'} />
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : null}
-                  {renderCtaButton(block.ctaUrl, block.ctaLabel, 'Bekijk video op Vimeo')}
-                </div>
-              );
-            }
-            case 'block_double_image': {
-              const renderMedia = (image, alt) => {
-                if (!image) return null;
-                const isVideo = image.mimeType?.startsWith('video/') || image.url?.match(/\.(mp4|webm|mov|ogg)$/i);
-                const videoSrc = image.video?.mp4Url || image.url;
-                if (isVideo) {
-                  return (
-                    <video
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
-                    >
-                      <source src={videoSrc} type={image.mimeType || 'video/mp4'} />
-                    </video>
-                  );
-                }
-                return <img src={image.url} alt={image.alt || alt} />;
-              };
-
-              return (
-                <div key={block.id} className="case-section double-image-section">
-                  <div className="double-image-inner">
-                    <div className="double-image-left reveal">
-                      {renderMedia(block.imageLeft, "Left image")}
-                    </div>
-                    <div className="double-image-right reveal">
-                      {renderMedia(block.imageRight, "Right image")}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
             case 'block_image_text': {
-              const embedSrc = parseVideoUrl(block.externalVideoUrl);
-              const isVideo = block.image?.mimeType?.startsWith('video/') || block.image?.url?.match(/\.(mp4|webm|mov|ogg)$/i);
-              const videoSrc = block.image?.video?.mp4Url || block.image?.url;
-
-              const showMedia = (embedSrc || block.image) && block.displayLayout !== 'Alleen Tekst (Verberg beeld)';
-              
-              let alignClass = 'align-left';
-              if (block.textAlignment === 'Midden') alignClass = 'align-center';
-              if (block.textAlignment === 'Rechts') alignClass = 'align-right';
-
+              const embed = parseVideoUrl(block.externalVideoUrl, true);
+              const showMedia = (embed || block.image) && block.displayLayout !== 'Alleen Tekst (Verberg beeld)';
               if (!showMedia) {
-                // Render cleanly as text-only block
                 return (
-                  <section key={block.id} className={`case-section ${block.darkTheme !== false ? 'case-section--dark' : 'module--light'}`}>
-                    <div className={`case-section-inner ${alignClass}`}>
-                      {block.showSubtitle !== false && (
-                        <div className="project-section-label reveal">{block.subtitle || project.title}</div>
-                      )}
-                      <h3 className="case-section-title reveal">{block.title}</h3>
-                      {typeof block.text === 'string' && /<[a-z][\s\S]*>/i.test(block.text) ? (
-                        <div className="case-section-lead reveal" dangerouslySetInnerHTML={{ __html: block.text }} />
-                      ) : (
-                        <p className="case-section-lead reveal" style={{ whiteSpace: 'pre-line' }}>{block.text}</p>
-                      )}
-                      {renderCtaButton(block.ctaUrl, block.ctaLabel, 'Bekijk resultaat online')}
+                  <section key={block.id} className={cls} data-theme={theme}>
+                    <div className={`h-wrap h-cs-grid ${alignClass(block.textAlignment)}`}>
+                      {renderHead(block, no, theme)}
+                      <div className="h-cs-body">
+                        <RichText text={block.text} />
+                        <Cta url={block.ctaUrl} label={block.ctaLabel} dark={dark} />
+                      </div>
                     </div>
                   </section>
                 );
               }
-
-              // Determine layout class
-              let ratioClass = '';
-              if (block.layoutRatio === '2/3 Beeld - 1/3 Tekst') ratioClass = 'ratio-2-3';
-              if (block.layoutRatio === '1/3 Beeld - 2/3 Tekst') ratioClass = 'ratio-1-3';
-              if (block.layoutRatio === '3/4 Beeld - 1/4 Tekst') ratioClass = 'ratio-3-4';
-              if (block.layoutRatio === '1/4 Beeld - 3/4 Tekst') ratioClass = 'ratio-1-4';
-
+              const ratio =
+                {
+                  '2/3 Beeld - 1/3 Tekst': 'r-2-3',
+                  '1/3 Beeld - 2/3 Tekst': 'r-1-3',
+                  '3/4 Beeld - 1/4 Tekst': 'r-3-4',
+                  '1/4 Beeld - 3/4 Tekst': 'r-1-4',
+                }[block.layoutRatio] || 'r-1-1';
               return (
-                <section key={block.id} className={`case-section image-text-section ${block.darkTheme !== false ? 'case-section--dark' : 'module--light'}`}>
-                  <div className={`image-text-inner ${block.imageOnRight ? 'layout-reversed' : ''} ${ratioClass}`}>
-                    <div className="image-text-media reveal">
-                      {embedSrc ? (
-                        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px' }}>
-                          <iframe
-                            src={embedSrc}
-                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowFullScreen
-                            title={block.title || 'Video'}
-                          />
-                        </div>
-                      ) : block.image && (
-                        isVideo ? (
-                          <video
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '8px' }}
-                          >
-                            <source src={videoSrc} type={block.image.mimeType || 'video/mp4'} />
-                          </video>
-                        ) : (
-                          <img src={block.image.url} alt={block.title || "Section image"} style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '8px' }} />
-                        )
-                      )}
+                <section key={block.id} className={cls} data-theme={theme}>
+                  <div className={`h-wrap h-cs-split ${ratio} ${block.imageOnRight ? 'is-flipped' : ''}`}>
+                    <div className="h-cs-split-media">
+                      <Media image={embed ? null : block.image} embed={embed} alt={block.title} caption={capOf(figs[0])} />
                     </div>
-                    <div className={`image-text-content ${alignClass}`}>
-                      {block.showSubtitle !== false && (
-                        <div className="project-section-label reveal">{block.subtitle || project.title}</div>
-                      )}
-                      <h3 className="case-section-title reveal">{block.title}</h3>
-                      {typeof block.text === 'string' && /<[a-z][\s\S]*>/i.test(block.text) ? (
-                        <div className="case-section-lead reveal" dangerouslySetInnerHTML={{ __html: block.text }} />
-                      ) : (
-                        <p className="case-section-lead reveal" style={{ whiteSpace: 'pre-line' }}>{block.text}</p>
-                      )}
-                      {renderCtaButton(block.ctaUrl, block.ctaLabel, 'Bekijk resultaat online')}
+                    <div className={`h-cs-split-text ${alignClass(block.textAlignment)}`}>
+                      {renderHead(block, no, theme)}
+                      <RichText text={block.text} />
+                      <Cta url={block.ctaUrl} label={block.ctaLabel} dark={dark} />
                     </div>
                   </div>
                 </section>
               );
             }
+
             default:
               return null;
           }
         })}
       </main>
 
+      {/* ───────── VOLGENDE CASE ───────── */}
       {nextProject && (
-        <Link href={`/work/${nextProject.slug}`} className="next-project" id="next-project">
-          <div className="next-project-bg" style={{ backgroundImage: nextProject.coverImage ? `url(${nextProject.coverImage.url})` : 'none' }}></div>
-          <div className="next-project-label">Volgend project</div>
-          <div className="next-project-title">{nextProject.title}<br /><em>→</em></div>
-          <div className="next-project-type">{nextProject.projectType}</div>
-        </Link>
+        <section className="h-cnext h-spot" data-theme="spot">
+          <Link href={`/work/${nextProject.slug}`} className="h-cnext-link" data-h-cursor="Open">
+            <div className="h-wrap h-cnext-grid">
+              <div className="h-cnext-text">
+                <span className="h-mono h-cnext-label" data-h="up">
+                  Volgende case{total ? ` — ${pad(((index + 1) % total) + 1)} / ${pad(total)}` : ''}
+                </span>
+                <span className="h-cnext-title" data-h-lines>
+                  {nextProject.client || nextProject.title}
+                </span>
+                <span className="h-mono h-cnext-type" data-h="up">
+                  {nextProject.projectType} <b aria-hidden="true">→</b>
+                </span>
+              </div>
+              <div className="h-cnext-media" data-h="up">
+                <div className="h-cnext-frame">
+                  {nextProject.coverImage?.url ? (
+                    <img src={sized(nextProject.coverImage.url, 1100)} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <span className="h-case-noimg">{(nextProject.title || 'EM').slice(0, 2)}</span>
+                  )}
+                </div>
+                <CropMarks className="h-crop--out" />
+              </div>
+            </div>
+          </Link>
+        </section>
       )}
 
-      { !hideCta && (
-      <section className="case-cta">
-        <div className="case-cta-inner reveal">
-          <p className="case-cta-eyebrow">Klaar om samen te werken?</p>
-          <h2 className="case-cta-title">Laten we <em>iets moois</em><br />maken.</h2>
-          <div className="case-cta-btns">
-            <a href="mailto:info@studio-maaijen.nl" className="btn btn-primary">Mail mij direct →</a>
-            <Link href="/work" className="btn btn-outline">Terug naar portfolio</Link>
+      {/* ───────── CONTACT ───────── */}
+      <section className="h-contact h-cs-contact h-dark" data-theme="dark">
+        <div className="h-wrap">
+          <p className="h-contact-eyebrow" data-h="up">
+            Een vergelijkbaar project in gedachten?
+          </p>
+          <h2 className="h-contact-title" data-h-lines>
+            Laten we <em>iets moois</em> maken.
+          </h2>
+          <div className="h-contact-actions" data-h="up">
+            <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
+              <span>Start een project</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+            <Link href="/pakketten" className="h-btn h-btn--ghost" data-h-magnet>
+              <span>Bekijk pakketten</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+            <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="h-btn h-btn--ghost" data-h-magnet>
+              <span>LinkedIn</span>
+              <i aria-hidden="true">↗</i>
+            </a>
+            <Link href="/work" className="h-btn h-btn--ghost" data-h-magnet>
+              <span>Alle projecten</span>
+              <i aria-hidden="true">←</i>
+            </Link>
           </div>
         </div>
       </section>
-      ) }
 
-      <footer className="case-footer">
-        <div className="case-footer-inner">
-          <span>© 2026 Eugène Maaijen | KVK-nummer: 92113273</span>
-          <Link href="/work">← Werk</Link>
-          <a href="#" className="back-top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>↑ Top</a>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

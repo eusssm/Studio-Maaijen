@@ -1,529 +1,459 @@
-
 'use client';
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import HeroVisual from './HeroVisual';
+import { PackageGrid } from './PackageCards';
+import { EMAIL, LINKEDIN, sized, CropMarks, Reg, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import { normalizePackages } from '../../lib/packages';
+import '../app/drukklaar.css';
 
-gsap.registerPlugin(ScrollTrigger);
+const DEFAULT_CLIENTS = ['Blubricks', 'Spotta', 'De Kindertelefoon', 'PostNL', 'Gemeenten', 'Enova'];
+const DEFAULT_SERVICES = [
+  {
+    title: 'UX/UI Design',
+    desc: 'Van wireframe tot klikbaar prototype. Ik ontwerp digitale ervaringen die intuïtief aanvoelen en bezoekers van A naar B brengen.',
+    tags: ['User research', 'Wireframing', 'Prototyping', 'Design systems'],
+  },
+  {
+    title: 'Brand Identity',
+    desc: 'Merken die er goed uitzien én iets zeggen. Logo, kleur, typografie en een stijlgids die je team daadwerkelijk gebruikt.',
+    tags: ['Logo', 'Typografie', 'Kleurpaletten', 'Brand guidelines'],
+  },
+  {
+    title: 'Video & Motion',
+    desc: 'Van ruwe opnames naar een gepolijste productie, met oog voor ritme en sfeer. Bewegend beeld dat het verhaal versterkt.',
+    tags: ['Post-productie', 'Motion graphics', 'Color grading', 'Sound design'],
+  },
+];
+const DEFAULT_STEPS = [
+  { name: 'Luisteren & begrijpen', desc: 'Ik duik in jouw merk, doelgroep en doelstellingen. Geen aannames, alleen een scherp beeld van wat je nodig hebt.' },
+  { name: 'Creëren & verfijnen', desc: 'Van concept tot pixel-perfecte uitwerking. Ik werk iteratief, met jou als sparringpartner door het hele traject.' },
+  { name: 'Lanceren & groeien', desc: 'Alles klaar voor livegang, met heldere documentatie zodat je zelfstandig verder kunt of met je team.' },
+];
+const STATEMENT = (
+  'Ik bouw digitale producten voor ondernemers die meer willen dan mooi. Ze moeten *duidelijk* zijn, snel laden en klanten laten doen wat je wilt.'
+).split(' ').map(w => (w.startsWith('*') ? { t: w.replace(/\*/g, ''), em: true } : { t: w, em: false }));
 
-export default function HomeClient({ homepage, projects, testimonials = [] }) {
-  const containerRef = useRef();
+const isHtml = s => typeof s === 'string' && /<[a-z][\s\S]*>/i.test(s);
+const pad = n => String(n).padStart(2, '0');
 
-  
+/* Koppen uit het CMS: regels scheiden met <br> of een nieuwe regel */
+function headlineLines(html) {
+  return html.split(/<br\s*\/?>|\n/).map(l => l.trim()).filter(Boolean);
+}
+
+export default function HomeClient({ homepage, projects = [], packages: packageData = [] }) {
+  const rootRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
-    import('./home-animations').then((mod) => {
-      let ctx = gsap.context(() => {
-        mod.initHomeAnimations(containerRef.current);
-      }, containerRef);
-      return () => ctx.revert();
+    let cleanup = null;
+    let cancelled = false;
+    import('./home-animations').then(mod => {
+      if (cancelled || !rootRef.current) return;
+      cleanup = mod.initHomeMotion(rootRef.current);
     });
+    return () => {
+      cancelled = true;
+      if (cleanup) cleanup();
+    };
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle('menu-open', menuOpen);
+    return () => document.body.classList.remove('menu-open');
+  }, [menuOpen]);
+
+  const h = homepage || {};
+  const headline = h.heroHeadline || 'Impactvolle UX/UI<br />&amp; <em>Merkidentiteiten</em>';
+  const portraitUrl = h.aboutPortrait?.url || '/images/eugene-portrait.jpg';
+  const clientNames = Array.from(new Set(projects.map(p => p.client).filter(Boolean)));
+  const ticker = clientNames.length ? clientNames : DEFAULT_CLIENTS;
+  const clients = h.aboutClients ? h.aboutClients.split(',').map(c => c.trim()) : DEFAULT_CLIENTS;
+  const packages = normalizePackages(packageData).slice(0, 3);
+  const stats = [
+    { v: h.stat1Value || '20', l: h.stat1Label || 'Jaar werkervaring', s: h.stat1Sub || 'UX/UI & brand' },
+    { v: h.stat2Value || '50', l: h.stat2Label || 'Projecten afgeleverd', s: h.stat2Sub || 'Diverse opdrachtgevers' },
+    { v: h.stat3Value || '30', l: h.stat3Label || 'Huisstijlen gecreëerd', s: h.stat3Sub || 'Van concept tot delivery' },
+    { v: h.stat4Value || '100', l: h.stat4Label || 'Passie voor craft', s: h.stat4Sub || 'Elke pixel telt' },
+  ];
+  const services = [1, 2, 3].map((n, i) => ({
+    title: h[`service${n}Title`] || DEFAULT_SERVICES[i].title,
+    desc: h[`service${n}Desc`] || DEFAULT_SERVICES[i].desc,
+    tags: h[`service${n}Tags`]
+      ? h[`service${n}Tags`].split(',').map(t => t.trim())
+      : DEFAULT_SERVICES[i].tags,
+  }));
+  const blocks = [1, 2, 3, 4].map(n => ({ label: h[`aboutBlock${n}Label`], text: h[`aboutBlock${n}Text`] }));
+  const steps = [1, 2, 3].map((n, i) => ({
+    name: h[`processStep${n}Name`] || DEFAULT_STEPS[i].name,
+    desc: h[`processStep${n}Desc`] || DEFAULT_STEPS[i].desc,
+  }));
+  const email = h.ctaEmail || EMAIL;
 
   return (
-    <div ref={containerRef}>
-      
-
-
-<div id="scroll-bar"></div>
-
-
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-
-
-<div id="loader">
-  <div id="loader-name">Eugène Maaijen</div>
-  <div id="loader-bar"><div id="loader-fill"></div></div>
-  <div id="loader-count">0%</div>
-</div>
-
-
-<nav id="nav">
-  <a href="#hero" className="nav-logo">STUDIO MAAIJEN</a>
-  <ul className="nav-links">
-    <li><Link href="/work">Werk</Link></li>
-    <li><Link href="/pakketten">Pakketten</Link></li>
-    <li><a href="#services">Disciplines</a></li>
-    <li><a href="#about">Over</a></li>
-    <li><Link href="/contact">Contact</Link></li>
-  </ul>
-  <div className="nav-actions">
-    <Link href="/contact" className="nav-cta-btn">Start een project</Link>
-    <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
-  </div>
-</nav>
-
-
-<div id="menu-overlay">
-  <div className="menu-col-left">
-    <button className="menu-close" id="menu-close-btn">Sluiten ✕</button>
-    <nav className="menu-nav">
-      <Link href="/work" onClick={() => {}}><span>Werk</span><span className="arrow">→</span></Link>
-      <Link href="/pakketten" onClick={() => {}}><span>Pakketten</span><span className="arrow">→</span></Link>
-      <a href="#services" onClick={() => {}}><span>Disciplines</span><span className="arrow">→</span></a>
-      <a href="#about" onClick={() => {}}><span>Over Mij</span><span className="arrow">→</span></a>
-      <Link href="/contact" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></Link>
-    </nav>
-    <div className="menu-footer">
-      <a href="https://instagram.com" target="_blank">Instagram</a>
-      <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank">LinkedIn</a>
-      <a href="mailto:info@studio-maaijen.nl">Email</a>
-    </div>
-  </div>
-  <div 
-    className="menu-col-right"
-    style={homepage?.aboutPortrait?.url ? {
-      backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, rgba(10,10,10,0.7) 100%), url(${homepage.aboutPortrait.url})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
-    } : undefined}
-  >
-    <div className="menu-col-right-inner"></div>
-  </div>
-</div>
-
-
-<section id="hero">
-  <div className="hero-bg hero-bg--motion"></div>
-  <HeroVisual projects={projects} />
-  <div className="hero-grid"></div>
-  <div className="hero-side-label">UX · Brand · Video · NL</div>
-
-  <div className="hero-content">
-    <div className="hero-eyebrow">
-      <div className="hero-eyebrow-dot"></div>
-      <span className="hero-eyebrow-text" id="hero-eyebrow-txt">{homepage?.heroEyebrow || "Portfolio 2026 — Amsterdam, NL"}</span>
-    </div>
-
-    <h1 className="hero-headline" id="hero-headline">
-      {homepage?.heroHeadline ? (
-        <div dangerouslySetInnerHTML={{ __html: homepage.heroHeadline }} />
-      ) : (
-        <>
-          <div><span className="word-wrap"><span className="word-inner">Impactvolle UX/UI</span></span></div>
-          <div><span className="word-wrap"><span className="word-inner">&amp; <em>Merkidentiteiten</em></span></span></div>
-        </>
-      )}
-    </h1>
-
-    <div className="hero-bottom">
-      <div className="hero-cta" id="hero-cta">
-        <Link href="/work" className="btn btn-primary">Bekijk mijn werk ↓</Link>
-        <a href="#cta" className="btn btn-outline">Contact</a>
+    <div className="h-root" ref={rootRef} id="top">
+      <div className="h-loader no-print" aria-hidden="true">
+        <div className="h-loader-inner">
+          <span className="h-loader-label">Studio Maaijen</span>
+          <span className="h-loader-count">
+            <b data-h-count>000</b>
+            <i>%</i>
+          </span>
+          <span className="h-loader-bar">
+            <span data-h-bar />
+          </span>
+        </div>
       </div>
-      <div className="hero-disciplines" id="hero-disc">
-        <span>UX/UI Design</span>
-        <span>Video Editing</span>
-        <span>Brand Identity</span>
+      <SiteOverlays />
+      <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
+      {/* ───────── 00 HERO ───────── */}
+      <section id="start" className="h-hero h-dark no-print" data-theme="dark">
+        <HeroVisual portraitUrl={portraitUrl} />
+
+        <div className="h-hero-top">
+          <span className="h-mono" data-h-hero-fade>
+            {h.heroEyebrow || 'Studio Maaijen — UX/UI, merk & video'}
+          </span>
+          <span className="h-mono h-hero-top-r" data-h-hero-fade>
+            {h.footerLocation ? h.footerLocation.split('\n')[0] : 'Amsterdam, NL'}
+          </span>
+        </div>
+
+        <h1 className="h-hero-name h-hero-name--sm" aria-label={headlineLines(headline).join(' ').replace(/<[^>]+>/g, '')}>
+          {headlineLines(headline).map((line, i) => (
+            <span key={i} className="h-hero-line" data-h-line>
+              <span dangerouslySetInnerHTML={{ __html: line }} />
+            </span>
+          ))}
+        </h1>
+
+        <div className="h-hero-role" data-h-hero-fade>
+          <p className="h-hero-role-sub">
+            Ik help ondernemers en MKB-bedrijven met websites, huisstijlen en video die klanten aantrekken en
+            laten aanvragen.
+          </p>
+          <div className="h-hero-cta">
+            <a href="#werk" className="h-btn h-btn--spot" data-h-magnet>
+              <span>Bekijk mijn werk</span>
+              <i aria-hidden="true">↓</i>
+            </a>
+            <Link href="/contact" className="h-btn h-btn--ghost" data-h-magnet>
+              <span>Start een project</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+          </div>
+        </div>
+
+        <div className="h-hero-foot" data-h-hero-fade>
+          <span className="h-mono h-hero-scroll">
+            Scroll <b aria-hidden="true">↓</b>
+          </span>
+          <span className="h-mono h-hero-avail">
+            <i aria-hidden="true" /> Nu beschikbaar — projecten vanaf 2 weken
+          </span>
+        </div>
+      </section>
+
+      {/* ───────── TICKER ───────── */}
+      <div className="h-ticker h-dark no-print" data-theme="dark" aria-label="Opdrachtgevers">
+        <div className="h-ticker-track">
+          {[0, 1].map(dup => (
+            <div className="h-ticker-set" key={dup} aria-hidden={dup === 1}>
+              {ticker.map((name, i) => (
+                <span key={`${dup}-${i}`} className="h-ticker-item">
+                  {name}
+                  <Reg />
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </div>
 
-  <div className="scroll-hint" id="scroll-hint">Scroll</div>
-</section>
+      {/* ───────── 01 WERK ───────── */}
+      <section id="werk" className="h-work h-dark" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">(01) Geselecteerd werk</span>
+            <span className="h-mono">{pad(projects.length)} cases</span>
+          </div>
+          <div className="h-work-head">
+            <h2 className="h-display" data-h-lines>
+              Projecten die <em>resultaat</em> leveren
+            </h2>
+            <p className="h-work-intro" data-h="up">
+              Van brand identity tot digitale producten. Elk project vertelt een verhaal dat blijft hangen, en
+              elk project is gebouwd om iets voor de opdrachtgever op te leveren.
+            </p>
+          </div>
 
+          <ol className="h-cases" data-h-cases>
+            {projects.length > 0 ? (
+              projects.map((proj, i) => {
+                const cats = proj.categories?.length
+                  ? proj.categories.map(c => c.name)
+                  : proj.projectType
+                  ? [proj.projectType]
+                  : ['Case'];
+                const name = proj.client || proj.title;
+                return (
+                  <li key={proj.slug || i} className="h-case-item" data-h="up">
+                    <Link href={`/work/${proj.slug}`} className="h-case" data-h-case={i}>
+                      <span className="h-case-no h-mono">{pad(i + 1)}</span>
+                      <span className="h-case-main">
+                        <span className="h-case-name">{name}</span>
+                        {proj.introText ? <span className="h-case-sub">{proj.introText}</span> : null}
+                      </span>
+                      <span className="h-case-cats h-mono">{cats.join(' / ')}</span>
+                      <span className="h-case-arrow" aria-hidden="true">↗</span>
+                      <span className="h-case-inline" aria-hidden="true">
+                        {proj.coverImage?.url ? (
+                          <img src={sized(proj.coverImage.url, 1000)} alt="" loading="lazy" decoding="async" />
+                        ) : (
+                          <span className="h-case-noimg">{(name || 'SM').slice(0, 2)}</span>
+                        )}
+                        <CropMarks />
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })
+            ) : (
+              <li className="h-case-item">
+                <span className="h-mono">Projecten worden geladen…</span>
+              </li>
+            )}
+          </ol>
 
-<div className="marquee-section">
-  <div className="marquee-track" id="marquee-track">
-    <div className="marquee-item">
-      <span className="marquee-txt">Eugène Maaijen</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Blubricks</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Spotta</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">De Kindertelefoon</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">UX/UI Design</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Brand Identity</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Video Editing</span><span className="marquee-dot"></span>
-    </div>
-    <div className="marquee-item">
-      <span className="marquee-txt">Eugène Maaijen</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Blubricks</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Spotta</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">De Kindertelefoon</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">UX/UI Design</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Brand Identity</span><span className="marquee-dot"></span>
-      <span className="marquee-txt">Video Editing</span><span className="marquee-dot"></span>
-    </div>
-  </div>
-</div>
+          <div className="h-peek" data-h-peek aria-hidden="true">
+            <div className="h-peek-frame">
+              {projects.map((proj, i) => (
+                <div className="h-peek-img" data-h-peek-img={i} key={proj.slug || i}>
+                  {proj.coverImage?.url ? (
+                    <img src={sized(proj.coverImage.url, 900)} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <span className="h-case-noimg">{(proj.client || proj.title || 'SM').slice(0, 2)}</span>
+                  )}
+                </div>
+              ))}
+              <CropMarks />
+            </div>
+            <span className="h-peek-cap h-mono" data-h-peek-cap />
+          </div>
 
+          <div className="h-work-more" data-h="up">
+            <Link href="/work" className="h-btn h-btn--ghost" data-h-magnet>
+              <span>Alle projecten</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+          </div>
+        </div>
+      </section>
 
-<div id="work-section">
-  <div className="work-header">
-    <div className="s-label reveal">
-      <div className="s-dot"></div>
-      <span className="s-tag">Geselecteerd Werk</span>
-    </div>
-    <div className="s-header" style={{"marginBottom":"0"}}>
-      <h2 className="s-title reveal">Projecten die<br /><em>resultaat leveren</em></h2>
-      <div>
-        <p className="s-sub reveal" style={{"marginBottom":"20px"}}>Van brand identity tot digitale producten — elk project vertelt een verhaal dat blijft hangen.</p>
-        <Link href="/work" className="btn btn-outline reveal">Alle projecten →</Link>
-      </div>
-    </div>
-  </div>
+      {/* ───────── 02 DISCIPLINES ───────── */}
+      <section id="services" className="h-svc h-paper" data-theme="paper">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">(02) Disciplines</span>
+            <span className="h-mono">Wat ik doe</span>
+          </div>
+          <h2 className="h-display h-display--ink" data-h-lines>
+            Wat ik doe &amp; <em>hoe ik het doe</em>
+          </h2>
+          <p className="h-svc-intro" data-h="up">
+            {h.servicesSubtitle || '20 jaar ervaring op het snijvlak van strategie, esthetiek en techniek.'}
+          </p>
 
-  <div className="work-grid">
-    {projects.length > 0 ? projects.map(proj => (
-      <Link key={proj.slug} href={`/work/${proj.slug}`} className="work-card">
-        <div className="work-img-wrap">
-          <div className="work-img" style={{ backgroundImage: proj.coverImage ? `url(${proj.coverImage.url})` : 'none', backgroundColor: '#222' }}>
-            <span style={{ fontFamily: "var(--ff-d)", fontSize: "clamp(40px,6vw,80px)", fontWeight: "600", color: "rgba(240,237,230,.1)" }}>
-              {proj.title.substring(0, 2).toUpperCase()}
+          <ol className="h-svc-list" data-h-group>
+            {services.map((s, i) => (
+              <li key={i} className="h-svc-row" data-h="up">
+                <span className="h-mono h-svc-no">{pad(i + 1)}</span>
+                <h3 className="h-svc-title">{s.title}</h3>
+                <p className="h-svc-desc">{s.desc}</p>
+                <ul className="h-svc-tags">
+                  {s.tags.map((t, j) => (
+                    <li key={j} className="h-mono">{t}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ───────── 03 PAKKETTEN (teaser) ───────── */}
+      <section id="pakketten" className="h-dark h-pkt-teaser" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">(03) Pakketten</span>
+            <Link href="/pakketten" className="h-mono h-chero-back">Alle pakketten →</Link>
+          </div>
+          <h2 className="h-display" data-h-lines>
+            Heldere pakketten, <em>sleutelklaar</em>
+          </h2>
+          <PackageGrid packages={packages} compact />
+        </div>
+      </section>
+
+      {/* ───────── 04 OVER MIJ ───────── */}
+      <section id="about" className="h-story h-paper" data-theme="paper">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">(04) Over mij</span>
+            <span className="h-mono">Studio sinds 2013</span>
+          </div>
+
+          <p className="h-statement" data-h-statement aria-label={STATEMENT.map(w => w.t).join(' ')}>
+            {STATEMENT.map((w, i) => (
+              <span key={i} className={`h-word ${w.em ? 'is-em' : ''}`} aria-hidden="true">
+                {w.t}{' '}
+              </span>
+            ))}
+          </p>
+
+          <div className="h-story-body">
+            <div className="h-story-facts" data-h-group>
+              {stats.map((st, i) => (
+                <div key={i} className="h-fact" data-h="up">
+                  <span
+                    className="h-fact-num"
+                    data-h-count-to={st.v}
+                    data-h-suffix={i === 3 ? '%' : i === 0 ? '' : '+'}
+                  >
+                    {st.v}
+                  </span>
+                  <span className="h-mono">{st.l}</span>
+                  <span className="h-fact-sub h-mono">{st.s}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="h-story-prose" data-h-group>
+              {h.aboutIntro ? (
+                <p className="h-story-lead" data-h="up" dangerouslySetInnerHTML={{ __html: h.aboutIntro }} />
+              ) : (
+                <p className="h-story-lead" data-h="up">
+                  <strong>Ik ben Eugène Maaijen.</strong> Senior UX/UI-designer, front-end developer en brand creator.
+                  Met ruim 20 jaar ervaring help ik bedrijven om <em>digitale ervaringen te maken</em> die raken,
+                  helder communiceren en converteren.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="h-blocks" data-h-group>
+            {blocks.map((b, i) => (
+              <div key={i} className="h-block-card" data-h="up">
+                <span className="h-mono h-block-lbl">{b.label || ['Achtergrond', 'Werkwijze', 'Expertise', 'Tools'][i]}</span>
+                {isHtml(b.text) ? (
+                  <div className="h-prose" dangerouslySetInnerHTML={{ __html: b.text }} />
+                ) : (
+                  <div className="h-prose">
+                    {(b.text ||
+                      [
+                        'Al meer dan twintig jaar beweeg ik me op het snijvlak van design, psychologie en technologie. Ik ontwerp niet alleen een intuïtieve interface, maar begrijp ook hoe interacties en moderne webcode werken.',
+                        'Geen bureauprocessen of onnodige vergaderlagen. Je werkt rechtstreeks samen met degene die jouw project ontwerpt en bouwt. Korte lijnen, heldere afspraken, nuchter en transparant.',
+                        'UX & UI design, front-end en web met Next.js en React, branding en visuele identiteit, en video & motion in Premiere Pro en After Effects.',
+                        'Figma, Adobe Creative Cloud, After Effects, Premiere Pro, DaVinci Resolve, Next.js, HTML/CSS, Webflow en AI-gedreven workflows.',
+                      ][i]
+                    )
+                      .split('\n')
+                      .filter(Boolean)
+                      .map((p, j) => (
+                        <p key={j}>{p}</p>
+                      ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="h-clients" data-h="up">
+            <span className="h-mono">Gewerkt voor</span>
+            <ul>
+              {clients.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── 05 WERKWIJZE ───────── */}
+      <section id="werkwijze" className="h-proc h-dark" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">(05) Werkwijze</span>
+            <span className="h-mono">Van brief naar resultaat</span>
+          </div>
+          <h2 className="h-display" data-h-lines>
+            {h.processTitle ? (
+              <span dangerouslySetInnerHTML={{ __html: h.processTitle }} />
+            ) : (
+              <>
+                Van brief naar <em>briljant resultaat</em>
+              </>
+            )}
+          </h2>
+          <ol className="h-proc-steps" data-h-group>
+            {steps.map((s, i) => (
+              <li key={i} className="h-proc-step" data-h="up">
+                <span className="h-proc-num">{pad(i + 1)}</span>
+                <h3 className="h-proc-name">{s.name}</h3>
+                <p className="h-proc-desc">{s.desc}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ───────── 06 CONTACT ───────── */}
+      <section id="cta" className="h-contact h-dark" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">(06) Samenwerken</span>
+            <span className="h-mono h-contact-avail">
+              <i aria-hidden="true" /> Nu beschikbaar
             </span>
           </div>
-        </div>
-        <div className="work-meta">
-          <div className="work-meta-left">
-            <span className="work-client">{proj.client} — {proj.categories?.map(c => c.name).join(', ') || proj.projectType}</span>
-            <span className="work-name">{proj.title}</span>
+          <p className="h-contact-eyebrow" data-h="up">
+            {h.ctaEyebrow || 'Klaar om samen te werken?'}
+          </p>
+          <h2 className="h-contact-title" data-h-lines>
+            {h.ctaTitle ? (
+              <span dangerouslySetInnerHTML={{ __html: h.ctaTitle }} />
+            ) : (
+              <>
+                Laten we <em>iets moois</em> maken.
+              </>
+            )}
+          </h2>
+          <div className="h-contact-grid">
+            <p className="h-contact-lead" data-h="up">
+              Vertel kort wat je nodig hebt. Je krijgt binnen twee werkdagen een reactie, met een eerlijk advies
+              en een voorstel dat past bij je budget.
+            </p>
+            <a href={`mailto:${email}`} className="h-contact-mail" data-h="up" data-h-cursor="Mail" data-h-magnet>
+              <span>{email}</span>
+              <i aria-hidden="true">↗</i>
+            </a>
           </div>
-          <span className="work-arrow" aria-hidden="true">↗</span>
-        </div>
-      </Link>
-    )) : (
-      <>
-        <Link href="/work/blubricks" className="work-card">
-          <div className="work-img-wrap"><div className="work-img bg-blubricks"><span style={{"fontFamily":"var(--ff-d)","fontSize":"clamp(40px,6vw,80px)","fontWeight":"600","color":"rgba(240,237,230,.1)"}}>BB</span></div></div>
-          <div className="work-meta">
-            <div className="work-meta-left">
-              <span className="work-client">Brand Identity & Web</span>
-              <span className="work-name">Blubricks (Voorbeeld)</span>
-            </div>
-            <span className="work-arrow" aria-hidden="true">↗</span>
+          <div className="h-contact-actions" data-h="up">
+            <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
+              <span>Start een project</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+            <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="h-btn h-btn--ghost" data-h-magnet>
+              <span>LinkedIn</span>
+              <i aria-hidden="true">↗</i>
+            </a>
           </div>
-        </Link>
-      </>
-    )}
-  </div>
-</div>
-
-
-<div id="stats" className="section--light">
-  <div className="stats-grid">
-    <div className="stat-item">
-      <div className="stat-num"><span className="counter" data-to={homepage?.stat1Value || "20"}>0</span></div>
-      <div className="stat-label">{homepage?.stat1Label || "Jaar werkervaring"}</div>
-      <div className="stat-sub">{homepage?.stat1Sub || "UX/UI & Brand"}</div>
-    </div>
-    <div className="stat-item">
-      <div className="stat-num"><span className="counter" data-to={homepage?.stat2Value || "50"}>0</span><sup>+</sup></div>
-      <div className="stat-label">{homepage?.stat2Label || "Projecten afgeleverd"}</div>
-      <div className="stat-sub">{homepage?.stat2Sub || "Diverse opdrachtgevers"}</div>
-    </div>
-    <div className="stat-item">
-      <div className="stat-num"><span className="counter" data-to={homepage?.stat3Value || "30"}>0</span><sup>+</sup></div>
-      <div className="stat-label">{homepage?.stat3Label || "Huisstijlen gecreëerd"}</div>
-      <div className="stat-sub">{homepage?.stat3Sub || "Concept tot delivery"}</div>
-    </div>
-    <div className="stat-item">
-      <div className="stat-num"><span className="counter" data-to={homepage?.stat4Value || "100"}>0</span><sup>%</sup></div>
-      <div className="stat-label">{homepage?.stat4Label || "Passie voor craft"}</div>
-      <div className="stat-sub">{homepage?.stat4Sub || "Elke pixel telt"}</div>
-    </div>
-  </div>
-</div>
-
-
-<section id="services" className="section--light">
-  <div className="s-label reveal"><div className="s-dot"></div><span className="s-tag">Disciplines</span></div>
-  <div className="s-header">
-    <h2 className="s-title reveal">
-      {homepage?.servicesTitle ? (
-        <span dangerouslySetInnerHTML={{ __html: homepage.servicesTitle }} />
-      ) : (
-        <>Wat ik doe &<br /><em>hoe ik het doe</em></>
-      )}
-    </h2>
-    <p className="s-sub reveal">{homepage?.servicesSubtitle || "20 jaar ervaring op het snijvlak van strategie, esthetiek en techniek."}</p>
-  </div>
-
-  <div className="services-list reveal">
-    <div className="service-row">
-      <div className="service-index">
-        <span className="service-index-num">&quot;01&quot;</span>
-        <span className="service-index-title">{homepage?.service1Title || "UX/UI Design"}</span>
-        <span className="service-index-dash">—</span>
-      </div>
-      <div className="service-desc">
-        {homepage?.service1Desc || "Van wireframe tot high-fidelity prototype — ik ontwerp digitale ervaringen die intuïtief aanvoelen en gebruikers meenemen van A naar B."}
-      </div>
-      <div className="service-tags">
-        {(homepage?.service1Tags ? homepage.service1Tags.split(',').map(t => t.trim()) : ["User Research", "Wireframing", "Prototyping", "Design Systems"]).map((tag, idx) => (
-          <span key={idx} className="service-tag">{tag}</span>
-        ))}
-      </div>
-    </div>
-    
-    <div className="service-row">
-      <div className="service-index">
-        <span className="service-index-num">&quot;02&quot;</span>
-        <span className="service-index-title">{homepage?.service2Title || "Brand Identity"}</span>
-        <span className="service-index-dash">—</span>
-      </div>
-      <div className="service-desc">
-        {homepage?.service2Desc || "Merken die niet alleen mooi zijn — maar ook iets zeggen. Ik bouw identiteiten die emotioneel resoneren én visueel consistent zijn."}
-      </div>
-      <div className="service-tags">
-        {(homepage?.service2Tags ? homepage.service2Tags.split(',').map(t => t.trim()) : ["Logo Design", "Typografie", "Kleurpaletten", "Brand Guidelines"]).map((tag, idx) => (
-          <span key={idx} className="service-tag">{tag}</span>
-        ))}
-      </div>
-    </div>
-    
-    <div className="service-row">
-      <div className="service-index">
-        <span className="service-index-num">&quot;03&quot;</span>
-        <span className="service-index-title">{homepage?.service3Title || "Video Editing"}</span>
-        <span className="service-index-dash">—</span>
-      </div>
-      <div className="service-desc">
-        {homepage?.service3Desc || "Van rauwe opnames naar een gepolijste productie — met oog voor ritme, sfeer en impact. Bewegend beeld dat het verhaal versterkt."}
-      </div>
-      <div className="service-tags">
-        {(homepage?.service3Tags ? homepage.service3Tags.split(',').map(t => t.trim()) : ["Post-productie", "Motion Graphics", "Color Grading", "Sound Design"]).map((tag, idx) => (
-          <span key={idx} className="service-tag">{tag}</span>
-        ))}
-      </div>
-    </div>
-  </div>
-  
-  <div style={{"display":"flex","gap":"14px","marginTop":"36px","justifyContent":"center"}} className="reveal">
-    <Link href="/work" className="btn btn-primary">Bekijk werk →</Link>
-    <a href="#cta" className="btn btn-outline">Samenwerken</a>
-  </div>
-</section>
-
-
-<section id="about">
-  <div className="s-label reveal"><div className="s-dot"></div><span className="s-tag">Over Mij</span></div>
-  <div className="about-grid">
-    <div className="about-photo reveal-left">
-      <div className="about-portrait">
-        <div 
-          className="about-portrait-inner" 
-          style={homepage?.aboutPortrait?.url ? { 
-            backgroundImage: `linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 60%), url(${homepage.aboutPortrait.url})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          } : undefined}
-        >
-          Eugène<br />Maaijen
         </div>
-      </div>
-      <div className="about-social">
-        <a href="https://instagram.com" target="_blank">IG</a>
-        <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank">LI</a>
-        <a href="https://behance.net" target="_blank">BE</a>
-        <a href="mailto:info@studio-maaijen.nl">Mail</a>
-      </div>
-    </div>
-    <div className="about-right">
-      <p className="about-intro">
-        {homepage?.aboutIntro ? (
-          <span dangerouslySetInnerHTML={{ __html: homepage.aboutIntro }} />
-        ) : (
-          <>
-            Ik ben <em>Eugène Maaijen</em> — senior UX/UI designer, front-end developer en brand creator. Met ruim 20 jaar ervaring help ik bedrijven en merken om <em>digitale ervaringen te creëren</em> die raken, helder communiceren en converteren.
-          </>
-        )}
-      </p>
-      <div>
-        <div className="about-block reveal">
-          <div className="about-block-lbl">{homepage?.aboutBlock1Label || "Achtergrond"}</div>
-          {homepage?.aboutBlock1Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock1Text) ? (
-            <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock1Text }} />
-          ) : (
-            <div className="about-block-txt">
-              {homepage?.aboutBlock1Text || `Al meer dan twintig jaar beweeg ik me op het snijvlak van design, psychologie en technologie. Wat begon met een fascinatie voor interactieve interfaces en multimedia, is uitgegroeid tot een allround studio voor merken en bedrijven die online willen uitblinken.
+      </section>
 
-Mijn kracht ligt in de combinatie: ik ontwerp niet alleen een aantrekkelijke en intuïtieve interface in Figma, maar begrijp ook exact hoe interacties, animaties en moderne webcode onder de motorkap functioneren. Geen ontwerpen die in de praktijk sneuvelen of technisch onhaalbaar blijken, maar doordachte oplossingen die direct tot leven komen, razendsnel laden en écht resultaat opleveren.`}
-            </div>
-          )}
-        </div>
-
-        <div className="about-block reveal">
-          <div className="about-block-lbl">{homepage?.aboutBlock2Label || "Werkwijze & Filosofie"}</div>
-          {homepage?.aboutBlock2Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock2Text) ? (
-            <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock2Text }} />
-          ) : (
-            <div className="about-block-txt">
-              {homepage?.aboutBlock2Text || `Geen stroperige bureauprocessen, accountmanagers of onnodige vergaderlagen. Bij Studio Maaijen werk je rechtstreeks samen met degene die jouw project bedenkt, ontwerpt en bouwt. Korte communicatielijnen, heldere afspraken en een nuchtere, transparante aanpak.
-
-Elk traject begint met luisteren: wat is het doel, wie is de doelgroep en wat moet de bezoeker ervaren en doen? Vervolgens vertalen we dat snel naar tastbare wireframes, interactieve prototypes en een strakke visuele stijl. Van het eerste idee tot een sleutelklare livegang inclusief gebruiksvriendelijk CMS.`}
-            </div>
-          )}
-        </div>
-
-        <div className="about-block reveal">
-          <div className="about-block-lbl">{homepage?.aboutBlock3Label || "Disciplines & Expertise"}</div>
-          {homepage?.aboutBlock3Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock3Text) ? (
-            <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock3Text }} />
-          ) : (
-            <div className="about-block-txt">
-              {homepage?.aboutBlock3Text || `• UX & UI Design — User research, wireframing, interactieve Figma-prototypes en complete design systems.
-• Front-end & Web — Snelle, responsive websites gebouwd met moderne frameworks (Next.js, React) en eenvoudig te beheren CMS-systemen.
-• Branding & Visuele Identiteit — Logo-ontwerp, complete merkidentiteit, typografie en stijlgidsen.
-• Video & Motion Graphics — Dynamische animaties, video editing en social content in Premiere Pro en After Effects.`}
-            </div>
-          )}
-        </div>
-
-        <div className="about-block reveal">
-          <div className="about-block-lbl">{homepage?.aboutBlock4Label || "Tools & Stack"}</div>
-          {homepage?.aboutBlock4Text && /<[a-z][\s\S]*>/i.test(homepage.aboutBlock4Text) ? (
-            <div className="about-block-txt" dangerouslySetInnerHTML={{ __html: homepage.aboutBlock4Text }} />
-          ) : (
-            <div className="about-block-txt">
-              {homepage?.aboutBlock4Text || "Figma, Adobe Creative Cloud (Photoshop, Illustrator, InDesign), After Effects, Premiere Pro, DaVinci Resolve, Next.js, HTML/CSS, Webflow en moderne AI-gedreven workflows."}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="clients-lbl reveal">Gewerkt voor</div>
-      <div className="clients-list reveal">
-        {(homepage?.aboutClients ? homepage.aboutClients.split(',').map(c => c.trim()) : ["Blubricks", "Spotta", "De Kindertelefoon", "PostNL", "Gemeenten", "& meer"]).map((client, idx) => (
-          <span key={idx} className="client-badge">{client}</span>
-        ))}
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section id="process" className="section--light">
-  <div className="s-label reveal"><div className="s-dot"></div><span className="s-tag">Werkwijze</span></div>
-  <h2 className="s-title reveal">
-    {homepage?.processTitle ? (
-      <span dangerouslySetInnerHTML={{ __html: homepage.processTitle }} />
-    ) : (
-      <>Van brief naar<br /><em>briljant resultaat</em></>
-    )}
-  </h2>
-  <div className="process-steps">
-    <div className="process-step">
-      <div className="ps-num">[01] Ontdekken</div>
-      <div className="ps-name">{homepage?.processStep1Name || "Luisteren & Begrijpen"}</div>
-      <div className="ps-desc">{homepage?.processStep1Desc || "Ik duik in jouw merk, doelgroep en doelstellingen. Geen aannames — alleen een scherp begrip van wat jij nodig hebt en waarom."}</div>
-    </div>
-    <div className="process-step">
-      <div className="ps-num">[02] Ontwerpen</div>
-      <div className="ps-name">{homepage?.processStep2Name || "Creëren & Verfijnen"}</div>
-      <div className="ps-desc">{homepage?.processStep2Desc || "Van concept tot pixel-perfecte uitwerking. Ik werk iteratief, met jou als sparringpartner gedurende het hele creatieve proces."}</div>
-    </div>
-    <div className="process-step">
-      <div className="ps-num">[03] Opleveren</div>
-      <div className="ps-name">{homepage?.processStep3Name || "Lanceren & Groeien"}</div>
-      <div className="ps-desc">{homepage?.processStep3Desc || "Alles klaar voor implementatie — met heldere documentatie zodat je volledig zelfstandig verder kunt of met je team."}</div>
-    </div>
-  </div>
-</section>
-
-
-{/* Testimonials (Klanten aan het woord) tijdelijk geparkeerd 
-<section id="testimonials">
-  <div className="testimonials-header">
-    <div className="s-label reveal"><div className="s-dot"></div><span className="s-tag">Klanten aan het woord</span></div>
-    <h2 className="s-title reveal">Ervaringen die<br /><em>voor zich spreken</em></h2>
-  </div>
-  <div className="testi-scroll">
-    <div className="testi-track">
-      {testimonials.length > 0 ? (
-        <>
-          {testimonials.map((t, idx) => (
-            <div key={`t1-${idx}`} className="testi-card">
-              <p className="testi-quote">{t.quote}</p>
-              <div className="testi-author">
-                <div className="testi-avatar">{t.authorAvatarLetter || t.authorName.charAt(0)}</div>
-                <div>
-                  <div className="testi-name">{t.authorName}</div>
-                  <div className="testi-role">{t.authorRole}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-          {testimonials.map((t, idx) => (
-            <div key={`t2-${idx}`} className="testi-card">
-              <p className="testi-quote">{t.quote}</p>
-              <div className="testi-author">
-                <div className="testi-avatar">{t.authorAvatarLetter || t.authorName.charAt(0)}</div>
-                <div>
-                  <div className="testi-name">{t.authorName}</div>
-                  <div className="testi-role">{t.authorRole}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </>
-      ) : (
-        <>
-          <div className="testi-card"><p className="testi-quote">"Eugène heeft onze brand identity volledig getransformeerd. Het eindresultaat overtrof al onze verwachtingen — véél beter dan we hadden durven hopen."</p><div className="testi-author"><div className="testi-avatar">M</div><div><div className="testi-name">Martijn de Vries</div><div className="testi-role">CEO, Blubricks</div></div></div></div>
-          <div className="testi-card"><p className="testi-quote">"De nieuwe UX van Spotta heeft onze conversie significant verhoogd. Eugène begrijpt echt hoe mensen denken en hoe je ze door een product loodst."</p><div className="testi-author"><div className="testi-avatar">S</div><div><div className="testi-name">Sophie Janssen</div><div className="testi-role">Product Lead, Spotta</div></div></div></div>
-          <div className="testi-card"><p className="testi-quote">"Professioneel, creatief en toegankelijk. De samenwerking voelde als een echte partnership — geen uitvoerder, maar een mededenker met visie."</p><div className="testi-author"><div className="testi-avatar">A</div><div><div className="testi-name">Anna Pietersen</div><div className="testi-role">Communicatie, De Kindertelefoon</div></div></div></div>
-          <div className="testi-card"><p className="testi-quote">"De videoproductie was van een ongelofelijk hoog niveau. Eugène weet precies hoe hij een verhaal visueel moet vertellen — met ritme, sfeer en impact."</p><div className="testi-author"><div className="testi-avatar">R</div><div><div className="testi-name">Roel Bakker</div><div className="testi-role">Marketing Director</div></div></div></div>
-        </>
-      )}
-    </div>
-  </div>
-</section>
-*/}
-
-
-<section id="cta">
-  <div className="cta-backdrop" id="cta-backdrop">{homepage?.ctaBackdrop || "Samen"}</div>
-  <div className="cta-content">
-    <p className="cta-eyebrow reveal">{homepage?.ctaEyebrow || "Klaar om samen te werken?"}</p>
-    <h2 className="cta-title reveal">
-      {homepage?.ctaTitle ? (
-        <span dangerouslySetInnerHTML={{ __html: homepage.ctaTitle }} />
-      ) : (
-        <>Laten we <em>iets moois</em><br />maken.</>
-      )}
-    </h2>
-    <div className="cta-btns reveal">
-      <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="btn btn-primary">Mail mij direct →</a>
-      <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" className="btn btn-outline">LinkedIn ↗</a>
-    </div>
-  </div>
-</section>
-
-
-<footer>
-  <div className="footer-grid">
-    <div>
-      <div className="footer-logo-txt">Eugène Maaijen</div>
-      <div className="footer-tagline" dangerouslySetInnerHTML={{ __html: homepage?.footerTagline?.replace(/\n/g, '<br/>') || `"Design dat raakt vandaag<br />&amp; inspireert morgen."` }} />
-      <div className="footer-loc" dangerouslySetInnerHTML={{ __html: homepage?.footerLocation?.replace(/\n/g, '<br/>') || `📍 Amsterdam, Nederland<br />Beschikbaar voor remote &amp; on-site` }} />
-    </div>
-    <div>
-      <div className="footer-nav-h">Navigatie</div>
-      <div className="footer-nav-links">
-        <Link href="/work">Werk</Link>
-        <Link href="/pakketten">Pakketten</Link>
-        <a href="#services">Disciplines</a>
-        <a href="#about">Over Mij</a>
-        <Link href="/contact">Contact</Link>
-      </div>
-    </div>
-    <div>
-      <div className="footer-contact-h">Neem contact op</div>
-      <a href={`mailto:${homepage?.ctaEmail || "info@studio-maaijen.nl"}`} className="footer-email">{homepage?.ctaEmail || "info@studio-maaijen.nl"}</a>
-      <div className="footer-socials">
-        <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank"><span>LinkedIn</span><span>↗</span></a>
-      </div>
-    </div>
-  </div>
-  <div className="footer-bottom">
-    <span>{homepage?.footerCopyright || "© 2026 Eugène Maaijen — Alle rechten voorbehouden"} | KVK-nummer: 92113273</span>
-    <a href="#hero" className="back-top">↑</a>
-  </div>
-</footer>
-
+      <SiteFooter tagline={h.footerTagline} location={h.footerLocation} copyright={h.footerCopyright} />
     </div>
   );
 }

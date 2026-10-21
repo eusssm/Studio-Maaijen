@@ -201,5 +201,13 @@ export default async function ProjectPage({ params }) {
   const allProjects = data.allProjects || [];
   const currentIndex = allProjects.findIndex(p => p.slug === slug);
   const nextProject = allProjects.length > 0 ? allProjects[(currentIndex + 1) % allProjects.length] : null;
-  return <CaseClient project={data.project} nextProject={nextProject} />;
+  return (
+    <CaseClient
+      key={slug}
+      project={data.project}
+      nextProject={nextProject}
+      index={Math.max(0, currentIndex)}
+      total={allProjects.length}
+    />
+  );
 }

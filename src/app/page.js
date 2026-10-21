@@ -88,6 +88,21 @@ const PAGE_QUERY = `
       authorRole
       authorAvatarLetter
     }
+    allPackages(orderBy: positionOrder_ASC) {
+      id
+      name
+      tagline
+      priceLabel
+      duration
+      isFeatured
+      positionOrder
+      features {
+        ... on FeatureItemRecord {
+          id
+          feature
+        }
+      }
+    }
   }
 `;
 
@@ -95,6 +110,7 @@ export default async function Home() {
   let homepage = null;
   let projects = [];
   let testimonials = [];
+  let packages = [];
 
   try {
     const res = await performRequest({ query: PAGE_QUERY });
@@ -102,11 +118,12 @@ export default async function Home() {
     homepage = data?.homepage || null;
     projects = data?.allProjects || [];
     testimonials = data?.allTestimonials || [];
+    packages = data?.allPackages || [];
   } catch (e) {
     console.error("Home page query error:", e);
   }
 
   return (
-    <HomeClient homepage={homepage} projects={projects} testimonials={testimonials} />
+    <HomeClient homepage={homepage} projects={projects} testimonials={testimonials} packages={packages} />
   );
 }

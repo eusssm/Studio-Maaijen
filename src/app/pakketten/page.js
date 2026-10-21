@@ -10,14 +10,7 @@ export const metadata = {
 const PAKKETTEN_QUERY = `
   query PakkettenPageQuery {
     homepage {
-      aboutPortrait {
-        url
-      }
-      ctaBackdrop
       ctaEyebrow
-      ctaTitle
-      ctaEmail
-      ctaLinkedin
       footerTagline
       footerLocation
       footerCopyright
@@ -63,11 +56,5 @@ export default async function PakkettenPage() {
     console.error('Pakketten page query error:', e);
   }
 
-  return (
-    <PakkettenClient
-      packages={packages}
-      siteSetting={siteSetting}
-      homepage={homepage}
-    />
-  );
+  return <PakkettenClient packages={packages} siteSetting={siteSetting} homepage={homepage} />;
 }

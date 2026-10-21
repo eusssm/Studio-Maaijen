@@ -1,11 +1,14 @@
 import { performRequest } from "../../../lib/datocms";
 import WorkOverviewClient from "../../components/WorkOverviewClient";
 
+export const metadata = {
+  title: "Werk",
+  description: "Alle projecten van Studio Maaijen: UX/UI design, merkidentiteiten en video.",
+};
+
 const WORK_PAGE_QUERY = `
   query WorkPageQuery {
     homepage {
-      ctaEmail
-      ctaLinkedin
       footerTagline
       footerLocation
       footerCopyright
@@ -37,7 +40,5 @@ export default async function WorkPage() {
     console.error("Work page query error:", e);
   }
 
-  return (
-    <WorkOverviewClient projects={projects} homepage={homepage} />
-  );
+  return <WorkOverviewClient projects={projects} homepage={homepage} />;
 }

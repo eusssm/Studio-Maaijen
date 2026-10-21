@@ -1,155 +1,152 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { sized, CropMarks, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import '../app/drukklaar.css';
 
-gsap.registerPlugin(ScrollTrigger);
+const FILTERS = ['Alles', 'UX/UI Design', 'Brand Identity', 'Video Editing'];
+const pad = n => String(n).padStart(2, '0');
 
-export default function WorkOverviewClient({ projects, homepage }) {
-  const containerRef = useRef();
-  const [activeFilter, setActiveFilter] = useState('Alles');
+export default function WorkOverviewClient({ projects = [], homepage }) {
+  const rootRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [filter, setFilter] = useState('Alles');
 
-  const filters = ['Alles', 'UX/UI Design', 'Brand Identity', 'Video Editing'];
+  const shown = useMemo(
+    () =>
+      projects.filter(p => {
+        if (filter === 'Alles') return true;
+        return (p.categories || []).some(c => c.name === filter);
+      }),
+    [projects, filter]
+  );
 
-  const filteredProjects = projects.filter(proj => {
-    if (activeFilter === 'Alles') return true;
-    const cats = proj.categories?.map(c => c.name) || [];
-    return cats.includes(activeFilter);
-  });
+  /* Beweging opnieuw opzetten als de lijst verandert (filter) */
+  useEffect(() => {
+    let cleanup = null;
+    let cancelled = false;
+    import('./home-animations').then(mod => {
+      if (cancelled || !rootRef.current) return;
+      cleanup = mod.initHomeMotion(rootRef.current);
+    });
+    return () => {
+      cancelled = true;
+      if (cleanup) cleanup();
+    };
+  }, [filter, shown.length]);
 
   useEffect(() => {
-    // Re-trigger GSAP animations when filtered projects change
-    import('./home-animations').then((mod) => {
-      let ctx = gsap.context(() => {
-        mod.initHomeAnimations(containerRef.current);
-      }, containerRef);
-      return () => ctx.revert();
-    });
-  }, [filteredProjects]);
+    document.body.classList.toggle('menu-open', menuOpen);
+    return () => document.body.classList.remove('menu-open');
+  }, [menuOpen]);
 
   return (
-    <div ref={containerRef}>
-      <div id="scroll-bar"></div>
-      <div id="cursor"></div>
-      <div id="cursor-ring"></div>
+    <div className="h-root h-subpage" ref={rootRef} id="top">
+      <SiteOverlays />
+      <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <nav id="nav">
-        <Link href="/" className="nav-logo">STUDIO MAAIJEN</Link>
-        <ul className="nav-links">
-          <li><Link href="/work">Werk</Link></li>
-          <li><Link href="/pakketten">Pakketten</Link></li>
-          <li><Link href="/#services">Disciplines</Link></li>
-          <li><Link href="/#about">Over</Link></li>
-          <li><Link href="/contact">Contact</Link></li>
-        </ul>
-        <div className="nav-actions">
-          <Link href="/contact" className="nav-cta-btn">Start een project</Link>
-          <button className="nav-menu-btn" id="menu-open-btn">Menu</button>
-        </div>
-      </nav>
-
-      <div id="menu-overlay">
-        <div className="menu-col-left">
-          <button className="menu-close" id="menu-close-btn">Sluiten ✕</button>
-          <nav className="menu-nav">
-            <Link href="/work" onClick={() => {}}><span>Werk</span><span className="arrow">→</span></Link>
-            <Link href="/pakketten" onClick={() => {}}><span>Pakketten</span><span className="arrow">→</span></Link>
-            <Link href="/#services" onClick={() => {}}><span>Disciplines</span><span className="arrow">→</span></Link>
-            <Link href="/#about" onClick={() => {}}><span>Over Mij</span><span className="arrow">→</span></Link>
-            <Link href="/contact" onClick={() => {}}><span>Contact</span><span className="arrow">→</span></Link>
-          </nav>
-          <div className="menu-footer">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="mailto:info@studio-maaijen.nl">Email</a>
+      <section className="h-work-page h-dark" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">(01) Portfolio</span>
+            <span className="h-mono">{pad(projects.length)} projecten</span>
           </div>
-        </div>
-        <div className="menu-col-right">
-          <div className="menu-col-right-inner"></div>
-        </div>
-      </div>
-
-      <div id="work-section" style={{ paddingTop: '160px', minHeight: '100vh' }}>
-        <div className="work-header" style={{ padding: '0 0 60px' }}>
-          <div className="s-label reveal">
-            <div className="s-dot"></div>
-            <span className="s-tag">Portfolio</span>
-          </div>
-          <div className="s-header" style={{ marginBottom: '0', display: 'block' }}>
-            <h2 className="s-title reveal" style={{ marginBottom: '32px' }}>Al mijn<br /><em>projecten</em></h2>
-            
-            {/* Filters */}
-            <div className="filters reveal" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '20px' }}>
-              {filters.map(filter => (
-                <button 
-                  key={filter} 
-                  onClick={() => setActiveFilter(filter)}
-                  className={`btn ${activeFilter === filter ? 'btn-primary' : 'btn-outline'}`}
-                  style={{ padding: '10px 20px', fontSize: '11px', cursor: 'pointer' }}
+          <div className="h-work-head h-work-head--page">
+            <h1 className="h-display" data-h-lines>
+              Al mijn <em>projecten</em>
+            </h1>
+            <div className="h-chips" role="group" aria-label="Filter op discipline" data-h="up">
+              {FILTERS.map(f => (
+                <button
+                  key={f}
+                  type="button"
+                  aria-pressed={filter === f}
+                  className={`h-chip ${filter === f ? 'is-on' : ''}`}
+                  onClick={() => setFilter(f)}
+                  data-h-magnet
                 >
-                  {filter}
+                  {f}
                 </button>
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="work-grid">
-          {filteredProjects.length > 0 ? filteredProjects.map((proj, index) => (
-            <Link key={proj.slug + index} href={`/work/${proj.slug}`} className="work-card">
-              <div className="work-img-wrap">
-                <div className="work-img" style={{ backgroundImage: proj.coverImage ? `url(${proj.coverImage.url})` : 'none', backgroundColor: '#222' }}>
-                  <span style={{ fontFamily: "var(--ff-d)", fontSize: "clamp(40px,6vw,80px)", fontWeight: "600", color: "rgba(240,237,230,.1)" }}>
-                    {proj.title.substring(0, 2).toUpperCase()}
-                  </span>
+          <ol className="h-cases" data-h-cases>
+            {shown.length > 0 ? (
+              shown.map((proj, i) => {
+                const cats = proj.categories?.length
+                  ? proj.categories.map(c => c.name)
+                  : proj.projectType
+                  ? [proj.projectType]
+                  : ['Case'];
+                const name = proj.client || proj.title;
+                return (
+                  <li key={proj.slug + i} className="h-case-item" data-h="up">
+                    <Link href={`/work/${proj.slug}`} className="h-case" data-h-case={i}>
+                      <span className="h-case-no h-mono">{pad(i + 1)}</span>
+                      <span className="h-case-main">
+                        <span className="h-case-name">{name}</span>
+                        {proj.introText ? <span className="h-case-sub">{proj.introText}</span> : null}
+                      </span>
+                      <span className="h-case-cats h-mono">{cats.join(' / ')}</span>
+                      <span className="h-case-arrow" aria-hidden="true">↗</span>
+                      <span className="h-case-inline" aria-hidden="true">
+                        {proj.coverImage?.url ? (
+                          <img src={sized(proj.coverImage.url, 1000)} alt="" loading="lazy" decoding="async" />
+                        ) : (
+                          <span className="h-case-noimg">{(name || 'SM').slice(0, 2)}</span>
+                        )}
+                        <CropMarks />
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })
+            ) : (
+              <li className="h-case-item">
+                <span className="h-mono">Geen projecten gevonden voor dit filter.</span>
+              </li>
+            )}
+          </ol>
+
+          <div className="h-peek" data-h-peek aria-hidden="true">
+            <div className="h-peek-frame">
+              {shown.map((proj, i) => (
+                <div className="h-peek-img" data-h-peek-img={i} key={proj.slug + i}>
+                  {proj.coverImage?.url ? (
+                    <img src={sized(proj.coverImage.url, 900)} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <span className="h-case-noimg">{(proj.client || proj.title || 'SM').slice(0, 2)}</span>
+                  )}
                 </div>
-              </div>
-              <div className="work-meta">
-                <div className="work-meta-left">
-                  <span className="work-client">{proj.client} — {proj.categories?.map(c => c.name).join(', ') || proj.projectType}</span>
-                  <span className="work-name">{proj.title}</span>
-                </div>
-                <span className="work-arrow" aria-hidden="true">↗</span>
-              </div>
+              ))}
+              <CropMarks />
+            </div>
+            <span className="h-peek-cap h-mono" data-h-peek-cap />
+          </div>
+        </div>
+      </section>
+
+      <section className="h-cs-contact h-contact h-dark" data-theme="dark">
+        <div className="h-wrap">
+          <p className="h-contact-eyebrow" data-h="up">Heb je een project in gedachten?</p>
+          <h2 className="h-contact-title" data-h-lines>
+            Laten we <em>kennis&shy;maken.</em>
+          </h2>
+          <div className="h-contact-actions" data-h="up">
+            <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
+              <span>Start een project</span>
+              <i aria-hidden="true">→</i>
             </Link>
-          )) : (
-            <div className="reveal" style={{ gridColumn: '1 / -1', padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>
-              Geen projecten gevonden voor dit filter.
-            </div>
-          )}
+            <Link href="/pakketten" className="h-btn h-btn--ghost" data-h-magnet>
+              <span>Bekijk pakketten</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <footer>
-        <div className="footer-grid">
-          <div>
-            <div className="footer-logo-txt">Eugène Maaijen</div>
-            <div className="footer-tagline" dangerouslySetInnerHTML={{ __html: homepage?.footerTagline?.replace(/\n/g, '<br/>') || `"Design dat raakt vandaag<br />&amp; inspireert morgen."` }} />
-            <div className="footer-loc" dangerouslySetInnerHTML={{ __html: homepage?.footerLocation?.replace(/\n/g, '<br/>') || `📍 Amsterdam, Nederland<br />Beschikbaar voor remote &amp; on-site` }} />
-          </div>
-          <div>
-            <div className="footer-nav-h">Navigatie</div>
-            <div className="footer-nav-links">
-              <Link href="/work">Werk</Link>
-              <Link href="/#services">Disciplines</Link>
-              <Link href="/#about">Over Mij</Link>
-              <Link href="/#cta">Contact</Link>
-            </div>
-          </div>
-          <div>
-            <div className="footer-contact-h">Neem contact op</div>
-            <a href="mailto:info@studio-maaijen.nl" className="footer-email">info@studio-maaijen.nl</a>
-            <div className="footer-socials">
-              <a href="https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b658345/" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><span>↗</span></a>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <span>{homepage?.footerCopyright || "© 2026 Eugène Maaijen — Alle rechten voorbehouden"} | KVK-nummer: 92113273</span>
-          <a href="#" className="back-top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>↑</a>
-        </div>
-      </footer>
+      <SiteFooter tagline={homepage?.footerTagline} location={homepage?.footerLocation} copyright={homepage?.footerCopyright} />
     </div>
   );
 }
