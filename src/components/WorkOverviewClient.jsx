@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { sized, CropMarks, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
@@ -9,6 +9,7 @@ const pad = n => String(n).padStart(2, '0');
 
 export default function WorkOverviewClient({ projects = [], homepage }) {
   const rootRef = useRef(null);
+  const stackRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState('Alles');
 
@@ -20,6 +21,76 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
       }),
     [projects, filter]
   );
+
+  /* Filter switch met zachte scroll reset indien nodig */
+  const handleFilterClick = useCallback((newFilter) => {
+    if (newFilter === filter) return;
+    setFilter(newFilter);
+    if (stackRef.current) {
+      const rect = stackRef.current.getBoundingClientRect();
+      if (rect.top < 100) {
+        const targetY = window.scrollY + rect.top - 140;
+        window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+      }
+    }
+  }, [filter]);
+
+  /* Spector-style stacking card scroll depth (scale & dim op overdekte kaarten) */
+  useEffect(() => {
+    const stack = stackRef.current;
+    if (!stack) return;
+
+    const cards = Array.from(stack.querySelectorAll('.spector-card-wrap'));
+    if (cards.length === 0) return;
+
+    let ticking = false;
+
+    function updateCardTransforms() {
+      ticking = false;
+      const stickyTop = 68 + 24; // navbar hoogte + sticky offset
+      const windowH = window.innerHeight;
+
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        const nextCard = cards[i + 1];
+
+        if (nextCard) {
+          const nextRect = nextCard.getBoundingClientRect();
+          // Bereken hoever de volgende kaart is in zijn opmars naar stickyTop
+          const start = windowH;
+          const end = stickyTop;
+          const progress = Math.min(1, Math.max(0, (start - nextRect.top) / (start - end)));
+
+          // Schaal kaart subtiel van 1 naar 0.94 en dim van 1 naar 0.55
+          const scale = 1 - progress * 0.06;
+          const brightness = 1 - progress * 0.45;
+          const translateY = progress * -14;
+
+          card.style.transform = `scale(${scale.toFixed(4)}) translateY(${translateY.toFixed(2)}px)`;
+          card.style.filter = `brightness(${brightness.toFixed(3)})`;
+        } else {
+          card.style.transform = 'none';
+          card.style.filter = 'none';
+        }
+      }
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        requestAnimationFrame(updateCardTransforms);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    updateCardTransforms();
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [shown.length, filter]);
 
   /* Beweging opnieuw opzetten als de lijst verandert (filter) */
   useEffect(() => {
@@ -62,7 +133,7 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
                   type="button"
                   aria-pressed={filter === f}
                   className={`h-chip ${filter === f ? 'is-on' : ''}`}
-                  onClick={() => setFilter(f)}
+                  onClick={() => handleFilterClick(f)}
                   data-h-magnet
                 >
                   {f}
@@ -71,7 +142,8 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
             </div>
           </div>
 
-          <ol className="h-cases" data-h-cases>
+          {/* Spector Stacking Project Cards */}
+          <div className="spector-stack" ref={stackRef}>
             {shown.length > 0 ? (
               shown.map((proj, i) => {
                 const cats = proj.categories?.length
@@ -81,48 +153,73 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
                   : ['Case'];
                 const name = proj.client || proj.title;
                 return (
-                  <li key={proj.slug + i} className="h-case-item" data-h="up">
-                    <Link href={`/work/${proj.slug}`} className="h-case" data-h-case={i}>
-                      <span className="h-case-no h-mono">{pad(i + 1)}</span>
-                      <span className="h-case-main">
-                        <span className="h-case-name">{name}</span>
-                        {proj.introText ? <span className="h-case-sub">{proj.introText}</span> : null}
-                      </span>
-                      <span className="h-case-cats h-mono">{cats.join(' / ')}</span>
-                      <span className="h-case-arrow" aria-hidden="true">↗</span>
-                      <span className="h-case-inline" aria-hidden="true">
+                  <div
+                    key={proj.slug + i}
+                    className="spector-card-wrap"
+                    style={{ zIndex: i + 1 }}
+                    data-card-index={i}
+                  >
+                    <article className="spector-card">
+                      {/* Achtergrondmedia met subtiele zoom */}
+                      <div className="spector-card-media">
                         {proj.coverImage?.url ? (
-                          <img src={sized(proj.coverImage.url, 1000)} alt="" loading="lazy" decoding="async" />
+                          <img
+                            src={sized(proj.coverImage.url, 1800)}
+                            alt={name}
+                            loading={i < 2 ? 'eager' : 'lazy'}
+                            decoding="async"
+                            className="spector-card-img"
+                          />
                         ) : (
-                          <span className="h-case-noimg">{(name || 'SM').slice(0, 2)}</span>
+                          <div className="spector-card-noimg">
+                            <span>{(name || 'SM').slice(0, 2)}</span>
+                          </div>
                         )}
-                        <CropMarks />
-                      </span>
-                    </Link>
-                  </li>
+                        <div className="spector-card-overlay" aria-hidden="true" />
+                      </div>
+
+                      {/* Karakteristieke Studio Maaijen snijtekens */}
+                      <CropMarks />
+
+                      {/* Gecentreerde redactionele content */}
+                      <div className="spector-card-content">
+                        <div className="spector-card-badge">
+                          <span className="spector-card-no">{pad(i + 1)}</span>
+                          <span className="spector-card-dot" aria-hidden="true">✦</span>
+                          <span className="spector-card-cats">{cats.join(' / ')}</span>
+                        </div>
+
+                        <h2 className="spector-card-title">{name}</h2>
+
+                        <div className="spector-card-hairline" aria-hidden="true" />
+
+                        {proj.introText && (
+                          <p className="spector-card-desc">{proj.introText}</p>
+                        )}
+
+                        <div className="spector-card-cta">
+                          <span className="spector-card-btn">
+                            <span>Bekijk case</span>
+                            <i aria-hidden="true">↗</i>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Volledige kaart hitbox die direct naar de intacte detailpagina linkt */}
+                      <Link
+                        href={`/work/${proj.slug}`}
+                        className="spector-card-hitbox"
+                        aria-label={`Bekijk case ${name}`}
+                      />
+                    </article>
+                  </div>
                 );
               })
             ) : (
-              <li className="h-case-item">
-                <span className="h-mono">Geen projecten gevonden voor dit filter.</span>
-              </li>
+              <div className="spector-empty">
+                <p className="h-mono">Geen projecten gevonden voor dit filter.</p>
+              </div>
             )}
-          </ol>
-
-          <div className="h-peek" data-h-peek aria-hidden="true">
-            <div className="h-peek-frame">
-              {shown.map((proj, i) => (
-                <div className="h-peek-img" data-h-peek-img={i} key={proj.slug + i}>
-                  {proj.coverImage?.url ? (
-                    <img src={sized(proj.coverImage.url, 900)} alt="" loading="lazy" decoding="async" />
-                  ) : (
-                    <span className="h-case-noimg">{(proj.client || proj.title || 'SM').slice(0, 2)}</span>
-                  )}
-                </div>
-              ))}
-              <CropMarks />
-            </div>
-            <span className="h-peek-cap h-mono" data-h-peek-cap />
           </div>
         </div>
       </section>
