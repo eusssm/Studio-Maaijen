@@ -32,12 +32,16 @@ export function initHomeMotion(root) {
     /* ───────── 0. BEGINSTANDEN ───────── */
     const heroLines = q('[data-h-line] > span');
     const heroFade = q('[data-h-hero-fade]');
+    const heroBg = one('[data-h-hero-bg]');
+    const emblem = one('[data-h-emblem]');
     const portrait = one('[data-h-portrait]');
     const portraitMedia = one('[data-h-portrait-media]');
     const dots = one('[data-h-dots]');
 
     if (heroLines.length) gsap.set(heroLines, { yPercent: 112 });
     if (heroFade.length) gsap.set(heroFade, { opacity: 0, y: 18 });
+    if (emblem) gsap.set(emblem, { scale: 0, rotate: -180, opacity: 0 });
+    if (heroBg) gsap.set(heroBg, { scale: 1.08, opacity: 0 });
     if (portrait) gsap.set(portrait, { opacity: 0 });
     if (portraitMedia) gsap.set(portraitMedia, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.14 });
     if (dots) dots.style.setProperty('--r', '7');
@@ -58,14 +62,16 @@ export function initHomeMotion(root) {
     const intro = gsap.timeline({ defaults: { ease: 'power4.out' } });
     const heroIn = () => {
       const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-      if (heroLines.length) tl.to(heroLines, { yPercent: 0, duration: 1.25, stagger: 0.12 }, 0);
+      if (heroBg) tl.to(heroBg, { opacity: 1, scale: 1, duration: 1.8, ease: 'expo.out' }, 0);
+      if (heroLines.length) tl.to(heroLines, { yPercent: 0, duration: 1.25, stagger: 0.12 }, 0.1);
+      if (emblem) tl.to(emblem, { scale: 1, rotate: 0, opacity: 1, duration: 1.2, ease: 'back.out(1.8)' }, 0.35);
       if (portrait) tl.to(portrait, { opacity: 1, duration: 0.01 }, 0.1);
       if (portraitMedia) tl.to(portraitMedia, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: 1.5, ease: 'expo.out' }, 0.1);
       if (dots) {
         const o = { r: 7 };
         tl.to(o, { r: 0, duration: 2.6, ease: 'power2.inOut', onUpdate: () => dots.style.setProperty('--r', o.r.toFixed(2)), onComplete: () => { dots.style.display = 'none'; } }, 0.5);
       }
-      if (heroFade.length) tl.to(heroFade, { opacity: 1, y: 0, duration: 1, stagger: 0.1 }, 0.55);
+      if (heroFade.length) tl.to(heroFade, { opacity: 1, y: 0, duration: 1, stagger: 0.08 }, 0.5);
       return tl;
     };
 
@@ -133,17 +139,74 @@ export function initHomeMotion(root) {
       });
     }
 
-    /* ───────── 4. HERO: lichte parallax bij uitscrollen ───────── */
+    /* ───────── 4. HERO: Spector multi-plane scrubbed parallax ───────── */
     const hero = one('.h-hero');
     if (hero) {
-      const name = one('.h-hero-name', hero);
-      if (name) {
-        gsap.to(name, {
-          yPercent: -14,
+      const heroBgEl = one('[data-h-hero-bg]', hero);
+      const headlineEl = one('[data-h-hero-headline]', hero) || one('.h-hero-name', hero);
+      const topLayerEl = one('[data-h-hero-top-layer]', hero);
+      const barcodeEl = one('[data-h-hero-barcode]', hero);
+
+      // Achtergrondfoto + mesh: daalt langzaam naar beneden met lichte schaling
+      if (heroBgEl) {
+        gsap.to(heroBgEl, {
+          yPercent: 18,
+          scale: 1.06,
           ease: 'none',
-          scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
         });
       }
+
+      // Monumentale typografie: schuift sneller omhoog over de foto
+      if (headlineEl) {
+        gsap.to(headlineEl, {
+          yPercent: -28,
+          opacity: 0.25,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      }
+
+      // Top metadata: lichte lift en fade
+      if (topLayerEl) {
+        gsap.to(topLayerEl, {
+          yPercent: -15,
+          opacity: 0.15,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      }
+
+      // Verticale barcode rechts: lift en fade
+      if (barcodeEl) {
+        gsap.to(barcodeEl, {
+          yPercent: -22,
+          opacity: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      }
+
       if (portrait) {
         gsap.to(portrait, {
           yPercent: 10,

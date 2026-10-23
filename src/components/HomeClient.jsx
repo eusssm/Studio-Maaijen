@@ -65,7 +65,14 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
   }, [menuOpen]);
 
   const h = homepage || {};
-  const headline = h.heroHeadline || 'Impactvolle UX/UI<br />&amp; <em>Merkidentiteiten</em>';
+  const hasCustomHeadline = Boolean(
+    h.heroHeadline &&
+    !h.heroHeadline.includes('Impactvolle UX/UI') &&
+    !h.heroHeadline.includes('Design&nbsp;dat')
+  );
+  const headlineItems = hasCustomHeadline
+    ? headlineLines(h.heroHeadline)
+    : ['OUR BRANDS', 'JUST REFUSE', 'TO BLEND IN'];
   const portraitUrl = h.aboutPortrait?.url || '/images/eugene-portrait.jpg';
   const clientNames = Array.from(new Set(projects.map(p => p.client).filter(Boolean)));
   const ticker = clientNames.length ? clientNames : DEFAULT_CLIENTS;
@@ -108,51 +115,107 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
       <SiteOverlays />
       <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      {/* ───────── 00 HERO ───────── */}
-      <section id="start" className="h-hero h-dark no-print" data-theme="dark">
-        <HeroVisual portraitUrl={portraitUrl} />
+      {/* ───────── 00 HERO (Spector Style) ───────── */}
+      <section id="start" className="h-hero h-hero--spector h-dark no-print" data-theme="dark">
+        <HeroVisual heroImage="/images/spector-hero.jpg" heroMobileImage="/images/spector-hero-mobile.jpg" />
 
-        <div className="h-hero-top">
-          <span className="h-mono" data-h-hero-fade>
-            {h.heroEyebrow || 'Studio Maaijen — UX/UI, merk & video'}
-          </span>
-          <span className="h-mono h-hero-top-r" data-h-hero-fade>
-            {h.footerLocation ? h.footerLocation.split('\n')[0] : 'Amsterdam, NL'}
-          </span>
-        </div>
+        {/* Top Header Row */}
+        <div className="h-hero-top-row" data-h-hero-top-layer>
+          <div className="h-hero-agency">
+            <div className="h-hero-badge" data-h-hero-fade>
+              <span className="h-hero-badge-dot" aria-hidden="true" />
+              <span className="h-hero-badge-tag">デザインスタジオ</span>
+            </div>
+            <h2 className="h-hero-studio-title" data-h-hero-fade>
+              Studio Maaijen
+            </h2>
+            <div className="h-hero-location h-mono" data-h-hero-fade>
+              <span>{h.footerLocation ? h.footerLocation.split('\n')[0].toUpperCase() : 'RIDDERKERK, NL'}</span>
+              <span>51.8708° N, 4.6000° E</span>
+              <span>NETHERLANDS — EST. 2004</span>
+            </div>
+          </div>
 
-        <h1 className="h-hero-name h-hero-name--sm" aria-label={headlineLines(headline).join(' ').replace(/<[^>]+>/g, '')}>
-          {headlineLines(headline).map((line, i) => (
-            <span key={i} className="h-hero-line" data-h-line>
-              <span dangerouslySetInnerHTML={{ __html: line }} />
-            </span>
-          ))}
-        </h1>
-
-        <div className="h-hero-role" data-h-hero-fade>
-          <p className="h-hero-role-sub">
-            Ik help ondernemers en MKB-bedrijven met websites, huisstijlen en video die klanten aantrekken en
-            laten aanvragen.
-          </p>
-          <div className="h-hero-cta">
-            <a href="#werk" className="h-btn h-btn--spot" data-h-magnet>
-              <span>Bekijk mijn werk</span>
-              <i aria-hidden="true">↓</i>
-            </a>
-            <Link href="/contact" className="h-btn h-btn--ghost" data-h-magnet>
-              <span>Start een project</span>
-              <i aria-hidden="true">→</i>
-            </Link>
+          <div className="h-hero-disciplines" data-h-hero-fade>
+            <span className="h-hero-year h-mono">+ Y2K26</span>
+            <ul className="h-hero-services-list" aria-label="Disciplines">
+              {['Brand', 'Product', 'Web', 'Motion'].map((item, i) => (
+                <li key={i}>
+                  <a href="#services" className="h-hero-service-link">
+                    <span>{item}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        <div className="h-hero-foot" data-h-hero-fade>
-          <span className="h-mono h-hero-scroll">
-            Scroll <b aria-hidden="true">↓</b>
-          </span>
-          <span className="h-mono h-hero-avail">
-            <i aria-hidden="true" /> Nu beschikbaar — projecten vanaf 2 weken
-          </span>
+        {/* Vertical Barcode on Right Edge */}
+        <div className="h-hero-barcode" data-h-hero-barcode aria-hidden="true">
+          <svg className="h-hero-barcode-svg" viewBox="0 0 48 18" fill="currentColor">
+            <rect x="0" y="0" width="2" height="18" />
+            <rect x="4" y="0" width="1" height="18" />
+            <rect x="7" y="0" width="3" height="18" />
+            <rect x="12" y="0" width="1" height="18" />
+            <rect x="15" y="0" width="2" height="18" />
+            <rect x="19" y="0" width="4" height="18" />
+            <rect x="25" y="0" width="1" height="18" />
+            <rect x="28" y="0" width="2" height="18" />
+            <rect x="32" y="0" width="1" height="18" />
+            <rect x="35" y="0" width="3" height="18" />
+            <rect x="40" y="0" width="2" height="18" />
+            <rect x="44" y="0" width="1" height="18" />
+            <rect x="47" y="0" width="1" height="18" />
+          </svg>
+          <span className="h-mono">Studio Maaijen · All work, all rights</span>
+        </div>
+
+        {/* Monumental Headline Across the Bottom */}
+        <div className="h-hero-headline-wrap" data-h-hero-headline>
+          <h1 className="h-hero-monumental" aria-label={headlineItems.join(' ').replace(/<[^>]+>/g, '')}>
+            {headlineItems.map((line, i) => (
+              <span
+                key={i}
+                className={`h-hero-line ${i === 0 ? 'h-hero-line--spot' : ''}`}
+                data-h-line
+              >
+                <span>
+                  <span dangerouslySetInnerHTML={{ __html: line }} />
+                  {i === 0 && (
+                    <span className="h-hero-emblem" data-h-emblem aria-hidden="true">
+                      <svg viewBox="0 0 32 32" fill="none">
+                        <path
+                          d="M16 0L17.5 12.5L30 14L17.5 15.5L16 28L14.5 15.5L2 14L14.5 12.5L16 0Z"
+                          fill="currentColor"
+                        />
+                        <circle cx="16" cy="14" r="2.5" fill="#050609" />
+                      </svg>
+                    </span>
+                  )}
+                </span>
+              </span>
+            ))}
+          </h1>
+        </div>
+
+        {/* Bottom Bar: Scroll Indicator + CTA Badge */}
+        <div className="h-hero-bottom-bar" data-h-hero-fade>
+          <a href="#werk" className="h-hero-scroll-pill h-mono" data-h-magnet>
+            <span>SCROLL</span>
+            <span className="h-hero-scroll-arr" aria-hidden="true">↓</span>
+          </a>
+
+          <div className="h-hero-cta-badge">
+            <Link href="/contact" className="h-hero-badge-pill" data-h-magnet>
+              <span className="h-hero-badge-avatar">
+                <img src="/images/about-portrait.jpg" alt="Eugène" />
+              </span>
+              <span className="h-hero-badge-text">
+                <strong>Start een project</strong>
+                <small>BEKIJK WERKEN &amp; TARIEVEN →</small>
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
 
