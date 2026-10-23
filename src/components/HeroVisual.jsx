@@ -1,22 +1,10 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-const HUD_LABELS = [
-  'ACTIVATE',
-  'STIMULATE',
-  'INNOVATE',
-  'RESONATE',
-  'ILLUMINATE',
-  'CAPTIVATE',
-  'ELEVATE',
-  'ORCHESTRATE',
-];
-
 /**
  * HeroVisual — Spector-stijl cinematische hero canvas.
  * - Volledige schaal (full-bleed) stoere achtergrondfoto met uiterste scherpte.
  * - Dynamische interactieve wireframe mesh overlay (ruiten/isometrisch grid) met elastische cursor-bulge.
- * - High-tech HUD coördinaten en roterende tags bij pointer interactie.
  * - Multi-layer diepte en muis-tilt, geoptimaliseerd met RAF en IntersectionObserver.
  */
 export default function HeroVisual({
@@ -57,9 +45,6 @@ export default function HeroVisual({
       targetX: -1000,
       targetY: -1000,
       isHovered: false,
-      distTraveled: 0,
-      lastTagPos: { x: -1000, y: -1000 },
-      labelIndex: 0,
     };
 
     // Parallax tilt state
@@ -154,13 +139,6 @@ export default function HeroVisual({
       // Parallax tilt normaliseren (-0.5 tot 0.5)
       tilt.tx = (clientX - rect.left) / rect.width - 0.5;
       tilt.ty = (clientY - rect.top) / rect.height - 0.5;
-
-      // Update HUD label cyclus op afstand
-      const d = Math.hypot(mouse.targetX - mouse.lastTagPos.x, mouse.targetY - mouse.lastTagPos.y);
-      if (d > 70) {
-        mouse.labelIndex = (mouse.labelIndex + 1) % HUD_LABELS.length;
-        mouse.lastTagPos = { x: mouse.targetX, y: mouse.targetY };
-      }
     }
 
     function onPointerLeave() {
@@ -270,27 +248,6 @@ export default function HeroVisual({
         const p = points[i];
         if (!p) continue;
         ctx.fillRect(p.x - 0.75, p.y - 0.75, 1.5, 1.5);
-      }
-
-      // Cursor HUD (coördinaten + actieve tag)
-      if (hovered && mx > 0 && mx < width && my > 0 && my < height) {
-        ctx.save();
-        ctx.font = '10px var(--ff-mono), monospace';
-        ctx.fillStyle = 'rgba(249, 65, 55, 0.9)'; // Neon spot kleur
-        const tag = `[${HUD_LABELS[mouse.labelIndex]}]`;
-        const coords = `X:${Math.round(mx)} Y:${Math.round(my)}`;
-        ctx.fillText(`${tag} ${coords}`, mx + 16, my - 14);
-
-        // Subtiel draadkruis bij cursor
-        ctx.strokeStyle = 'rgba(249, 65, 55, 0.45)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(mx - 8, my);
-        ctx.lineTo(mx + 8, my);
-        ctx.moveTo(mx, my - 8);
-        ctx.lineTo(mx, my + 8);
-        ctx.stroke();
-        ctx.restore();
       }
 
       rafId = requestAnimationFrame(render);
