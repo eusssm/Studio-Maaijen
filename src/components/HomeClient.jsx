@@ -121,57 +121,6 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
       <section id="start" className="h-hero h-hero--spector h-dark no-print" data-theme="dark">
         <HeroVisual heroImage={heroImage} heroMobileImage={heroImage} />
 
-        {/* Top Header Row */}
-        <div className="h-hero-top-row" data-h-hero-top-layer>
-          <div className="h-hero-agency">
-            <div className="h-hero-badge" data-h-hero-fade>
-              <span className="h-hero-badge-dot" aria-hidden="true" />
-              <span className="h-hero-badge-tag">デザインスタジオ</span>
-            </div>
-            <h2 className="h-hero-studio-title" data-h-hero-fade>
-              Studio Maaijen
-            </h2>
-            <div className="h-hero-location h-mono" data-h-hero-fade>
-              <span>{h.footerLocation ? h.footerLocation.split('\n')[0].toUpperCase() : 'RIDDERKERK, NL'}</span>
-              <span>51.8708° N, 4.6000° E</span>
-              <span>NETHERLANDS — EST. 2004</span>
-            </div>
-          </div>
-
-          <div className="h-hero-disciplines" data-h-hero-fade>
-            <span className="h-hero-year h-mono">+ Y2K26</span>
-            <ul className="h-hero-services-list" aria-label="Disciplines">
-              {['Brand', 'Product', 'Web', 'Motion'].map((item, i) => (
-                <li key={i}>
-                  <a href="#services" className="h-hero-service-link">
-                    <span>{item}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Vertical Barcode on Right Edge */}
-        <div className="h-hero-barcode" data-h-hero-barcode aria-hidden="true">
-          <svg className="h-hero-barcode-svg" viewBox="0 0 48 18" fill="currentColor">
-            <rect x="0" y="0" width="2" height="18" />
-            <rect x="4" y="0" width="1" height="18" />
-            <rect x="7" y="0" width="3" height="18" />
-            <rect x="12" y="0" width="1" height="18" />
-            <rect x="15" y="0" width="2" height="18" />
-            <rect x="19" y="0" width="4" height="18" />
-            <rect x="25" y="0" width="1" height="18" />
-            <rect x="28" y="0" width="2" height="18" />
-            <rect x="32" y="0" width="1" height="18" />
-            <rect x="35" y="0" width="3" height="18" />
-            <rect x="40" y="0" width="2" height="18" />
-            <rect x="44" y="0" width="1" height="18" />
-            <rect x="47" y="0" width="1" height="18" />
-          </svg>
-          <span className="h-mono">Studio Maaijen · All work, all rights</span>
-        </div>
-
         {/* Monumental Headline Across the Bottom */}
         <div className="h-hero-headline-wrap" data-h-hero-headline>
           <h1 className="h-hero-monumental" aria-label={headlineItems.join(' ').replace(/<[^>]+>/g, '')}>

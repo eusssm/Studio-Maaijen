@@ -728,128 +728,6 @@ body:has(.h-root)::after {
   mix-blend-mode: screen;
 }
 
-/* ──────── Top Header Layer ──────── */
-.h-hero-top-row {
-  position: relative;
-  z-index: 4;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  gap: 24px;
-}
-.h-hero-agency {
-  display: flex;
-  flex-direction: column;
-}
-.h-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--ff-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--spot, #F94137);
-  margin-bottom: 8px;
-}
-.h-hero-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--spot, #F94137);
-  box-shadow: 0 0 10px var(--spot, #F94137);
-  animation: h-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-@keyframes h-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
-}
-.h-hero-badge-tag {
-  letter-spacing: 0.16em;
-  font-size: 11px;
-}
-.h-hero-studio-title {
-  font-family: var(--ff-d);
-  font-size: clamp(34px, 3.8vw, 56px);
-  font-weight: 700;
-  line-height: 0.96;
-  letter-spacing: -0.04em;
-  color: var(--chalk, #F4F1EA);
-  margin: 0 0 14px 0;
-}
-.h-hero-location {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: clamp(10px, 0.8vw, 12px);
-  line-height: 1.45;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(232, 217, 200, 0.6);
-}
-
-/* Disciplines list on top right */
-.h-hero-disciplines {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-right: clamp(20px, 6vw, 100px);
-}
-.h-hero-year {
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: rgba(232, 217, 200, 0.5);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-.h-hero-services-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.h-hero-service-link {
-  font-family: var(--ff-d);
-  font-size: clamp(20px, 2.2vw, 32px);
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  color: rgba(232, 217, 200, 0.85);
-  text-decoration: none;
-  transition: color 0.25s var(--ease), transform 0.25s var(--ease);
-  display: inline-block;
-}
-.h-hero-service-link:hover {
-  color: var(--spot, #F94137);
-  transform: translateX(4px);
-}
-
-/* ──────── Vertical Barcode on Right Edge ──────── */
-.h-hero-barcode {
-  position: absolute;
-  right: clamp(12px, 2vw, 32px);
-  top: 50%;
-  transform: translateY(-50%) rotate(90deg);
-  transform-origin: right center;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(232, 217, 200, 0.45);
-  pointer-events: none;
-  z-index: 4;
-}
-.h-hero-barcode-svg {
-  width: 44px;
-  height: 14px;
-  opacity: 0.75;
-}
-
 /* ──────── Monumental Headline Across the Bottom ──────── */
 .h-hero-headline-wrap {
   position: relative;
@@ -967,32 +845,15 @@ body:has(.h-root)::after {
     height: auto;
     min-height: 100svh;
   }
-  .h-hero-barcode {
-    display: none;
-  }
-  .h-hero-disciplines {
-    margin-right: 0;
-  }
   .h-hero-monumental {
     font-size: clamp(42px, 11vw, 76px);
     line-height: 0.88;
-  }
-  .h-hero-top-row {
-    flex-direction: row;
-    justify-content: space-between;
   }
 }
 
 @media (max-width: 640px) {
   .h-hero-photo {
     object-position: 50% 18%;
-  }
-  .h-hero-top-row {
-    flex-direction: column;
-    gap: 16px;
-  }
-  .h-hero-disciplines {
-    display: none;
   }
   .h-hero-monumental {
     font-size: clamp(38px, 12vw, 54px);

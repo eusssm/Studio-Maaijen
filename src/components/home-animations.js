@@ -144,8 +144,6 @@ export function initHomeMotion(root) {
     if (hero) {
       const heroBgEl = one('[data-h-hero-bg]', hero);
       const headlineEl = one('[data-h-hero-headline]', hero) || one('.h-hero-name', hero);
-      const topLayerEl = one('[data-h-hero-top-layer]', hero);
-      const barcodeEl = one('[data-h-hero-barcode]', hero);
 
       // Achtergrondfoto + mesh: daalt langzaam naar beneden met lichte schaling
       if (heroBgEl) {
@@ -167,36 +165,6 @@ export function initHomeMotion(root) {
         gsap.to(headlineEl, {
           yPercent: -28,
           opacity: 0.25,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: hero,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-          },
-        });
-      }
-
-      // Top metadata: lichte lift en fade
-      if (topLayerEl) {
-        gsap.to(topLayerEl, {
-          yPercent: -15,
-          opacity: 0.15,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: hero,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-          },
-        });
-      }
-
-      // Verticale barcode rechts: lift en fade
-      if (barcodeEl) {
-        gsap.to(barcodeEl, {
-          yPercent: -22,
-          opacity: 0,
           ease: 'none',
           scrollTrigger: {
             trigger: hero,
