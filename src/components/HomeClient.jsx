@@ -37,8 +37,15 @@ const STATEMENT = (
 const isHtml = s => typeof s === 'string' && /<[a-z][\s\S]*>/i.test(s);
 const pad = n => String(n).padStart(2, '0');
 
-/* Koppen uit het CMS: regels scheiden met <br> of een nieuwe regel */
+/* Koppen uit het CMS: regels scheiden met <br>, <p> of <div>-tags */
 function headlineLines(html) {
+  if (!html) return ['Impactvolle UX/UI', '&amp; <em>Merkidentiteiten</em>'];
+  if (html.includes('</div>')) {
+    return html
+      .split(/<\/div>\s*<div[^>]*>/)
+      .map(l => l.replace(/<\/?div[^>]*>/g, '').trim())
+      .filter(Boolean);
+  }
   return html.split(/<br\s*\/?>|\n/).map(l => l.trim()).filter(Boolean);
 }
 
@@ -65,15 +72,10 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
   }, [menuOpen]);
 
   const h = homepage || {};
-  const hasCustomHeadline = Boolean(
-    h.heroHeadline &&
-    !h.heroHeadline.includes('Impactvolle UX/UI') &&
-    !h.heroHeadline.includes('Design&nbsp;dat')
-  );
-  const headlineItems = hasCustomHeadline
-    ? headlineLines(h.heroHeadline)
-    : ['OUR BRANDS', 'JUST REFUSE', 'TO BLEND IN'];
+  const headline = h.heroHeadline || 'Impactvolle UX/UI<br />&amp; <em>Merkidentiteiten</em>';
+  const headlineItems = headlineLines(headline);
   const portraitUrl = h.aboutPortrait?.url || '/images/eugene-portrait.jpg';
+  const heroImage = sized(portraitUrl, 1600) || '/images/eugene-portrait.jpg';
   const clientNames = Array.from(new Set(projects.map(p => p.client).filter(Boolean)));
   const ticker = clientNames.length ? clientNames : DEFAULT_CLIENTS;
   const clients = h.aboutClients ? h.aboutClients.split(',').map(c => c.trim()) : DEFAULT_CLIENTS;
@@ -117,7 +119,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
 
       {/* ───────── 00 HERO (Spector Style) ───────── */}
       <section id="start" className="h-hero h-hero--spector h-dark no-print" data-theme="dark">
-        <HeroVisual heroImage="/images/spector-hero.jpg" heroMobileImage="/images/spector-hero-mobile.jpg" />
+        <HeroVisual heroImage={heroImage} heroMobileImage={heroImage} />
 
         {/* Top Header Row */}
         <div className="h-hero-top-row" data-h-hero-top-layer>
@@ -176,7 +178,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
             {headlineItems.map((line, i) => (
               <span
                 key={i}
-                className={`h-hero-line ${i === 0 ? 'h-hero-line--spot' : ''}`}
+                className={`h-hero-line ${i === 1 ? 'h-hero-line--indent' : ''}`}
                 data-h-line
               >
                 <span>
@@ -198,24 +200,15 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
           </h1>
         </div>
 
-        {/* Bottom Bar: Scroll Indicator + CTA Badge */}
+        {/* Bottom Bar: Scroll Indicator & Availability */}
         <div className="h-hero-bottom-bar" data-h-hero-fade>
           <a href="#werk" className="h-hero-scroll-pill h-mono" data-h-magnet>
             <span>SCROLL</span>
             <span className="h-hero-scroll-arr" aria-hidden="true">↓</span>
           </a>
-
-          <div className="h-hero-cta-badge">
-            <Link href="/contact" className="h-hero-badge-pill" data-h-magnet>
-              <span className="h-hero-badge-avatar">
-                <img src="/images/about-portrait.jpg" alt="Eugène" />
-              </span>
-              <span className="h-hero-badge-text">
-                <strong>Start een project</strong>
-                <small>BEKIJK WERKEN &amp; TARIEVEN →</small>
-              </span>
-            </Link>
-          </div>
+          <span className="h-hero-avail h-mono">
+            <i aria-hidden="true" /> Nu beschikbaar — projecten vanaf 2 weken
+          </span>
         </div>
       </section>
 

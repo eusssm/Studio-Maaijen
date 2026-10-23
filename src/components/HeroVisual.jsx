@@ -20,8 +20,8 @@ const HUD_LABELS = [
  * - Multi-layer diepte en muis-tilt, geoptimaliseerd met RAF en IntersectionObserver.
  */
 export default function HeroVisual({
-  heroImage = '/images/spector-hero.jpg',
-  heroMobileImage = '/images/spector-hero-mobile.jpg',
+  heroImage = '/images/eugene-portrait.jpg',
+  heroMobileImage = '/images/eugene-portrait.jpg',
 }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
