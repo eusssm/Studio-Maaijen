@@ -792,6 +792,37 @@ body:has(.h-root)::after {
   to { transform: rotate(360deg); }
 }
 
+/* ──────── Hero Subcopy & Directe Actieknoppen ──────── */
+.h-hero-lead-row {
+  position: relative;
+  z-index: 6;
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  row-gap: 20px;
+  align-items: end;
+  margin-top: clamp(22px, 2.8vh, 38px);
+}
+.h-hero-sub {
+  grid-column: 1 / 7;
+  margin: 0;
+  font-size: clamp(16px, 1.25vw, 20px);
+  line-height: 1.48;
+  letter-spacing: -0.01em;
+  color: rgba(238, 232, 220, 0.86);
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+.h-hero-actions {
+  grid-column: 7 / 13;
+  justify-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+}
+
 /* ──────── Bottom Bar: Scroll + Status ──────── */
 .h-hero-bottom-bar {
   position: relative;
@@ -801,7 +832,7 @@ body:has(.h-root)::after {
   align-items: center;
   width: 100%;
   padding-top: 18px;
-  margin-top: 14px;
+  margin-top: 18px;
   border-top: 1px solid rgba(238, 232, 220, 0.1);
 }
 .h-hero-scroll-pill {
@@ -847,8 +878,21 @@ body:has(.h-root)::after {
     min-height: 100svh;
   }
   .h-hero-monumental {
-    font-size: clamp(56px, 11.5vw, 94px);
-    line-height: 0.88;
+    font-size: clamp(50px, 10.8vw, 90px);
+    line-height: 0.9;
+  }
+  .h-hero-lead-row {
+    grid-template-columns: 1fr;
+    row-gap: 18px;
+    margin-top: 20px;
+  }
+  .h-hero-sub {
+    grid-column: 1 / -1;
+    font-size: 16px;
+  }
+  .h-hero-actions {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 }
 
@@ -857,13 +901,26 @@ body:has(.h-root)::after {
     object-position: 50% 18%;
   }
   .h-hero-monumental {
-    font-size: clamp(46px, 12.5vw, 68px);
-    line-height: 0.9;
+    font-size: clamp(34px, 9.6vw, 52px);
+    line-height: 0.92;
+  }
+  .h-hero-sub {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  .h-hero-actions {
+    width: 100%;
+    gap: 10px;
+  }
+  .h-hero-actions .h-btn {
+    padding: 14px 16px 13px;
+    font-size: 11px;
   }
   .h-hero-bottom-bar {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
   }
 }
 
@@ -2296,12 +2353,30 @@ body:has(.h-root)::after {
 .h-pkg-feats li { display: grid; grid-template-columns: 1.2em 1fr; font-size: 16px; line-height: 1.45; }
 .h-pkg-feats li span { color: var(--dot); }
 .h-pkg.is-featured .h-pkg-feats li span { color: var(--ink); }
-.h-pkg-btn { margin-top: auto; align-self: flex-start; }
-.h-pkg-feats + .h-pkg-btn { margin-top: 0; }
+.h-pkg-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+}
+.h-pkg-btn { align-self: flex-start; }
+.h-pkg-spec-link {
+  color: var(--dim);
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.h-pkg-spec-link:hover {
+  color: currentColor;
+  border-color: currentColor;
+}
 .h-pkgs--compact .h-pkg { padding-bottom: 30px; }
 .h-pkgs--compact .h-pkg-name { margin-top: 30px; font-size: clamp(26px, 2.2vw, 36px); }
 .h-pkgs--compact .h-pkg-price { font-size: clamp(38px, 3.6vw, 60px); }
-.h-pkgs--compact .h-pkg-btn { margin-top: 28px; }
+.h-pkgs--compact .h-pkg-feats { margin-top: 20px; margin-bottom: 28px; padding-top: 18px; gap: 10px; }
+.h-pkgs--compact .h-pkg-feats li { font-size: 15px; }
 .h-pkgs--compact .h-pkg-tagline { min-height: 0; }
 
 .h-maint {

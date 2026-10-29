@@ -7,6 +7,28 @@ import '../app/drukklaar.css';
 const FILTERS = ['Alles', 'UX/UI Design', 'Brand Identity', 'Video Editing'];
 const pad = n => String(n).padStart(2, '0');
 
+const CASE_SUBTITLE_OVERRIDES = {
+  'de-kindertelefoon': 'Een platform dat luistert: redesign voor 45 jaar vertrouwen',
+  enova: 'Internationaal energieplatform: van kijken naar realtime sturen',
+  spotta: 'Eén schaalbaar platform voor 14,7 miljoen huishoudens, bezorgers en adverteerders',
+  bluebricks: 'Nieuw digitaal platform voor een team van hands-on veranderpartners',
+};
+
+function resolveCaseSubtitle(proj) {
+  if (!proj) return '';
+  const slug = (proj.slug || '').toLowerCase();
+  const raw = (proj.introText || '').trim();
+  if (
+    CASE_SUBTITLE_OVERRIDES[slug] &&
+    (!raw ||
+      raw.toLowerCase() === 'van strategie naar werkelijkheid' ||
+      raw.toLowerCase().includes('nieuw digitale platform'))
+  ) {
+    return CASE_SUBTITLE_OVERRIDES[slug];
+  }
+  return raw || CASE_SUBTITLE_OVERRIDES[slug] || '';
+}
+
 export default function WorkOverviewClient({ projects = [], homepage }) {
   const rootRef = useRef(null);
   const stackRef = useRef(null);
@@ -152,6 +174,7 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
                 ? [proj.projectType]
                 : ['Case'];
               const name = proj.client || proj.title;
+              const subtitle = resolveCaseSubtitle(proj);
 
               return (
                 <div
@@ -188,8 +211,8 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
 
                     <div className="spector-slide-divider" aria-hidden="true" />
 
-                    {proj.introText && (
-                      <p className="spector-slide-desc">{proj.introText}</p>
+                    {subtitle && (
+                      <p className="spector-slide-desc">{subtitle}</p>
                     )}
                   </div>
 

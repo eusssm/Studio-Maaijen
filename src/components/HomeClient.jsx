@@ -7,7 +7,29 @@ import { EMAIL, LINKEDIN, sized, CropMarks, Reg, SiteOverlays, SiteNav, SiteFoot
 import { normalizePackages } from '../../lib/packages';
 import '../app/drukklaar.css';
 
-const DEFAULT_CLIENTS = ['Blubricks', 'Spotta', 'De Kindertelefoon', 'PostNL', 'Gemeenten', 'Enova'];
+const DEFAULT_CLIENTS = ['Blue Bricks', 'Spotta', 'De Kindertelefoon', 'PostNL', 'Gemeenten', 'Enova'];
+
+const CASE_SUBTITLE_OVERRIDES = {
+  'de-kindertelefoon': 'Een platform dat luistert: redesign voor 45 jaar vertrouwen',
+  enova: 'Internationaal energieplatform: van kijken naar realtime sturen',
+  spotta: 'Eén schaalbaar platform voor 14,7 miljoen huishoudens, bezorgers en adverteerders',
+  bluebricks: 'Nieuw digitaal platform voor een team van hands-on veranderpartners',
+};
+
+function resolveCaseSubtitle(proj) {
+  if (!proj) return '';
+  const slug = (proj.slug || '').toLowerCase();
+  const raw = (proj.introText || '').trim();
+  if (
+    CASE_SUBTITLE_OVERRIDES[slug] &&
+    (!raw ||
+      raw.toLowerCase() === 'van strategie naar werkelijkheid' ||
+      raw.toLowerCase().includes('nieuw digitale platform'))
+  ) {
+    return CASE_SUBTITLE_OVERRIDES[slug];
+  }
+  return raw || CASE_SUBTITLE_OVERRIDES[slug] || '';
+}
 const DEFAULT_SERVICES = [
   {
     title: 'UX/UI Design',
@@ -78,7 +100,11 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
   const heroImage = sized(portraitUrl, 1600) || '/images/eugene-portrait.jpg';
   const clientNames = Array.from(new Set(projects.map(p => p.client).filter(Boolean)));
   const ticker = clientNames.length ? clientNames : DEFAULT_CLIENTS;
-  const clients = h.aboutClients ? h.aboutClients.split(',').map(c => c.trim()) : DEFAULT_CLIENTS;
+  const clients = h.aboutClients
+    ? h.aboutClients
+        .split(',')
+        .map(c => c.trim().replace(/^Blubricks$/i, 'Blue Bricks'))
+    : DEFAULT_CLIENTS;
   const packages = normalizePackages(packageData).slice(0, 3);
   const stats = [
     { v: h.stat1Value || '20', l: h.stat1Label || 'Jaar werkervaring', s: h.stat1Sub || 'UX/UI & brand' },
@@ -147,6 +173,23 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               </span>
             ))}
           </h1>
+
+          {/* Hero Subcopy (MKB + Zakelijk resultaat) & Directe CTA-knoppen */}
+          <div className="h-hero-lead-row" data-h-hero-fade>
+            <p className="h-hero-sub">
+              Websites, digitale producten en merkidentiteiten die vertrouwen wekken en bezoekers omzetten in klanten — rechtstreeks ontworpen en gebouwd in Ridderkerk.
+            </p>
+            <div className="h-hero-actions">
+              <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
+                <span>Start een project</span>
+                <i aria-hidden="true">→</i>
+              </Link>
+              <a href="#pakketten" className="h-btn h-btn--ghost" data-h-magnet>
+                <span>Bekijk pakketten</span>
+                <i aria-hidden="true">↓</i>
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Bottom Bar: Scroll Indicator & Availability */}
@@ -203,13 +246,14 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
                   ? [proj.projectType]
                   : ['Case'];
                 const name = proj.client || proj.title;
+                const subtitle = resolveCaseSubtitle(proj);
                 return (
                   <li key={proj.slug || i} className="h-case-item" data-h="up">
                     <Link href={`/work/${proj.slug}`} className="h-case" data-h-case={i}>
                       <span className="h-case-no h-mono">{pad(i + 1)}</span>
                       <span className="h-case-main">
                         <span className="h-case-name">{name}</span>
-                        {proj.introText ? <span className="h-case-sub">{proj.introText}</span> : null}
+                        {subtitle ? <span className="h-case-sub">{subtitle}</span> : null}
                       </span>
                       <span className="h-case-cats h-mono">{cats.join(' / ')}</span>
                       <span className="h-case-arrow" aria-hidden="true">↗</span>
