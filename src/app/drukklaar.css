@@ -3194,11 +3194,14 @@ body:has(.h-root)::after {
   letter-spacing: -0.035em;
   padding: 16px 0 20px;
   border-radius: 0;
-  outline: none;
+  outline: none !important;
+  box-shadow: none !important;
   transition: border-color 0.35s var(--ease);
 }
 
 .wizard-hero-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
   border-bottom-color: var(--spot);
 }
 
@@ -3319,6 +3322,8 @@ body:has(.h-root)::after {
 }
 
 .wizard-textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
   border-bottom-color: var(--spot);
 }
 
@@ -3683,6 +3688,8 @@ body:has(.h-root)::after {
 }
 
 .wizard-form-field input:focus {
+  outline: none !important;
+  box-shadow: none !important;
   border-bottom-color: var(--spot);
 }
 
