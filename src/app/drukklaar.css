@@ -2732,3 +2732,117 @@ body:has(.h-root)::after {
     margin: 18px auto;
   }
 }
+
+/* ═════════ WEBSITE PREVIEW GENERATOR & CTAS ═════════ */
+.h-nav-preview-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ff-mon);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 16px 7px;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid rgba(238, 232, 220, 0.4);
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: all 0.3s var(--ease);
+}
+.h-nav-preview-cta:hover {
+  background: var(--spot);
+  color: var(--ink);
+  border-color: var(--spot);
+  transform: translateY(-1px);
+}
+@media (max-width: 680px) {
+  .h-nav-preview-cta {
+    font-size: 10px;
+    padding: 6px 11px 5px;
+    letter-spacing: 0.04em;
+  }
+}
+@media (max-width: 440px) {
+  .h-nav-preview-cta {
+    display: none;
+  }
+}
+
+.h-menu-preview-btn {
+  display: block;
+  padding: 15px 20px;
+  background: var(--spot);
+  color: var(--ink) !important;
+  font-family: var(--ff-mon);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.h-menu-preview-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.h-preview-teaser-section {
+  padding: clamp(36px, 6vh, 72px) 0;
+  border-bottom: 1px solid var(--line-d);
+  background: #0c0a09;
+}
+
+.h-preview-teaser-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(28px, 4.5vw, 48px);
+  background: radial-gradient(circle at top left, rgba(255, 77, 0, 0.14) 0%, rgba(20, 17, 15, 0.98) 100%);
+  border: 1px solid rgba(255, 77, 0, 0.4);
+  border-radius: 20px;
+  box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.85);
+  flex-wrap: wrap;
+}
+
+.h-preview-teaser-content {
+  flex: 1;
+  min-width: 280px;
+}
+
+.h-preview-teaser-badge {
+  display: inline-block;
+  color: var(--spot);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.h-preview-teaser-heading {
+  font-size: clamp(22px, 3.2vw, 36px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1.15;
+  margin: 0 0 10px 0;
+}
+
+.h-preview-teaser-sub {
+  font-size: clamp(14px, 1.2vw, 16px);
+  color: rgba(238, 232, 220, 0.8);
+  line-height: 1.55;
+  max-width: 58ch;
+  margin: 0;
+}
+
+.h-preview-teaser-action {
+  flex-shrink: 0;
+}
+

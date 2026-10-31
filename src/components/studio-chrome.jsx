@@ -79,8 +79,8 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
           <span className="h-nav-status">
             <i aria-hidden="true" /> {availability}
           </span>
-          <Link href="/contact" className="h-nav-cv">
-            Start een project <span aria-hidden="true">→</span>
+          <Link href="/start?bron=navbar" className="h-nav-preview-cta">
+            Bekijk jouw website <span aria-hidden="true">→</span>
           </Link>
           <button
             type="button"
@@ -96,6 +96,14 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
 
       <div id="h-menu" className={`h-menu no-print ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}>
         <nav aria-label="Mobiel menu">
+          <Link
+            href="/start?bron=mobile-menu"
+            onClick={() => setMenuOpen(false)}
+            tabIndex={menuOpen ? 0 : -1}
+            className="h-menu-preview-btn"
+          >
+            ✦ Bekijk jouw website preview →
+          </Link>
           {NAV_ITEMS.map((item, i) => (
             <Link
               key={item.id}

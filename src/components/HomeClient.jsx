@@ -180,8 +180,8 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               Websites, digitale producten en merkidentiteiten die vertrouwen wekken en bezoekers omzetten in klanten — rechtstreeks ontworpen en gebouwd in Ridderkerk.
             </p>
             <div className="h-hero-actions">
-              <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
-                <span>Start een project</span>
+              <Link href="/start?bron=hero" className="h-btn h-btn--spot" data-h-magnet>
+                <span>Bekijk jouw website</span>
                 <i aria-hidden="true">→</i>
               </Link>
               <a href="#pakketten" className="h-btn h-btn--ghost" data-h-magnet>
@@ -219,6 +219,31 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
           ))}
         </div>
       </div>
+
+      {/* ───────── PREVIEW GENERATOR TEASER ───────── */}
+      <section className="h-preview-teaser-section h-dark no-print" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-preview-teaser-box" data-h="up">
+            <div className="h-preview-teaser-content">
+              <span className="h-mono h-preview-teaser-badge">
+                Gratis preview tool · 2 minuten
+              </span>
+              <h2 className="h-preview-teaser-heading">
+                Benieuwd hoe jouw website eruit kan zien?
+              </h2>
+              <p className="h-preview-teaser-sub">
+                Beantwoord 7 korte vragen over jouw bedrijf en bekijk direct een eerste professionele schets. Geen account nodig, 100% vrijblijvend.
+              </p>
+            </div>
+            <div className="h-preview-teaser-action">
+              <Link href="/start?bron=home-banner" className="h-btn h-btn--spot" data-h-magnet>
+                <span>Bekijk jouw website</span>
+                <i aria-hidden="true">→</i>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ───────── 01 WERK ───────── */}
       <section id="werk" className="h-work h-dark" data-theme="dark">
