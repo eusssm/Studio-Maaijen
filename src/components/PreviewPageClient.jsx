@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { BRANCH_PRESETS, getDaysRemaining } from '../lib/preview-presets';
+import { resolvePreviewPreset, getDaysRemaining } from '../lib/preview-presets';
 import { sized, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 
@@ -32,10 +32,18 @@ export default function PreviewPageClient({
     const pToken = searchParams.get('p');
     if (pToken) {
       try {
-        const json = atob(pToken.replace(/-/g, '+').replace(/_/g, '/'));
-        loaded = JSON.parse(json);
+        const base64 = pToken.replace(/-/g, '+').replace(/_/g, '/');
+        const binary = atob(base64);
+        const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+        const decoded = new TextDecoder().decode(bytes);
+        loaded = JSON.parse(decoded);
       } catch (err) {
-        console.error('Failed to decode preview token from URL:', err);
+        try {
+          const raw = atob(pToken.replace(/-/g, '+').replace(/_/g, '/'));
+          loaded = JSON.parse(raw);
+        } catch (e2) {
+          console.error('Failed to decode preview token from URL:', err);
+        }
       }
     }
 
@@ -63,10 +71,17 @@ export default function PreviewPageClient({
   const brandColor = submission?.brand_color || '#ff4d00';
   const primaryAction = submission?.primary_action || 'Offerte aanvragen';
 
-  // Zoek de branch preset op of val terug op Anders
-  const preset = BRANCH_PRESETS[branchName] || BRANCH_PRESETS['Anders'];
+  // Intelligente preset resolver (matcht op branche, trefwoorden & bedrijfsnaam)
+  const preset = useMemo(() => {
+    return resolvePreviewPreset({
+      companyName: submission?.company_name,
+      branch: submission?.branch,
+      services: submission?.services,
+      city: submission?.city,
+    });
+  }, [submission]);
 
-  // Splits eventueel ingevoerde diensten
+  // Splits eventueel handmatig ingevoerde diensten of val terug op redactionele presets
   const parsedServices = useMemo(() => {
     if (submission?.services?.trim()) {
       const lines = submission.services
@@ -76,16 +91,15 @@ export default function PreviewPageClient({
 
       if (lines.length >= 2) {
         return lines.slice(0, 3).map((item, idx) => ({
+          num: `0${idx + 1}`,
           title: item,
-          desc: `Vakkundig en zorgvuldig uitgevoerd voor particulieren en bedrijven in ${city} en omstreken.`,
-          icon: idx === 0 ? '✦' : idx === 1 ? '⚡' : '✓',
+          category: 'SPECIALISME',
+          desc: `Vakkundig en zorgvuldig gerealiseerd voor particulieren en ondernemingen in ${city} en omstreken.`,
         }));
       }
     }
     return preset.defaultServices;
   }, [submission?.services, preset, city]);
-
-  const heroTagline = preset.tagline.replace('{city}', city);
 
   function scrollToSection(id) {
     const el = document.getElementById(id);
@@ -277,307 +291,232 @@ export default function PreviewPageClient({
         </div>
       </div>
 
-      {/* ───────── HET PREVIEW KADER ───────── */}
-      <section
-        style={{
-          padding: 'clamp(24px, 4vh, 48px) 0',
-          background: '#070605',
-          display: 'flex',
-          justifyContent: 'center',
-          overflowX: 'hidden',
-        }}
-      >
+      {/* ───────── HET PREVIEW KADER (AWWWARDS / GODLY LEVEL) ───────── */}
+      <section className="mock-preview-viewport">
         <div
+          className={`mock-device-frame ${device === 'mobile' ? 'mock-device-frame--mobile' : 'mock-device-frame--desktop'}`}
           style={{
-            width: device === 'mobile' ? '390px' : '100%',
-            maxWidth: device === 'mobile' ? '390px' : '1400px',
-            margin: '0 auto',
-            borderRadius: device === 'mobile' ? '36px' : '16px',
-            border: device === 'mobile' ? '10px solid #221f1d' : '1px solid rgba(238, 232, 220, 0.15)',
-            boxShadow: '0 40px 120px -20px rgba(0,0,0,0.95)',
-            overflow: 'hidden',
-            position: 'relative',
-            background: '#0c0a09',
-            transition: 'width 0.4s var(--ease), max-width 0.4s var(--ease), border-radius 0.4s var(--ease)',
-            userSelect: 'none',
+            '--mock-brand': brandColor,
           }}
         >
           {/* Subtiel watermerk */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 30,
-              pointerEvents: 'none',
-              background: 'repeating-linear-gradient(45deg, rgba(238,232,220,0.015), rgba(238,232,220,0.015) 120px, transparent 120px, transparent 240px)',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '20px',
-              right: '20px',
-              zIndex: 35,
-              pointerEvents: 'none',
-              padding: '6px 14px',
-              background: 'rgba(12, 10, 9, 0.85)',
-              border: '1px solid rgba(238, 232, 220, 0.2)',
-              borderRadius: '999px',
-              color: 'rgba(238, 232, 220, 0.7)',
-              fontSize: '11px',
-              fontFamily: 'var(--ff-mon)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Preview · Studio Maaijen
+          <div className="mock-watermark-pill">
+            Concept · Studio Maaijen
           </div>
 
+          {/* Top Bar: Browser Chrome (Desktop) of Dynamic Island (Mobiel) */}
+          {device === 'desktop' ? (
+            <div className="mock-browser-chrome">
+              <div className="mock-browser-dots">
+                <span className="mock-browser-dot" />
+                <span className="mock-browser-dot" />
+                <span className="mock-browser-dot" />
+              </div>
+              <div className="mock-browser-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <span>https://www.{slug || 'bedrijf'}.nl</span>
+              </div>
+              <div style={{ width: '48px' }} />
+            </div>
+          ) : (
+            <div className="mock-phone-notch-bar">
+              <div className="mock-phone-island">
+                <span className="mock-phone-lens" />
+                <span className="mock-phone-sensor" />
+              </div>
+            </div>
+          )}
+
           {/* ═════════ DE GEGENEREERDE HOMEPAGE ═════════ */}
-          <div style={{ color: '#eee8dc', fontFamily: 'var(--ff-sans)' }}>
+          <div className="mock-site-root">
             
             {/* Mock Website Navbar */}
-            <header
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '20px clamp(20px, 4vw, 40px)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                background: 'rgba(12, 10, 9, 0.7)',
-              }}
-            >
-              <div style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.02em', color: '#fff' }}>
-                {company}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <span style={{ fontSize: '13px', color: 'rgba(238, 232, 220, 0.7)', display: device === 'mobile' ? 'none' : 'inline' }}>
-                  Diensten
-                </span>
-                <span style={{ fontSize: '13px', color: 'rgba(238, 232, 220, 0.7)', display: device === 'mobile' ? 'none' : 'inline' }}>
-                  Over ons
-                </span>
+            <header className="mock-site-nav">
+              <div className="mock-brand-block">
                 <span
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: '999px',
-                    background: brandColor,
-                    color: '#0c0a09',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                  }}
-                >
-                  {primaryAction}
-                </span>
+                  className="mock-brand-dot"
+                  style={{ background: brandColor, color: brandColor }}
+                />
+                <span className="mock-brand-name">{company}</span>
+                <span className="mock-brand-est">EST. {city.toUpperCase()}</span>
               </div>
+
+              <nav className="mock-nav-links">
+                <span className="mock-nav-link">01 // Specialismen</span>
+                <span className="mock-nav-link">02 // Over ons</span>
+                <span className="mock-nav-link">03 // Locatie</span>
+              </nav>
+
+              <button
+                type="button"
+                className="mock-nav-cta-btn"
+                style={{ background: brandColor }}
+              >
+                <span>{primaryAction}</span>
+                <span aria-hidden="true">→</span>
+              </button>
             </header>
 
-            {/* Mock Website Hero */}
-            <div
-              style={{
-                position: 'relative',
-                padding: 'clamp(60px, 10vh, 120px) clamp(20px, 5vw, 60px)',
-                backgroundImage: `radial-gradient(circle at center, rgba(12,10,9,0.7) 0%, rgba(12,10,9,0.92) 100%), url(${preset.heroImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  padding: '6px 14px',
-                  borderRadius: '999px',
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.18)',
-                  fontSize: '12px',
-                  fontFamily: 'var(--ff-mon)',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: brandColor,
-                  marginBottom: '20px',
-                }}
-              >
-                {branchName} · {city}
-              </span>
+            {/* Mock Website Hero: Asymmetric Editorial Split */}
+            <section className="mock-hero-section">
+              <div className="mock-hero-grid">
+                
+                {/* Hero Left: Monumental Typography */}
+                <div className="mock-hero-left">
+                  <div className="mock-discipline-tag">
+                    <span style={{ color: brandColor }}>//</span>
+                    <span>{preset.disciplineTag}</span>
+                    <span style={{ opacity: 0.4 }}>·</span>
+                    <span style={{ color: 'rgba(238, 232, 220, 0.7)' }}>{city}</span>
+                  </div>
 
-              <h1
-                style={{
-                  fontSize: 'clamp(28px, 5.5vw, 64px)',
-                  fontWeight: 700,
-                  lineHeight: 1.05,
-                  letterSpacing: '-0.04em',
-                  color: '#ffffff',
-                  maxWidth: '18ch',
-                  margin: '0 auto 20px',
-                  textShadow: '0 2px 20px rgba(0,0,0,0.8)',
-                }}
-              >
-                {preset.heroTitle}
-              </h1>
+                  <h1 className="mock-hero-title">
+                    {preset.heroTitleSans}{' '}
+                    <em style={{ color: brandColor }}>{preset.heroTitleItalic}</em>
+                    {preset.heroTitleAfter ? ` ${preset.heroTitleAfter}` : ''}
+                  </h1>
 
-              <p
-                style={{
-                  fontSize: 'clamp(15px, 1.8vw, 20px)',
-                  lineHeight: 1.5,
-                  color: 'rgba(238, 232, 220, 0.85)',
-                  maxWidth: '52ch',
-                  margin: '0 auto 32px',
-                }}
-              >
-                {heroTagline}
-              </p>
+                  <p className="mock-hero-sub">
+                    {preset.heroSub}
+                  </p>
 
-              <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '14px 28px',
-                    borderRadius: '999px',
-                    background: brandColor,
-                    color: '#0c0a09',
-                    fontSize: '15px',
-                    fontWeight: 600,
-                  }}
-                >
-                  {primaryAction} →
-                </span>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '14px 24px',
-                    borderRadius: '999px',
-                    background: 'rgba(255,255,255,0.08)',
-                    color: '#eee8dc',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    fontSize: '15px',
-                  }}
-                >
-                  Bekijk onze diensten
-                </span>
-              </div>
-            </div>
-
-            {/* USPs Balk */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: device === 'mobile' ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '12px',
-                padding: '24px clamp(20px, 4vw, 40px)',
-                background: 'rgba(255, 255, 255, 0.03)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-              }}
-            >
-              {preset.uspList.map((usp, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: 'rgba(238, 232, 220, 0.8)' }}>
-                  <span style={{ color: brandColor, fontWeight: 700 }}>✓</span>
-                  <span>{usp}</span>
+                  <div className="mock-hero-ctas">
+                    <span className="mock-primary-cta" style={{ background: brandColor }}>
+                      <span>{primaryAction}</span>
+                      <span aria-hidden="true">→</span>
+                    </span>
+                    <span className="mock-secondary-link">
+                      Ontdek onze aanpak ↓
+                    </span>
+                  </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Diensten Sectie */}
-            <div style={{ padding: 'clamp(50px, 8vh, 90px) clamp(20px, 5vw, 60px)', background: '#0c0a09' }}>
-              <div style={{ textAlign: 'center', marginBottom: 'clamp(32px, 5vh, 60px)' }}>
-                <span className="h-mono" style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: brandColor, display: 'block', marginBottom: '8px' }}>
-                  Vakmanschap & Oplossingen
-                </span>
-                <h2 style={{ fontSize: 'clamp(24px, 4vw, 44px)', fontWeight: 600, letterSpacing: '-0.03em', color: '#fff' }}>
-                  Onze specialismen & diensten
-                </h2>
+                {/* Hero Right: Showcase Image Card */}
+                <div className="mock-hero-showcase">
+                  <img
+                    src={preset.heroImage}
+                    alt={company}
+                    className="mock-showcase-img"
+                    loading="eager"
+                  />
+                  <div className="mock-showcase-badge">
+                    <span
+                      style={{
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        background: brandColor,
+                        boxShadow: `0 0 8px ${brandColor}`,
+                      }}
+                    />
+                    <span>{preset.heroBadge}</span>
+                  </div>
+                  <div className="mock-showcase-meta">
+                    <span>LOCATIE: {city.toUpperCase()}</span>
+                    <span>GEVERIFIEERD CONCEPT</span>
+                  </div>
+                </div>
+
               </div>
+            </section>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: device === 'mobile' ? '1fr' : 'repeat(auto-fit, minmax(260px, 1fr))',
-                  gap: '20px',
-                }}
-              >
-                {parsedServices.map((srv, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      padding: '28px',
-                      borderRadius: '14px',
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      border: '1px solid rgba(238, 232, 220, 0.1)',
-                    }}
-                  >
-                    <div style={{ fontSize: '28px', marginBottom: '14px' }}>{srv.icon}</div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#fff', marginBottom: '10px' }}>
-                      {srv.title}
-                    </h3>
-                    <p style={{ fontSize: '14px', lineHeight: 1.5, color: 'rgba(238, 232, 220, 0.7)' }}>
-                      {srv.desc}
-                    </p>
+            {/* Swiss Spec Ticker / Stat Strip */}
+            <div className="mock-stats-ticker">
+              <div className="mock-stats-grid">
+                {preset.stats.map((s, idx) => (
+                  <div key={idx} className="mock-stat-col">
+                    <span className="mock-stat-num" style={{ color: brandColor }}>[{s.num}]</span>
+                    <span className="mock-stat-label">{s.label}</span>
+                    <span className="mock-stat-sub">{s.sub}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Over Ons Sectie */}
-            <div
-              style={{
-                padding: 'clamp(50px, 8vh, 80px) clamp(20px, 5vw, 60px)',
-                background: 'rgba(255, 255, 255, 0.02)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                textAlign: 'center',
-              }}
-            >
-              <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-                <span className="h-mono" style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: brandColor, display: 'block', marginBottom: '8px' }}>
-                  Persoonlijk & Betrouwbaar
+            {/* Services Section: Swiss Ledger Rows */}
+            <section className="mock-services-section">
+              <div className="mock-section-head">
+                <span className="mock-section-index" style={{ color: brandColor }}>
+                  ( 01 ) PORTFOLIO & DIENSTEN
                 </span>
-                <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 38px)', fontWeight: 600, letterSpacing: '-0.03em', color: '#fff', marginBottom: '16px' }}>
-                  Over {company}
+                <h2 className="mock-section-title">
+                  Gespecialiseerd in <em style={{ color: brandColor }}>kwaliteit & maatwerk</em>
                 </h2>
-                <p style={{ fontSize: '15px', lineHeight: 1.6, color: 'rgba(238, 232, 220, 0.8)' }}>
-                  {preset.aboutText}
-                </p>
               </div>
-            </div>
 
-            {/* Contact / CTA Blok */}
-            <div
-              style={{
-                padding: 'clamp(40px, 6vh, 70px) clamp(20px, 5vw, 60px)',
-                background: '#070605',
-                textAlign: 'center',
-                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              }}
-            >
-              <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>
-                Klaar voor de volgende stap in {city}?
-              </h2>
-              <p style={{ fontSize: '15px', color: 'rgba(238, 232, 220, 0.75)', marginBottom: '24px' }}>
-                Neem direct contact op en ervaar onze persoonlijke service en vakkennis.
-              </p>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 26px',
-                  borderRadius: '999px',
-                  background: brandColor,
-                  color: '#0c0a09',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-              >
-                {primaryAction} →
+              <div className="mock-services-ledger">
+                {parsedServices.map((srv, idx) => (
+                  <div key={idx} className="mock-ledger-row">
+                    <span className="mock-ledger-num" style={{ color: brandColor }}>
+                      [{srv.num || `0${idx + 1}`}]
+                    </span>
+                    <span className="mock-ledger-title">{srv.title}</span>
+                    <span className="mock-ledger-cat">{srv.category || 'SPECIALISME'}</span>
+                    <p className="mock-ledger-desc">{srv.desc}</p>
+                    <span className="mock-ledger-arrow" aria-hidden="true">↗</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Editorial Manifesto / About Split */}
+            <section className="mock-manifesto-section">
+              <div className="mock-manifesto-grid">
+                <blockquote className="mock-manifesto-quote" style={{ borderColor: brandColor }}>
+                  “{preset.manifestoQuote}”
+                </blockquote>
+
+                <div className="mock-manifesto-right">
+                  <span className="mock-section-index" style={{ color: brandColor }}>
+                    // OVER {company.toUpperCase()}
+                  </span>
+                  <p className="mock-manifesto-narrative">
+                    {preset.aboutText}
+                  </p>
+
+                  <div className="mock-manifesto-stats">
+                    <div className="mock-manifesto-stat-block">
+                      <span className="mock-manifesto-stat-val">100%</span>
+                      <span className="mock-manifesto-stat-lbl">Toewijding</span>
+                    </div>
+                    <div className="mock-manifesto-stat-block">
+                      <span className="mock-manifesto-stat-val">24u</span>
+                      <span className="mock-manifesto-stat-lbl">Korte Lijnen</span>
+                    </div>
+                    <div className="mock-manifesto-stat-block">
+                      <span className="mock-manifesto-stat-val">10+</span>
+                      <span className="mock-manifesto-stat-lbl">Jaren Ervaring</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Closing CTA / Conversion */}
+            <section className="mock-closing-cta">
+              <span className="mock-section-index" style={{ color: brandColor, marginBottom: '14px' }}>
+                ✦ KLAAR VOOR DE VOLGENDE STAP
               </span>
-            </div>
+              <h2 className="mock-closing-title">
+                Klaar om kennis te maken met <em style={{ color: brandColor }}>{company}</em>?
+              </h2>
+              <p className="mock-closing-sub">
+                Ervaar onze persoonlijke service en vakkennis in {city} en omstreken.
+              </p>
+              <span className="mock-primary-cta" style={{ background: brandColor }}>
+                <span>{primaryAction}</span>
+                <span aria-hidden="true">→</span>
+              </span>
+            </section>
+
+            {/* Mock Footer Strip */}
+            <footer className="mock-footer-strip">
+              <span>© 2026 {company} · Alle rechten voorbehouden</span>
+              <span>ONTWERPCONCEPT GEREGISSEERD DOOR STUDIO MAAIJEN · RIDDERKERK</span>
+            </footer>
 
           </div>
         </div>
