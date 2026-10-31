@@ -1,4 +1,5 @@
 import { buildClient } from '@datocms/cma-client-node';
+import { sendMail } from '../../../lib/notify';
 
 const CMA_TOKEN = process.env.DATOCMS_CMA_TOKEN;
 const CONTACT_MODEL_ID = 'AmmEJM1lQkqyR2xRZUdNxA';
@@ -43,74 +44,43 @@ export async function POST(request) {
       message.trim(),
     ].join('\n');
 
-    // 1. Save submission directly to DatoCMS (Contact Aanvraag model)
-    try {
-      const client = buildClient({ apiToken: CMA_TOKEN });
-      await client.items.create({
-        item_type: { type: 'item_type', id: CONTACT_MODEL_ID },
-        name: name.trim(),
-        email: email.trim(),
-        company: company?.trim() || '',
-        website: website?.trim() || '',
-        interests: interestsList,
-        message: message.trim(),
-      });
-    } catch (cmsErr) {
-      console.error('DatoCMS contact submission save warning:', cmsErr);
+    // 1. Opslaan in DatoCMS (Contact Aanvraag model)
+    let saved = false;
+    if (CMA_TOKEN) {
+      try {
+        const client = buildClient({ apiToken: CMA_TOKEN });
+        await client.items.create({
+          item_type: { type: 'item_type', id: CONTACT_MODEL_ID },
+          name: name.trim(),
+          email: email.trim(),
+          company: company?.trim() || '',
+          website: website?.trim() || '',
+          interests: interestsList,
+          message: message.trim(),
+        });
+        saved = true;
+      } catch (cmsErr) {
+        console.error('[contact] DatoCMS opslaan mislukt:', cmsErr);
+      }
+    } else {
+      console.error('[contact] DATOCMS_CMA_TOKEN ontbreekt: aanvraag wordt niet opgeslagen.');
     }
 
-    // 2. Send email notification
-    if (process.env.RESEND_API_KEY) {
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: process.env.CONTACT_FROM_EMAIL || 'Studio Maaijen <onboarding@resend.dev>',
-          to: [recipientEmail],
-          reply_to: email.trim(),
-          subject,
-          text: plainText,
-        }),
-      });
-    } else if (process.env.WEB3FORMS_ACCESS_KEY) {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: process.env.WEB3FORMS_ACCESS_KEY,
-          subject,
-          from_name: name.trim(),
-          email: email.trim(),
-          message: plainText,
-        }),
-      });
-    } else {
-      // Forward via FormSubmit AJAX endpoint to info@studio-maaijen.nl
-      try {
-        await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Origin: 'https://www.studio-maaijen.nl',
-            Referer: 'https://www.studio-maaijen.nl/contact',
-          },
-          body: JSON.stringify({
-            _subject: subject,
-            Naam: name.trim(),
-            Email: email.trim(),
-            Bedrijfsnaam: company?.trim() || '-',
-            Website: website?.trim() || '-',
-            Interesse: interestsList,
-            Bericht: message.trim(),
-          }),
-        });
-      } catch (mailErr) {
-        console.error('FormSubmit forward warning:', mailErr);
-      }
+    // 2. E-mailnotificatie
+    const mailed = await sendMail({
+      to: recipientEmail,
+      subject,
+      text: plainText,
+      replyTo: email.trim(),
+    });
+
+    // Als niets is gelukt, laat de bezoeker dat weten i.p.v. nep-succes
+    if (!saved && !mailed) {
+      console.error('[contact] AANVRAAG VERLOREN:', plainText);
+      return Response.json(
+        { error: 'Je bericht kon helaas niet worden verstuurd. Mail me direct via info@studio-maaijen.nl.' },
+        { status: 502 }
+      );
     }
 
     return Response.json({

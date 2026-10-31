@@ -1,4 +1,5 @@
 import { buildClient } from '@datocms/cma-client-node';
+import { sendMail } from '../../../lib/notify';
 import { generateSlug, calculateExpiryDate } from '../../../lib/preview-presets';
 
 const CMA_TOKEN = process.env.DATOCMS_CMA_TOKEN;
@@ -131,68 +132,20 @@ export async function POST(request) {
       `06-12345678 · info@studio-maaijen.nl`,
     ].join('\n');
 
-    // Mail verzenden via beschikbare mailservice (Resend, Web3Forms of FormSubmit)
-    if (process.env.RESEND_API_KEY) {
-      try {
-        // Mail naar Eugène
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: process.env.CONTACT_FROM_EMAIL || 'Studio Maaijen <onboarding@resend.dev>',
-            to: ['info@studio-maaijen.nl'],
-            reply_to: cleanEmail,
-            subject: adminSubject,
-            text: adminText,
-          }),
-        });
-
-        // Mail naar klant
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: process.env.CONTACT_FROM_EMAIL || 'Studio Maaijen <onboarding@resend.dev>',
-            to: [cleanEmail],
-            reply_to: 'info@studio-maaijen.nl',
-            subject: customerSubject,
-            text: customerText,
-          }),
-        });
-      } catch (err) {
-        console.error('Resend preview notification warning:', err);
-      }
-    } else {
-      // Fallback via FormSubmit naar info@studio-maaijen.nl
-      try {
-        await fetch('https://formsubmit.co/ajax/info@studio-maaijen.nl', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            _subject: adminSubject,
-            Bedrijf: cleanCompany,
-            Branche: cleanBranch,
-            Naam: cleanName,
-            Email: cleanEmail,
-            Telefoon: cleanPhone || '-',
-            Plaats: cleanCity,
-            PreviewUrl: previewUrl,
-            Bron: source,
-          }),
-        });
-      } catch (mailErr) {
-        console.error('FormSubmit notification warning:', mailErr);
-      }
-    }
+    // Mail verzenden (fouten worden gelogd; de preview zelf blijft altijd werken)
+    const adminMailed = await sendMail({
+      to: 'info@studio-maaijen.nl',
+      subject: adminSubject,
+      text: adminText,
+      replyTo: cleanEmail,
+    });
+    if (!adminMailed) console.error('[preview] Notificatie naar info@ niet verzonden. Lead:', adminText);
+    await sendMail({
+      to: cleanEmail,
+      subject: customerSubject,
+      text: customerText,
+      replyTo: 'info@studio-maaijen.nl',
+    });
 
     const previewPayload = {
       company_name: cleanCompany,
