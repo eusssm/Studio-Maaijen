@@ -194,10 +194,31 @@ export async function POST(request) {
       }
     }
 
+    const previewPayload = {
+      company_name: cleanCompany,
+      slug,
+      branch: cleanBranch,
+      services: services?.trim() || '',
+      vibe: vibe || 'Strak & modern',
+      brand_color: brandColor || '#ff4d00',
+      primary_action: primaryAction || 'Offerte aanvragen',
+      name: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
+      city: cleanCity,
+      current_website: cleanWebsite,
+      source: source || 'direct',
+      lead_status: 'Nieuw',
+      expires_at: expiresAt,
+    };
+
+    const dataToken = Buffer.from(JSON.stringify(previewPayload)).toString('base64url');
+
     return Response.json({
       ok: true,
       slug,
-      previewUrl,
+      dataToken,
+      previewUrl: `https://www.studio-maaijen.nl/preview/${slug}?p=${dataToken}`,
     });
   } catch (error) {
     console.error('API /preview error:', error);

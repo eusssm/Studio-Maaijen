@@ -176,8 +176,16 @@ export default function WizardClient() {
         throw new Error(data.error || 'Er is iets misgegaan.');
       }
 
+      // Sla lokaal op als snelle fallback
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem(`sm_preview_${data.slug}`, JSON.stringify(payload));
+        } catch (e) {}
+      }
+
       // Doorsturen naar de zojuist gegenereerde preview
-      router.push(`/preview/${data.slug}`);
+      const targetUrl = `/preview/${data.slug}${data.dataToken ? `?p=${data.dataToken}` : ''}`;
+      router.push(targetUrl);
     } catch (err) {
       console.error('Wizard submit error:', err);
       setErrorMsg(err.message || 'Er ging iets mis bij het genereren. Probeer het opnieuw.');

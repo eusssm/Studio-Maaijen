@@ -9,3 +9,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Zodra er gewerkt wordt aan het ontwerpen, restylen of bouwen van een template, website, landingspagina, CSS-styling of UI-componenten: activeer en betrek altijd de skill `godly-awwwards-art-director`. Geen generieke templates, bento boxes of standaard UI-componenten.
 <!-- END:art-director-rule -->
+
+<!-- BEGIN:lead-hunter-rule -->
+# Lead Hunter Sub-Agent Routing (Studio Maaijen)
+
+Wanneer de gebruiker vraagt om **"nieuwe leads"**, **"zoek MKB klanten"** of **"draai de wekelijkse lead-run"**, delegeer deze taak direct aan de `lead-hunter` sub-agent (`Model: "flash"`, zie `/agents/lead-hunter.md`).
+- Deduplicatiebestand: `/leads/benaderde-bedrijven.json`
+- Screenshot-script: `node scripts/screenshot-helper.js <url> <slug>` → `/leads/screenshots/`
+- Wekelijks rapport: `/leads/week-[weeknummer]-[jaar]-leads.md`
+<!-- END:lead-hunter-rule -->

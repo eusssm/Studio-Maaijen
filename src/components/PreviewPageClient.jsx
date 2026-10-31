@@ -1,18 +1,61 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { BRANCH_PRESETS } from '../lib/preview-presets';
+import { BRANCH_PRESETS, getDaysRemaining } from '../lib/preview-presets';
 import { sized, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 
 export default function PreviewPageClient({
-  submission,
-  daysRemaining = 14,
+  initialSubmission = null,
+  slug,
+  daysRemaining: initialDays = 14,
   cases = [],
   packages = [],
   siteSetting,
 }) {
+  const searchParams = useSearchParams();
   const [device, setDevice] = useState('desktop'); // 'desktop' | 'mobile'
+  const [submission, setSubmission] = useState(initialSubmission);
+  const [isLoading, setIsLoading] = useState(!initialSubmission);
+
+  // Client-side fallback via URL token (?p=) of sessionStorage
+  useEffect(() => {
+    if (submission) {
+      setIsLoading(false);
+      return;
+    }
+
+    let loaded = null;
+
+    // 1. Probeer URL parameter p
+    const pToken = searchParams.get('p');
+    if (pToken) {
+      try {
+        const json = atob(pToken.replace(/-/g, '+').replace(/_/g, '/'));
+        loaded = JSON.parse(json);
+      } catch (err) {
+        console.error('Failed to decode preview token from URL:', err);
+      }
+    }
+
+    // 2. Probeer sessionStorage
+    if (!loaded && typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem(`sm_preview_${slug}`);
+        if (stored) {
+          loaded = JSON.parse(stored);
+        }
+      } catch (err) {}
+    }
+
+    if (loaded) {
+      setSubmission(loaded);
+    }
+    setIsLoading(false);
+  }, [submission, searchParams, slug]);
+
+  const daysRemaining = submission?.expires_at ? getDaysRemaining(submission.expires_at) : initialDays;
 
   const company = submission?.company_name || 'Jouw Bedrijf';
   const branchName = submission?.branch || 'Installateur / Klusbedrijf';
@@ -49,6 +92,67 @@ export default function PreviewPageClient({
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#0c0a09', color: '#eee8dc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p className="h-mono" style={{ color: 'var(--spot)' }}>Preview laden...</p>
+      </div>
+    );
+  }
+
+  // Not found state
+  if (!submission) {
+    return (
+      <div className="h-root h-subpage">
+        <SiteOverlays />
+        <SiteNav />
+        <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <div style={{ maxWidth: '520px', textAlign: 'center' }}>
+            <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>Preview niet gevonden</h1>
+            <p style={{ color: 'rgba(238, 232, 220, 0.7)', lineHeight: 1.6, marginBottom: '28px' }}>
+              We konden deze website-preview niet vinden. Mogelijk is de link niet compleet of is de preview verplaatst.
+            </p>
+            <Link href="/start" className="h-btn h-btn--spot" style={{ textDecoration: 'none', display: 'inline-flex' }}>
+              <span>Genereer een nieuwe preview</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+          </div>
+        </div>
+        <SiteFooter />
+      </div>
+    );
+  }
+
+  // Expired state
+  if (daysRemaining <= 0) {
+    return (
+      <div className="h-root h-subpage">
+        <SiteOverlays />
+        <SiteNav />
+        <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <div style={{ maxWidth: '520px', textAlign: 'center' }}>
+            <div style={{ fontSize: '44px', marginBottom: '16px' }}>⏳</div>
+            <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>Deze preview is verlopen</h1>
+            <p style={{ color: 'rgba(238, 232, 220, 0.7)', lineHeight: 1.6, marginBottom: '28px' }}>
+              De 14-daagse preview-periode voor <strong>{company}</strong> is verstreken. Wil je het ontwerp alsnog bekijken of direct doorpakken naar jouw definitieve website? Neem contact op met Eugène!
+            </p>
+            <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/contact" className="h-btn h-btn--spot" style={{ textDecoration: 'none' }}>
+                <span>Neem contact op met Eugène</span>
+                <i aria-hidden="true">→</i>
+              </Link>
+              <Link href="/start" className="h-btn h-btn--ghost" style={{ textDecoration: 'none' }}>
+                <span>Nieuwe preview maken</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+        <SiteFooter />
+      </div>
+    );
   }
 
   return (

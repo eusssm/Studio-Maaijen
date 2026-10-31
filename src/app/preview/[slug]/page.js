@@ -1,8 +1,8 @@
+import { Suspense } from 'react';
 import { buildClient } from '@datocms/cma-client-node';
 import { performRequest } from '../../../../lib/datocms';
 import { getDaysRemaining } from '../../../lib/preview-presets';
 import PreviewPageClient from '../../../components/PreviewPageClient';
-import Link from 'next/link';
 
 export const metadata = {
   title: 'Jouw Website Preview | Studio Maaijen',
@@ -13,8 +13,25 @@ export const metadata = {
   },
 };
 
-const CASES_AND_PACKAGES_QUERY = `
-  query PreviewSupportingQuery {
+const PREVIEW_AND_SUPPORT_QUERY = `
+  query PreviewSupportingQuery($slug: String) {
+    previewSubmission(filter: { slug: { eq: $slug } }) {
+      companyName
+      slug
+      branch
+      services
+      vibe
+      brandColor
+      primaryAction
+      name
+      email
+      phone
+      city
+      currentWebsite
+      source
+      leadStatus
+      expiresAt
+    }
     allPackages(orderBy: positionOrder_ASC) {
       id
       name
@@ -49,6 +66,27 @@ const CASES_AND_PACKAGES_QUERY = `
   }
 `;
 
+function normalizeSubmission(item) {
+  if (!item) return null;
+  return {
+    company_name: item.companyName || item.company_name,
+    slug: item.slug,
+    branch: item.branch,
+    services: item.services,
+    vibe: item.vibe,
+    brand_color: item.brandColor || item.brand_color,
+    primary_action: item.primaryAction || item.primary_action,
+    name: item.name,
+    email: item.email,
+    phone: item.phone,
+    city: item.city,
+    current_website: item.currentWebsite || item.current_website,
+    source: item.source,
+    lead_status: item.leadStatus || item.lead_status,
+    expires_at: item.expiresAt || item.expires_at,
+  };
+}
+
 export default async function PreviewPage({ params }) {
   const { slug } = await params;
 
@@ -57,8 +95,24 @@ export default async function PreviewPage({ params }) {
   let packages = [];
   let siteSetting = null;
 
-  // 1. Haal de submission op uit DatoCMS via CMA
-  if (process.env.DATOCMS_CMA_TOKEN) {
+  // 1. Probeer eerst via GraphQL CDA (werkt met NEXT_DATOCMS_API_TOKEN)
+  try {
+    const res = await performRequest({
+      query: PREVIEW_AND_SUPPORT_QUERY,
+      variables: { slug },
+    });
+    cases = res?.data?.allProjects || [];
+    packages = res?.data?.allPackages || [];
+    siteSetting = res?.data?.siteSetting || null;
+    if (res?.data?.previewSubmission) {
+      submission = normalizeSubmission(res.data.previewSubmission);
+    }
+  } catch (err) {
+    console.error('Error fetching preview via GraphQL:', err);
+  }
+
+  // 2. Fallback via CMA als GraphQL de submission niet vond
+  if (!submission && process.env.DATOCMS_CMA_TOKEN) {
     try {
       const client = buildClient({ apiToken: process.env.DATOCMS_CMA_TOKEN });
       const items = await client.items.list({
@@ -69,71 +123,26 @@ export default async function PreviewPage({ params }) {
           },
         },
       });
-      submission = items[0] || null;
+      if (items[0]) {
+        submission = normalizeSubmission(items[0]);
+      }
     } catch (err) {
-      console.error('Error fetching preview submission from DatoCMS:', err);
+      console.error('Error fetching preview via CMA:', err);
     }
   }
 
-  // 2. Haal cases en pakketten op uit DatoCMS
-  try {
-    const res = await performRequest({ query: CASES_AND_PACKAGES_QUERY });
-    cases = res?.data?.allProjects || [];
-    packages = res?.data?.allPackages || [];
-    siteSetting = res?.data?.siteSetting || null;
-  } catch (err) {
-    console.error('Error fetching cases/packages for preview:', err);
-  }
-
-  // Als er geen submission gevonden is
-  if (!submission) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#0c0a09', color: '#eee8dc', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-        <div style={{ maxWidth: '520px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>Preview niet gevonden</h1>
-          <p style={{ color: 'rgba(238, 232, 220, 0.7)', lineHeight: 1.6, marginBottom: '28px' }}>
-            We konden deze website-preview niet vinden. Mogelijk is de link niet compleet of is de preview verplaatst.
-          </p>
-          <Link href="/start" style={{ display: 'inline-flex', padding: '14px 24px', background: '#ff4d00', color: '#0c0a09', borderRadius: '999px', textDecoration: 'none', fontWeight: 600 }}>
-            Genereer een nieuwe preview →
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const daysRemaining = getDaysRemaining(submission.expires_at);
-
-  // Als de preview na 14 dagen verlopen is
-  if (daysRemaining <= 0) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#0c0a09', color: '#eee8dc', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-        <div style={{ maxWidth: '520px', textAlign: 'center' }}>
-          <div style={{ fontSize: '44px', marginBottom: '16px' }}>⏳</div>
-          <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>Deze preview is verlopen</h1>
-          <p style={{ color: 'rgba(238, 232, 220, 0.7)', lineHeight: 1.6, marginBottom: '28px' }}>
-            De 14-daagse preview-periode voor <strong>{submission.company_name}</strong> is verstreken. Wil je het ontwerp alsnog bekijken of direct doorpakken naar jouw definitieve website? Neem contact op met Eugène!
-          </p>
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/contact" style={{ display: 'inline-flex', padding: '14px 24px', background: '#ff4d00', color: '#0c0a09', borderRadius: '999px', textDecoration: 'none', fontWeight: 600 }}>
-              Neem contact op met Eugène →
-            </Link>
-            <Link href="/start" style={{ display: 'inline-flex', padding: '14px 24px', background: 'rgba(255,255,255,0.08)', color: '#eee8dc', borderRadius: '999px', textDecoration: 'none' }}>
-              Nieuwe preview maken
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const daysRemaining = submission ? getDaysRemaining(submission.expires_at) : 14;
 
   return (
-    <PreviewPageClient
-      submission={submission}
-      daysRemaining={daysRemaining}
-      cases={cases}
-      packages={packages}
-      siteSetting={siteSetting}
-    />
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#0c0a09' }} />}>
+      <PreviewPageClient
+        initialSubmission={submission}
+        slug={slug}
+        daysRemaining={daysRemaining}
+        cases={cases}
+        packages={packages}
+        siteSetting={siteSetting}
+      />
+    </Suspense>
   );
 }
