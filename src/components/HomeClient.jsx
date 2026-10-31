@@ -220,45 +220,6 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
         </div>
       </div>
 
-      {/* ───────── INTERACTIEVE PREVIEW TOOL ───────── */}
-      <section className="h-preview-feature h-dark no-print" data-theme="dark">
-        <div className="h-wrap">
-          <div className="h-label" data-h="up">
-            <span className="h-mono">[ Gratis preview tool ]</span>
-            <span className="h-mono">Interactieve schets · 2 minuten</span>
-          </div>
-          <div className="h-preview-feature-grid">
-            <div className="h-preview-feature-left">
-              <h2 className="h-display" data-h-lines>
-                Benieuwd hoe jouw website er <em>uit kan zien?</em>
-              </h2>
-            </div>
-            <div className="h-preview-feature-right" data-h="up">
-              <p className="h-preview-feature-intro">
-                Geen vage offertes vooraf. Beantwoord 7 gerichte vragen over jouw bedrijf en bekijk direct een eerste professionele, interactieve schets van jouw homepage. Vrijblijvend en zonder account.
-              </p>
-              <div className="h-preview-feature-meta">
-                <div className="h-preview-feature-director">
-                  <img
-                    src="/images/eugene-portrait.jpg"
-                    alt="Eugène Maaijen"
-                    className="h-preview-avatar"
-                  />
-                  <div className="h-preview-avatar-info">
-                    <span className="h-preview-avatar-name">Eugène Maaijen</span>
-                    <span className="h-preview-avatar-role">Studio Maaijen · Ridderkerk</span>
-                  </div>
-                </div>
-                <Link href="/start?bron=home-banner" className="h-btn h-btn--spot" data-h-magnet>
-                  <span>Bekijk jouw website</span>
-                  <i aria-hidden="true">→</i>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ───────── 01 WERK ───────── */}
       <section id="werk" className="h-work h-dark" data-theme="dark">
         <div className="h-wrap">
@@ -336,6 +297,45 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               <span>Alle projecten</span>
               <i aria-hidden="true">→</i>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── INTERACTIEVE PREVIEW TOOL ───────── */}
+      <section className="h-preview-feature h-dark no-print" data-theme="dark">
+        <div className="h-wrap">
+          <div className="h-label" data-h="up">
+            <span className="h-mono">[ Gratis preview tool ]</span>
+            <span className="h-mono">Interactieve schets · 2 minuten</span>
+          </div>
+          <div className="h-preview-feature-grid">
+            <div className="h-preview-feature-left">
+              <h2 className="h-display" data-h-lines>
+                Benieuwd hoe jouw website er <em>uit kan zien?</em>
+              </h2>
+            </div>
+            <div className="h-preview-feature-right" data-h="up">
+              <p className="h-preview-feature-intro">
+                Geen vage offertes vooraf. Beantwoord 7 gerichte vragen over jouw bedrijf en bekijk direct een eerste professionele, interactieve schets van jouw homepage. Vrijblijvend en zonder account.
+              </p>
+              <div className="h-preview-feature-meta">
+                <div className="h-preview-feature-director">
+                  <img
+                    src="/images/eugene-portrait.jpg"
+                    alt="Eugène Maaijen"
+                    className="h-preview-avatar"
+                  />
+                  <div className="h-preview-avatar-info">
+                    <span className="h-preview-avatar-name">Eugène Maaijen</span>
+                    <span className="h-preview-avatar-role">Studio Maaijen · Ridderkerk</span>
+                  </div>
+                </div>
+                <Link href="/start?bron=home-banner" className="h-btn h-btn--spot" data-h-magnet>
+                  <span>Start de gratis preview</span>
+                  <i aria-hidden="true">→</i>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

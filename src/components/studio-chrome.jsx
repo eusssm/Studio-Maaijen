@@ -80,7 +80,7 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
             <i aria-hidden="true" /> {availability}
           </span>
           <Link href="/start?bron=navbar" className="h-nav-preview-cta">
-            Bekijk jouw website <span aria-hidden="true">→</span>
+            Gratis preview <span aria-hidden="true">→</span>
           </Link>
           <button
             type="button"
@@ -102,7 +102,7 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
             tabIndex={menuOpen ? 0 : -1}
             className="h-menu-preview-btn"
           >
-            ✦ Bekijk jouw website preview →
+            ✦ Gratis website-preview →
           </Link>
           {NAV_ITEMS.map((item, i) => (
             <Link
