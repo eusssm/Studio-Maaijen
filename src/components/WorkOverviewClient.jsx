@@ -137,25 +137,20 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
       <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <section className="h-work-page h-dark" data-theme="dark">
-        {/* Module "Al mijn projecten" + filter — exact behouden in het grid */}
-        <div className="h-wrap">
-          <div className="h-label" data-h="up">
-            <span className="h-mono">(01) Portfolio</span>
-            <span className="h-mono">{pad(projects.length)} projecten</span>
-          </div>
-          <div className="h-work-head h-work-head--page">
-            <h1 className="h-display" data-h-lines>
+        {/* Module "Al mijn projecten" + filter — exact zoals in screenshot */}
+        <div className="h-wrap spector-header-wrap">
+          <div className="spector-work-head">
+            <h1 className="spector-work-title">
               Al mijn <em>projecten</em>
             </h1>
-            <div className="h-chips" role="group" aria-label="Filter op discipline" data-h="up">
+            <div className="spector-chips" role="group" aria-label="Filter op discipline">
               {FILTERS.map(f => (
                 <button
                   key={f}
                   type="button"
                   aria-pressed={filter === f}
-                  className={`h-chip ${filter === f ? 'is-on' : ''}`}
+                  className={`spector-chip ${filter === f ? 'is-on' : ''}`}
                   onClick={() => handleFilterClick(f)}
-                  data-h-magnet
                 >
                   {f}
                 </button>
@@ -209,11 +204,19 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
 
                     <h2 className="spector-slide-title">{name}</h2>
 
-                    <div className="spector-slide-divider" aria-hidden="true" />
-
                     {subtitle && (
                       <p className="spector-slide-desc">{subtitle}</p>
                     )}
+                  </div>
+
+                  {/* Spector corner metadata (zoals Spector bottom bar) */}
+                  <div className="spector-slide-footer">
+                    <span className="spector-slide-index h-mono">
+                      {pad(i + 1)} / {pad(shown.length)}
+                    </span>
+                    <span className="spector-slide-action h-mono">
+                      Bekijk case <i aria-hidden="true">→</i>
+                    </span>
                   </div>
 
                   {/* Volledig klikbaar naar de intacte detailpagina */}

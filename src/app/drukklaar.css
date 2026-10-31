@@ -2252,7 +2252,10 @@ body:has(.h-root)::after {
 .h-fact-sub { display: block; margin-top: 6px; color: var(--dim); }
 
 /* subpagina's: ruimte onder de vaste navigatie */
-.h-work-page, .h-pkt-page, .h-form-page {
+.h-work-page {
+  padding: calc(var(--nav-h) + clamp(16px, 2.5vw, 36px)) 0 0;
+}
+.h-pkt-page, .h-form-page {
   padding: calc(var(--nav-h) + clamp(30px, 5vw, 80px)) 0 clamp(90px, 10vw, 170px);
 }
 .h-subpage { min-height: 100svh; }
@@ -2533,6 +2536,97 @@ body:has(.h-root)::after {
   .h-nav-logo { white-space: nowrap; }
 }
 
+/* ═════════ SPECTOR WORK HEADER (EXACT 1:1 CONFORM ONTWERP) ═════════ */
+.spector-header-wrap {
+  width: min(var(--max-w), calc(100% - var(--pad) * 2));
+  margin: 0 auto;
+}
+
+.spector-work-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 28px;
+  padding-top: clamp(16px, 2.5vw, 32px);
+  padding-bottom: clamp(28px, 4vw, 52px);
+  border: none !important;
+}
+
+.spector-work-title {
+  font-family: var(--ff-sans);
+  font-size: clamp(48px, 7vw, 108px);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  color: var(--paper);
+  margin: 0;
+}
+
+.spector-work-title em {
+  font-family: var(--ff-ser);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--spot);
+  letter-spacing: -0.025em;
+  margin-left: 0.12em;
+}
+
+.spector-chips {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  margin-bottom: 6px;
+}
+
+.spector-chip {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(238, 232, 220, 0.45);
+  border-radius: 999px;
+  color: var(--paper);
+  font-family: var(--ff-mon);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 22px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s var(--ease);
+}
+
+.spector-chip:hover {
+  border-color: var(--paper);
+  background: rgba(238, 232, 220, 0.1);
+}
+
+.spector-chip.is-on {
+  background: var(--spot);
+  border-color: var(--spot);
+  color: #0c0a09;
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .spector-work-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    padding-bottom: 28px;
+  }
+  .spector-chips {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+  .spector-chip {
+    padding: 8px 16px 7px;
+    font-size: 10.5px;
+  }
+}
+
 /* ═════════ SPECTOR FULL-BLEED STACKING PROJECTS (VOLWASSEN, STRAK, ZONDER BORDERS) ═════════ */
 .spector-stack {
   position: relative;
@@ -2541,7 +2635,7 @@ body:has(.h-root)::after {
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
-  margin-top: clamp(48px, 6vw, 90px);
+  margin-top: 0;
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
@@ -2673,20 +2767,6 @@ body:has(.h-root)::after {
   transform: scale(1.02);
 }
 
-/* 80px hairline divider */
-.spector-slide-divider {
-  width: 80px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.45);
-  margin: clamp(22px, 3.2vh, 36px) auto;
-  transition: width 0.6s var(--ease), background 0.6s var(--ease);
-}
-
-.spector-slide:hover .spector-slide-divider {
-  width: 120px;
-  background: rgba(255, 255, 255, 0.85);
-}
-
 /* Editorial Description */
 .spector-slide-desc {
   font-family: var(--ff-sans);
@@ -2696,8 +2776,51 @@ body:has(.h-root)::after {
   font-weight: 400;
   color: rgba(238, 232, 220, 0.88);
   max-width: 540px;
-  margin: 0;
+  margin: clamp(18px, 2.8vh, 30px) auto 0;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.75);
+}
+
+/* Spector bottom bar / corner metadata */
+.spector-slide-footer {
+  position: absolute;
+  bottom: clamp(24px, 4vh, 44px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: min(var(--max-w), calc(100% - var(--pad) * 2));
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.spector-slide-index,
+.spector-slide-action {
+  font-family: var(--ff-mon);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper);
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+
+.spector-slide-action i {
+  font-style: normal;
+  margin-left: 6px;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.spector-slide:hover .spector-slide-action {
+  opacity: 1;
+}
+
+.spector-slide:hover .spector-slide-action i {
+  transform: translateX(4px);
 }
 
 /* Full-bleed clickable link */
@@ -2726,10 +2849,7 @@ body:has(.h-root)::after {
   .spector-slide-desc {
     font-size: clamp(14px, 4vw, 18px);
     max-width: 320px;
-  }
-  .spector-slide-divider {
-    width: 60px;
-    margin: 18px auto;
+    margin-top: 14px;
   }
 }
 
