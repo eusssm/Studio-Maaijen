@@ -54,22 +54,22 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
             verrassingen achteraf.
           </p>
 
-          <div className="h-preview-teaser-box" data-h="up" style={{ margin: '36px 0 48px' }}>
-            <div>
-              <span className="h-mono" style={{ color: 'var(--spot)', fontSize: '12px', textTransform: 'uppercase' }}>
-                Eerst zien, dan beslissen?
-              </span>
-              <h3 style={{ fontSize: 'clamp(18px, 2.2vw, 24px)', fontWeight: 600, color: '#fff', marginTop: '4px' }}>
-                Bekijk gratis en vrijblijvend een preview van jouw nieuwe website.
+          <div className="h-pkt-preview-strip" data-h="up">
+            <div className="h-pkt-strip-left">
+              <span className="h-mono h-pkt-strip-tag">[ Eerst zien, dan beslissen? ]</span>
+              <h3 className="h-pkt-strip-title">
+                Zie binnen 2 minuten hoe jouw nieuwe website eruit kan zien.
               </h3>
-              <p style={{ color: 'rgba(238, 232, 220, 0.75)', fontSize: '14px', margin: '4px 0 0' }}>
-                Beantwoord 7 korte vragen en zie binnen 2 minuten hoe jouw homepage eruit kan zien.
-              </p>
             </div>
-            <Link href="/start?bron=pakketten" className="h-btn h-btn--spot" data-h-magnet>
-              <span>Bekijk jouw preview</span>
-              <i aria-hidden="true">→</i>
-            </Link>
+            <div className="h-pkt-strip-right">
+              <p className="h-pkt-strip-desc">
+                Beantwoord 7 gerichte vragen over jouw bedrijf en bekijk direct een interactieve website-preview. 100% vrijblijvend.
+              </p>
+              <Link href="/start?bron=pakketten" className="h-btn h-btn--spot" data-h-magnet>
+                <span>Bekijk jouw preview</span>
+                <i aria-hidden="true">→</i>
+              </Link>
+            </div>
           </div>
 
           <PackageGrid packages={items} />

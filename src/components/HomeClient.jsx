@@ -220,26 +220,40 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
         </div>
       </div>
 
-      {/* ───────── PREVIEW GENERATOR TEASER ───────── */}
-      <section className="h-preview-teaser-section h-dark no-print" data-theme="dark">
+      {/* ───────── INTERACTIEVE PREVIEW TOOL ───────── */}
+      <section className="h-preview-feature h-dark no-print" data-theme="dark">
         <div className="h-wrap">
-          <div className="h-preview-teaser-box" data-h="up">
-            <div className="h-preview-teaser-content">
-              <span className="h-mono h-preview-teaser-badge">
-                Gratis preview tool · 2 minuten
-              </span>
-              <h2 className="h-preview-teaser-heading">
-                Benieuwd hoe jouw website eruit kan zien?
+          <div className="h-label" data-h="up">
+            <span className="h-mono">[ Gratis preview tool ]</span>
+            <span className="h-mono">Interactieve schets · 2 minuten</span>
+          </div>
+          <div className="h-preview-feature-grid">
+            <div className="h-preview-feature-left">
+              <h2 className="h-display" data-h-lines>
+                Benieuwd hoe jouw website er <em>uit kan zien?</em>
               </h2>
-              <p className="h-preview-teaser-sub">
-                Beantwoord 7 korte vragen over jouw bedrijf en bekijk direct een eerste professionele schets. Geen account nodig, 100% vrijblijvend.
-              </p>
             </div>
-            <div className="h-preview-teaser-action">
-              <Link href="/start?bron=home-banner" className="h-btn h-btn--spot" data-h-magnet>
-                <span>Bekijk jouw website</span>
-                <i aria-hidden="true">→</i>
-              </Link>
+            <div className="h-preview-feature-right" data-h="up">
+              <p className="h-preview-feature-intro">
+                Geen vage offertes vooraf. Beantwoord 7 gerichte vragen over jouw bedrijf en bekijk direct een eerste professionele, interactieve schets van jouw homepage. Vrijblijvend en zonder account.
+              </p>
+              <div className="h-preview-feature-meta">
+                <div className="h-preview-feature-director">
+                  <img
+                    src="/images/eugene-portrait.jpg"
+                    alt="Eugène Maaijen"
+                    className="h-preview-avatar"
+                  />
+                  <div className="h-preview-avatar-info">
+                    <span className="h-preview-avatar-name">Eugène Maaijen</span>
+                    <span className="h-preview-avatar-role">Studio Maaijen · Ridderkerk</span>
+                  </div>
+                </div>
+                <Link href="/start?bron=home-banner" className="h-btn h-btn--spot" data-h-magnet>
+                  <span>Bekijk jouw website</span>
+                  <i aria-hidden="true">→</i>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

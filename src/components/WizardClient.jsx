@@ -2,43 +2,90 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 
+const pad = n => String(n).padStart(2, '0');
+
 const BRANCH_OPTIONS = [
-  { id: 'Installateur / Klusbedrijf', label: 'Installateur / Klusbedrijf', icon: '⚡', placeholder: 'Bijv. CV-onderhoud, badkamerrenovatie, warmtepompen, leidingwerk...' },
-  { id: 'Kapsalon / Schoonheid', label: 'Kapsalon / Schoonheid', icon: '✂️', placeholder: 'Bijv. Knippen & stylen, balayage, bruidskapsels, hoofdhuidverzorging...' },
-  { id: 'Zorg / Praktijk', label: 'Zorg / Praktijk', icon: '🩺', placeholder: 'Bijv. Fysiotherapie, revalidatie, manuele therapie, blessurepreventie...' },
-  { id: 'Horeca', label: 'Horeca', icon: '🍽️', placeholder: 'Bijv. Seizoenslunch, à la carte diner, borrel & bites, private dining...' },
-  { id: 'Winkel / Retail', label: 'Winkel / Retail', icon: '🛍️', placeholder: 'Bijv. Woonaccessoires, stijladvies, cadeauservice, lokale producten...' },
-  { id: 'Anders', label: 'Anders / Dienstverlening', icon: '✏️', placeholder: 'Bijv. Maatwerk advies, onderhoud, installatie of zakelijke service...' },
+  {
+    id: 'Installateur / Klusbedrijf',
+    label: 'Installateur & Klusbedrijf',
+    num: '01',
+    desc: 'CV-installatie, sanitair, warmtepompen, renovaties & elektra',
+    chips: ['CV-onderhoud & storingen', 'Warmtepompen', 'Badkamerrenovatie', 'Loodgieterswerk', 'Elektra & zonnepanelen'],
+    placeholder: 'Bijv. CV-onderhoud, badkamerrenovatie, warmtepompen, leidingwerk...',
+  },
+  {
+    id: 'Kapsalon / Schoonheid',
+    label: 'Kapsalon & Schoonheid',
+    num: '02',
+    desc: 'Hairstyling, kleuringen, huidverzorging, visagie & behandelingen',
+    chips: ['Knippen & stylen', 'Balayage & highlights', 'Bruidskapsels', 'Gezichtsbehandelingen', 'Huidverbetering'],
+    placeholder: 'Bijv. Knippen & stylen, balayage, bruidskapsels, gezichtsverzorging...',
+  },
+  {
+    id: 'Zorg / Praktijk',
+    label: 'Zorg & Praktijk',
+    num: '03',
+    desc: 'Fysiotherapie, tandheelkunde, coaching, psychologie & revalidatie',
+    chips: ['Fysiotherapie', 'Manuele therapie', 'Revalidatie', 'Preventief advies', 'Persoonlijke intake'],
+    placeholder: 'Bijv. Fysiotherapie, revalidatie, manuele therapie, blessurepreventie...',
+  },
+  {
+    id: 'Horeca',
+    label: 'Horeca & Hospitality',
+    num: '04',
+    desc: 'Restaurants, cafés, lunchrooms, catering & evenementenlocaties',
+    chips: ['Seizoenslunch', 'À la carte diner', 'Borrel & bites', 'Private dining & feesten', 'Catering op maat'],
+    placeholder: 'Bijv. Seizoenslunch, à la carte diner, borrel & bites, private dining...',
+  },
+  {
+    id: 'Winkel / Retail',
+    label: 'Winkel & Boetiek',
+    num: '05',
+    desc: 'Speciaalzaken, woonwinkels, modeboetieks & ambachtelijke streekproducten',
+    chips: ['Woonaccessoires', 'Stijladvies op maat', 'Cadeauservice', 'Lokale producten', 'Afhalen & bezorgen'],
+    placeholder: 'Bijv. Woonaccessoires, stijladvies, cadeauservice, lokale producten...',
+  },
+  {
+    id: 'Anders',
+    label: 'Dienstverlening & Maatwerk',
+    num: '06',
+    desc: 'Zakelijke dienstverleners, adviesbureaus, zzp’ers & creatieve makers',
+    chips: ['Strategisch advies', 'Projectbegeleiding', 'Onderhoud & service', 'Maatwerkoplossingen'],
+    placeholder: 'Bijv. Meubelmakerij, Schoonmaakbedrijf, Boekhouding of Adviesbureau...',
+  },
 ];
 
 const VIBE_OPTIONS = [
   {
     id: 'Strak & modern',
     title: 'Strak & modern',
-    desc: 'Minimalistisch, heldere vlakken en krachtige typografie. Een eigentijdse uitstraling.',
+    num: '01',
+    desc: 'Zwitserse eenvoud, heldere vlakken, micro-typografie en maximale rust.',
     accent: '#ffffff',
-  },
-  {
-    id: 'Warm & persoonlijk',
-    title: 'Warm & persoonlijk',
-    desc: 'Gastvrij, sfeervol en toegankelijk. Klanten voelen zich direct thuis.',
-    accent: '#d6cdb9',
   },
   {
     id: 'Stoer & robuust',
     title: 'Stoer & robuust',
-    desc: 'Krachtige contrasten en ambachtelijke no-nonsense stijl. Perfect voor vakkrachten.',
+    num: '02',
+    desc: 'Ambachtelijke kracht, donkere contrasten en levendig Studio Oranje.',
     accent: '#ff4d00',
   },
   {
-    id: 'Luxe & chic',
-    title: 'Luxe & chic',
-    desc: 'Verfijnd, elegant en met oog voor het kleinste detail. Straalt exclusiviteit uit.',
+    id: 'Luxe & exclusief',
+    title: 'Luxe & exclusief',
+    num: '03',
+    desc: 'Serif-accenten, champagne-tonen en verfijning voor het hoogste segment.',
     accent: '#c8963e',
+  },
+  {
+    id: 'Warm & persoonlijk',
+    title: 'Warm & persoonlijk',
+    num: '04',
+    desc: 'Gastvrij, tactiele zandtinten en benaderbaar voor lokale klanten.',
+    accent: '#d6cdb9',
   },
 ];
 
@@ -46,15 +93,25 @@ const COLOR_PRESETS = [
   { label: 'Studio Oranje', hex: '#ff4d00' },
   { label: 'Oceaanblauw', hex: '#0f4c81' },
   { label: 'Diepgroen', hex: '#245a43' },
-  { label: 'Luxe Champagne', hex: '#c8963e' },
-  { label: 'Grafiet & Wit', hex: '#111111' },
+  { label: 'Champagne Goud', hex: '#c8963e' },
+  { label: 'Zwart & Ecru', hex: '#141413' },
 ];
 
 const ACTION_OPTIONS = [
-  { id: 'Offerte aanvragen', label: 'Offerte aanvragen', icon: '📋', sub: 'Bezoekers vragen een vrijblijvende prijsopgave' },
-  { id: 'Direct bellen', label: 'Direct bellen', icon: '📞', sub: 'Bezoekers bellen direct voor advies of spoed' },
-  { id: 'Afspraak maken', label: 'Afspraak maken', icon: '📅', sub: 'Bezoekers plannen eenvoudig online een tijdslot' },
-  { id: 'Langskomen op locatie', label: 'Langskomen', icon: '📍', sub: 'Bezoekers bezoeken jouw zaak of showroom' },
+  { id: 'Offerte aanvragen', num: '01', label: 'Offerte aanvragen', sub: 'Bezoekers vragen direct een vrijblijvende prijsindicatie' },
+  { id: 'Direct bellen', num: '02', label: 'Direct bellen', sub: 'Bezoekers bellen direct voor spoed, advies of een vraag' },
+  { id: 'Afspraak maken', num: '03', label: 'Online afspraak maken', sub: 'Bezoekers plannen zelfstandig een tijdslot in de agenda' },
+  { id: 'Langskomen op locatie', num: '04', label: 'Langskomen op locatie', sub: 'Bezoekers bezoeken jouw werkplaats, winkel of salon' },
+];
+
+const STEP_TITLES = [
+  'Bedrijfsnaam',
+  'Branche',
+  'Specialismes',
+  'Sfeer & Vibe',
+  'Huiskleur',
+  'Doel voor bezoeker',
+  'Contact & Oplevering',
 ];
 
 export default function WizardClient() {
@@ -103,7 +160,7 @@ export default function WizardClient() {
     setErrorMsg('');
     if (step === 1) {
       if (!companyName.trim()) {
-        setErrorMsg('Vul alsjeblieft de naam van je bedrijf in.');
+        setErrorMsg('Vul alsjeblieft de naam van jouw bedrijf in.');
         return;
       }
     }
@@ -115,6 +172,7 @@ export default function WizardClient() {
     }
     if (step < totalSteps) {
       setStep(s => s + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
@@ -122,6 +180,15 @@ export default function WizardClient() {
     setErrorMsg('');
     if (step > 1) {
       setStep(s => s - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function handleAddChip(chip) {
+    if (!services.trim()) {
+      setServices(chip);
+    } else if (!services.includes(chip)) {
+      setServices(prev => `${prev.trim()}, ${chip}`);
     }
   }
 
@@ -206,576 +273,457 @@ export default function WizardClient() {
       <SiteOverlays />
       <SiteNav />
 
-      <main className="h-work-page h-dark" data-theme="dark" style={{ minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
-        <div className="h-wrap" style={{ maxWidth: '840px', width: '100%', margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <main className="wizard-main h-dark" data-theme="dark">
+        <div className="wizard-wrap">
 
-          {/* Voortgangsbalk & stappenteller */}
-          <div style={{ marginBottom: 'clamp(24px, 4vh, 48px)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <span className="h-mono" style={{ color: 'var(--spot)', fontSize: '13px' }}>
-                Stap {step} van {totalSteps}
-              </span>
-              <span className="h-mono" style={{ color: 'var(--dim)', fontSize: '12px' }}>
-                Gratis & vrijblijvend
-              </span>
-            </div>
-            <div style={{ width: '100%', height: '3px', background: 'rgba(238, 232, 220, 0.12)', borderRadius: '999px', overflow: 'hidden' }}>
-              <div
-                style={{
-                  width: `${(step / totalSteps) * 100}%`,
-                  height: '100%',
-                  background: 'var(--spot)',
-                  transition: 'width 0.4s var(--ease)',
-                }}
-              />
+          {/* Strakke Zwitserse voortgangsbalk */}
+          <div className="wizard-progress-bar">
+            <span className="wizard-progress-step h-mono">
+              ({pad(step)} / {pad(totalSteps)}) · {STEP_TITLES[step - 1]}
+            </span>
+            <span className="wizard-progress-track h-mono">
+              Gratis preview generator · Studio Maaijen
+            </span>
+          </div>
+
+          {/* Senior Creative Director micro-badge */}
+          <div className="wizard-director-bar">
+            <img
+              src="/images/eugene-portrait.jpg"
+              alt="Eugène Maaijen"
+              className="wizard-director-avatar"
+            />
+            <div className="wizard-director-meta">
+              <span className="wizard-director-name">Eugène Maaijen · Lead Designer</span>
+              <span className="wizard-director-note">Persoonlijk voorstel op maat</span>
             </div>
           </div>
 
-          {/* Chat Container */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            
-            {/* Eugène Avatar & Spraakballon */}
-            <div style={{ display: 'flex', gap: 'clamp(14px, 2.5vw, 24px)', alignItems: 'flex-start', marginBottom: 'clamp(24px, 4vh, 40px)' }}>
-              <div style={{ flexShrink: 0, position: 'relative' }}>
-                <div style={{ width: 'clamp(48px, 6vw, 64px)', height: 'clamp(48px, 6vw, 64px)', borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--spot)' }}>
-                  <img
-                    src="/images/eugene-portrait.jpg"
-                    alt="Eugène Maaijen"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-                <span
-                  title="Online"
-                  style={{
-                    position: 'absolute',
-                    bottom: '2px',
-                    right: '2px',
-                    width: '12px',
-                    height: '12px',
-                    background: '#10b981',
-                    borderRadius: '50%',
-                    border: '2px solid #0c0a09',
-                  }}
-                />
-              </div>
+          {/* Monumentale vraag per stap */}
+          {step === 1 && (
+            <h1 className="wizard-question-title">
+              Hoi! Wat is de naam van jouw <em>bedrijf?</em>
+            </h1>
+          )}
+          {step === 2 && (
+            <h1 className="wizard-question-title">
+              Leuk, {companyName}! In welke branche ben je <em>actief?</em>
+            </h1>
+          )}
+          {step === 3 && (
+            <h1 className="wizard-question-title">
+              Wat zijn jouw belangrijkste <em>specialismes?</em>
+            </h1>
+          )}
+          {step === 4 && (
+            <h1 className="wizard-question-title">
+              Welke sfeer past bij jouw <em>uitstraling?</em>
+            </h1>
+          )}
+          {step === 5 && (
+            <h1 className="wizard-question-title">
+              Welke huiskleur mag jouw merk <em>ademen?</em>
+            </h1>
+          )}
+          {step === 6 && (
+            <h1 className="wizard-question-title">
+              Wat moet een bezoeker primair <em>doen?</em>
+            </h1>
+          )}
+          {step === 7 && (
+            <h1 className="wizard-question-title">
+              Waar mag ik jouw interactieve preview <em>naartoe sturen?</em>
+            </h1>
+          )}
 
-              <div style={{ flex: 1 }}>
-                <span className="h-mono" style={{ fontSize: '12px', color: 'var(--dim)', display: 'block', marginBottom: '6px' }}>
-                  Eugène Maaijen · Studio Maaijen
-                </span>
-
-                {/* Vraaginhoud per stap */}
-                {step === 1 && (
-                  <h1 style={{ fontSize: 'clamp(24px, 4vw, 42px)', lineHeight: 1.15, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0 }}>
-                    Hoi! Ik ben Eugène. Wat is de naam van jouw bedrijf?
-                  </h1>
-                )}
-                {step === 2 && (
-                  <h1 style={{ fontSize: 'clamp(24px, 4vw, 42px)', lineHeight: 1.15, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0 }}>
-                    Leuk, {companyName}! In welke branche ben je actief?
-                  </h1>
-                )}
-                {step === 3 && (
-                  <h1 style={{ fontSize: 'clamp(24px, 4vw, 42px)', lineHeight: 1.15, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0 }}>
-                    Wat zijn je belangrijkste diensten of specialismes?
-                  </h1>
-                )}
-                {step === 4 && (
-                  <h1 style={{ fontSize: 'clamp(24px, 4vw, 42px)', lineHeight: 1.15, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0 }}>
-                    Welke sfeer past het beste bij jouw bedrijf?
-                  </h1>
-                )}
-                {step === 5 && (
-                  <h1 style={{ fontSize: 'clamp(24px, 4vw, 42px)', lineHeight: 1.15, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0 }}>
-                    Heb je al een vaste huiskleur of voorkeur?
-                  </h1>
-                )}
-                {step === 6 && (
-                  <h1 style={{ fontSize: 'clamp(24px, 4vw, 42px)', lineHeight: 1.15, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0 }}>
-                    Wat moet een bezoeker vooral doen op je site?
-                  </h1>
-                )}
-                {step === 7 && (
-                  <h1 style={{ fontSize: 'clamp(24px, 4vw, 42px)', lineHeight: 1.15, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0 }}>
-                    Bijna klaar! Waar mag ik je preview naartoe sturen?
-                  </h1>
-                )}
+          {/* ───────── STAP 1: BEDRIJFSNAAM (PUUR REDACTIONEEL) ───────── */}
+          {step === 1 && (
+            <div className="wizard-hero-field">
+              <input
+                id="companyName"
+                ref={inputRef}
+                type="text"
+                autoComplete="organization"
+                value={companyName}
+                onChange={e => setCompanyName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Typ jouw bedrijfsnaam…"
+                className="wizard-hero-input"
+              />
+              <div className="wizard-input-hint h-mono">
+                <span>Druk op <strong>ENTER ↵</strong> of klik op Volgende stap</span>
               </div>
             </div>
+          )}
 
-            {/* Invoervelden per stap */}
-            <div style={{ background: 'rgba(238, 232, 220, 0.03)', border: '1px solid rgba(238, 232, 220, 0.1)', borderRadius: '18px', padding: 'clamp(20px, 3.5vw, 40px)' }}>
+          {/* ───────── STAP 2: BRANCHE (SWISS TILES GRID) ───────── */}
+          {step === 2 && (
+            <div>
+              <div className="wizard-tiles-grid">
+                {BRANCH_OPTIONS.map(opt => {
+                  const isActive = branch === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setBranch(opt.id);
+                        if (opt.id !== 'Anders') {
+                          setStep(3);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                      }}
+                      className={`wizard-tile ${isActive ? 'is-active' : ''}`}
+                    >
+                      <div className="wizard-tile-header">
+                        <span className="wizard-tile-index">[{opt.num}]</span>
+                        {isActive && <span className="h-mono" style={{ color: 'var(--spot)', fontSize: '11px' }}>Gekozen</span>}
+                      </div>
+                      <div>
+                        <div className="wizard-tile-name">{opt.label}</div>
+                        <div className="wizard-tile-desc">{opt.desc}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
 
-              {/* STAP 1: Bedrijfsnaam */}
-              {step === 1 && (
-                <div>
-                  <label htmlFor="companyName" className="h-mono" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '12px' }}>
-                    Bedrijfsnaam
+              {branch === 'Anders' && (
+                <div style={{ marginTop: '24px' }}>
+                  <label htmlFor="customBranch" className="h-mono" style={{ display: 'block', fontSize: '11.5px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '8px', letterSpacing: '0.1em' }}>
+                    Beschrijf jouw onderneming of dienstverlening:
                   </label>
                   <input
-                    id="companyName"
-                    ref={inputRef}
+                    id="customBranch"
                     type="text"
-                    value={companyName}
-                    onChange={e => setCompanyName(e.target.value)}
+                    value={customBranch}
+                    onChange={e => setCustomBranch(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Bijv. Bakker Installatietechniek of Salon Puur"
-                    style={{
-                      width: '100%',
-                      padding: '16px 20px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(238, 232, 220, 0.2)',
-                      borderRadius: '12px',
-                      color: 'var(--paper)',
-                      fontSize: 'clamp(18px, 2.2vw, 24px)',
-                      outline: 'none',
-                    }}
+                    placeholder="Bijv. Meubelmakerij, Adviesbureau of Schoonmaakbedrijf"
+                    className="wizard-hero-input"
+                    style={{ fontSize: 'clamp(20px, 2.5vw, 32px)' }}
                   />
-                  <p className="h-mono" style={{ fontSize: '11px', color: 'var(--dim)', marginTop: '10px' }}>
-                    Druk op Enter ↵ of klik op Volgende om verder te gaan.
-                  </p>
                 </div>
               )}
+            </div>
+          )}
 
-              {/* STAP 2: Branche */}
-              {step === 2 && (
-                <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px', marginBottom: '16px' }}>
-                    {BRANCH_OPTIONS.map(opt => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => {
-                          setBranch(opt.id);
-                          if (opt.id !== 'Anders') {
-                            setStep(3);
-                          }
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          padding: '16px 18px',
-                          borderRadius: '12px',
-                          background: branch === opt.id ? 'var(--spot)' : 'rgba(255, 255, 255, 0.04)',
-                          color: branch === opt.id ? 'var(--ink)' : 'var(--paper)',
-                          border: branch === opt.id ? '1px solid var(--spot)' : '1px solid rgba(238, 232, 220, 0.15)',
-                          fontSize: '15px',
-                          fontWeight: 500,
-                          textAlign: 'left',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        <span style={{ fontSize: '20px' }}>{opt.icon}</span>
-                        <span>{opt.label}</span>
-                      </button>
-                    ))}
-                  </div>
+          {/* ───────── STAP 3: DIENSTEN & SUGGESTIES ───────── */}
+          {step === 3 && (
+            <div>
+              <textarea
+                id="services"
+                ref={inputRef}
+                rows={3}
+                value={services}
+                onChange={e => setServices(e.target.value)}
+                placeholder={currentBranchObj.placeholder}
+                className="wizard-textarea"
+              />
 
-                  {branch === 'Anders' && (
-                    <div style={{ marginTop: '16px' }}>
-                      <label className="h-mono" style={{ display: 'block', fontSize: '11px', color: 'var(--dim)', marginBottom: '8px' }}>
-                        Beschrijf jouw type onderneming:
-                      </label>
-                      <input
-                        type="text"
-                        value={customBranch}
-                        onChange={e => setCustomBranch(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Bijv. Meubelmakerij, Schoonmaakbedrijf of Adviesbureau"
-                        style={{
-                          width: '100%',
-                          padding: '14px 18px',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(238, 232, 220, 0.2)',
-                          borderRadius: '10px',
-                          color: 'var(--paper)',
-                          fontSize: '16px',
-                          outline: 'none',
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* STAP 3: Diensten */}
-              {step === 3 && (
-                <div>
-                  <label htmlFor="services" className="h-mono" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '10px' }}>
-                    Belangrijkste diensten of producten (optioneel maar handig)
-                  </label>
-                  <textarea
-                    id="services"
-                    ref={inputRef}
-                    rows={4}
-                    value={services}
-                    onChange={e => setServices(e.target.value)}
-                    placeholder={currentBranchObj.placeholder}
-                    style={{
-                      width: '100%',
-                      padding: '16px 18px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(238, 232, 220, 0.2)',
-                      borderRadius: '12px',
-                      color: 'var(--paper)',
-                      fontSize: '16px',
-                      lineHeight: 1.5,
-                      outline: 'none',
-                      resize: 'vertical',
-                    }}
-                  />
-                  <p className="h-mono" style={{ fontSize: '11px', color: 'var(--dim)', marginTop: '8px' }}>
-                    Tip: Typ gerust een paar steekwoorden onder elkaar. Geen zorgen als je het nog niet precies weet, ik vul het netjes aan!
-                  </p>
-                </div>
-              )}
-
-              {/* STAP 4: Sfeer */}
-              {step === 4 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
-                  {VIBE_OPTIONS.map(v => (
+              <div className="wizard-suggestions">
+                <span className="wizard-suggestions-label h-mono">
+                  Klik op een suggestie om direct toe te voegen:
+                </span>
+                <div className="wizard-quick-chips">
+                  {currentBranchObj.chips.map(chip => (
                     <button
-                      key={v.id}
+                      key={chip}
                       type="button"
-                      onClick={() => {
-                        setVibe(v.id);
-                        setStep(5);
-                      }}
-                      style={{
-                        padding: '20px',
-                        borderRadius: '14px',
-                        background: vibe === v.id ? 'rgba(255, 77, 0, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-                        border: vibe === v.id ? '1.5px solid var(--spot)' : '1px solid rgba(238, 232, 220, 0.15)',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                      }}
+                      onClick={() => handleAddChip(chip)}
+                      className="wizard-quick-chip"
                     >
-                      <span style={{ display: 'block', fontSize: '17px', fontWeight: 600, color: vibe === v.id ? 'var(--spot)' : 'var(--paper)', marginBottom: '6px' }}>
-                        {v.title}
-                      </span>
-                      <span style={{ display: 'block', fontSize: '13px', lineHeight: 1.4, color: 'rgba(238, 232, 220, 0.7)' }}>
-                        {v.desc}
-                      </span>
+                      + {chip}
                     </button>
                   ))}
                 </div>
-              )}
+              </div>
+            </div>
+          )}
 
-              {/* STAP 5: Kleur */}
-              {step === 5 && (
-                <div>
+          {/* ───────── STAP 4: SFEER & VIBE (EDITORIAL MOODS) ───────── */}
+          {step === 4 && (
+            <div className="wizard-moods-grid">
+              {VIBE_OPTIONS.map(v => {
+                const isActive = vibe === v.id;
+                return (
                   <button
+                    key={v.id}
                     type="button"
                     onClick={() => {
-                      setColorChoice('auto');
-                      setBrandColor('#ff4d00');
-                      setStep(6);
+                      setVibe(v.id);
+                      setStep(5);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    style={{
-                      width: '100%',
-                      padding: '16px 20px',
-                      borderRadius: '12px',
-                      background: colorChoice === 'auto' ? 'var(--spot)' : 'rgba(255, 255, 255, 0.05)',
-                      color: colorChoice === 'auto' ? 'var(--ink)' : 'var(--paper)',
-                      border: '1px solid rgba(238, 232, 220, 0.2)',
-                      fontSize: '16px',
-                      fontWeight: 600,
-                      marginBottom: '20px',
-                      cursor: 'pointer',
-                      textAlign: 'center',
-                    }}
+                    className={`wizard-mood-card ${isActive ? 'is-active' : ''}`}
                   >
-                    ✦ Geen idee, kies jij maar wat het beste past!
-                  </button>
-
-                  <div className="h-mono" style={{ fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '12px' }}>
-                    Of kies een kleurpalet:
-                  </div>
-
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
-                    {COLOR_PRESETS.map(c => (
-                      <button
-                        key={c.hex}
-                        type="button"
-                        onClick={() => {
-                          setColorChoice('preset');
-                          setBrandColor(c.hex);
-                          setStep(6);
-                        }}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          padding: '10px 16px',
-                          borderRadius: '999px',
-                          background: brandColor === c.hex && colorChoice === 'preset' ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)',
-                          border: brandColor === c.hex && colorChoice === 'preset' ? '1.5px solid var(--spot)' : '1px solid rgba(238, 232, 220, 0.15)',
-                          color: 'var(--paper)',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <span style={{ width: '14px', height: '14px', borderRadius: '50%', background: c.hex, border: '1px solid rgba(255,255,255,0.3)' }} />
-                        <span style={{ fontSize: '13px' }}>{c.label}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <input
-                      type="color"
-                      value={brandColor}
-                      onChange={e => {
-                        setColorChoice('custom');
-                        setBrandColor(e.target.value);
-                      }}
-                      style={{
-                        width: '44px',
-                        height: '44px',
-                        border: 'none',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        background: 'transparent',
-                      }}
-                    />
-                    <span className="h-mono" style={{ fontSize: '13px', color: 'var(--paper)' }}>
-                      Eigen kleurcode kiezen ({brandColor})
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* STAP 6: Hoofdactie */}
-              {step === 6 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '12px' }}>
-                  {ACTION_OPTIONS.map(act => (
-                    <button
-                      key={act.id}
-                      type="button"
-                      onClick={() => {
-                        setPrimaryAction(act.id);
-                        setStep(7);
-                      }}
-                      style={{
-                        padding: '18px',
-                        borderRadius: '12px',
-                        background: primaryAction === act.id ? 'rgba(255, 77, 0, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-                        border: primaryAction === act.id ? '1.5px solid var(--spot)' : '1px solid rgba(238, 232, 220, 0.15)',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                      }}
-                    >
-                      <div style={{ fontSize: '22px', marginBottom: '8px' }}>{act.icon}</div>
-                      <div style={{ fontSize: '16px', fontWeight: 600, color: primaryAction === act.id ? 'var(--spot)' : 'var(--paper)', marginBottom: '4px' }}>
-                        {act.label}
-                      </div>
-                      <div style={{ fontSize: '12px', color: 'rgba(238, 232, 220, 0.65)', lineHeight: 1.3 }}>
-                        {act.sub}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* STAP 7: Contactgegevens */}
-              {step === 7 && (
-                <form onSubmit={handleSubmit}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
-                    <div>
-                      <label className="h-mono" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '6px' }}>
-                        Jouw naam *
-                      </label>
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        required
-                        value={name}
-                        onChange={e => setName(e.target.value)}
-                        placeholder="Bijv. Jan Bakker"
-                        style={{
-                          width: '100%',
-                          padding: '12px 14px',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(238, 232, 220, 0.2)',
-                          borderRadius: '8px',
-                          color: 'var(--paper)',
-                          fontSize: '15px',
-                          outline: 'none',
-                        }}
-                      />
+                    <div className="wizard-mood-tag">
+                      <span className="wizard-mood-accent-bar" style={{ background: v.accent }} />
+                      <span>[{v.num}] Sfeerprofiel</span>
                     </div>
-
-                    <div>
-                      <label className="h-mono" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '6px' }}>
-                        E-mailadres *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        placeholder="naam@bedrijf.nl"
-                        style={{
-                          width: '100%',
-                          padding: '12px 14px',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(238, 232, 220, 0.2)',
-                          borderRadius: '8px',
-                          color: 'var(--paper)',
-                          fontSize: '15px',
-                          outline: 'none',
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
-                    <div>
-                      <label className="h-mono" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '6px' }}>
-                        Telefoonnummer (optioneel)
-                      </label>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={e => setPhone(e.target.value)}
-                        placeholder="06 - 1234 5678"
-                        style={{
-                          width: '100%',
-                          padding: '12px 14px',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(238, 232, 220, 0.2)',
-                          borderRadius: '8px',
-                          color: 'var(--paper)',
-                          fontSize: '15px',
-                          outline: 'none',
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="h-mono" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '6px' }}>
-                        Plaats / Regio
-                      </label>
-                      <input
-                        type="text"
-                        value={city}
-                        onChange={e => setCity(e.target.value)}
-                        placeholder="Bijv. Ridderkerk of Rotterdam"
-                        style={{
-                          width: '100%',
-                          padding: '12px 14px',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(238, 232, 220, 0.2)',
-                          borderRadius: '8px',
-                          color: 'var(--paper)',
-                          fontSize: '15px',
-                          outline: 'none',
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label className="h-mono" style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '6px' }}>
-                      Bestaande website (optioneel)
-                    </label>
-                    <input
-                      type="text"
-                      value={currentWebsite}
-                      onChange={e => setCurrentWebsite(e.target.value)}
-                      placeholder="www.jouw-huidige-site.nl"
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(238, 232, 220, 0.2)',
-                        borderRadius: '8px',
-                        color: 'var(--paper)',
-                        fontSize: '15px',
-                        outline: 'none',
-                      }}
-                    />
-                  </div>
-
-                  {/* Privacy Checkbox */}
-                  <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <input
-                      id="privacy"
-                      type="checkbox"
-                      checked={privacyAgreed}
-                      onChange={e => setPrivacyAgreed(e.target.checked)}
-                      style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--spot)', cursor: 'pointer' }}
-                    />
-                    <label htmlFor="privacy" style={{ fontSize: '13px', lineHeight: 1.4, color: 'rgba(238, 232, 220, 0.8)', cursor: 'pointer' }}>
-                      Ik ga akkoord met de verwerking van mijn gegevens volgens de{' '}
-                      <Link href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--spot)', textDecoration: 'underline' }}>
-                        privacyverklaring
-                      </Link>
-                      . Geen spam, alleen een persoonlijke toelichting en link naar mijn preview.
-                    </label>
-                  </div>
-                </form>
-              )}
-
-              {/* Foutmelding */}
-              {errorMsg && (
-                <div style={{ marginTop: '16px', padding: '12px 16px', borderRadius: '8px', background: 'rgba(255, 77, 0, 0.15)', border: '1px solid var(--spot)', color: 'var(--spot)', fontSize: '14px' }}>
-                  ⚠️ {errorMsg}
-                </div>
-              )}
-
-              {/* Knoppenbalk onderaan */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '28px', paddingTop: '20px', borderTop: '1px solid rgba(238, 232, 220, 0.1)' }}>
-                {step > 1 ? (
-                  <button
-                    type="button"
-                    onClick={handleBack}
-                    disabled={isSubmitting}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--dim)',
-                      fontFamily: 'var(--ff-mon)',
-                      fontSize: '12px',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                      padding: '8px 12px',
-                    }}
-                  >
-                    ← Vorige vraag
+                    <div className="wizard-mood-title">{v.title}</div>
+                    <div className="wizard-mood-desc">{v.desc}</div>
                   </button>
-                ) : <div />}
+                );
+              })}
+            </div>
+          )}
 
-                {step < totalSteps ? (
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    className="h-btn h-btn--spot"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <span>Volgende stap</span>
-                    <i aria-hidden="true">→</i>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="h-btn h-btn--spot"
-                    style={{ cursor: isSubmitting ? 'wait' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}
-                  >
-                    <span>{isSubmitting ? 'Preview samenstellen...' : 'Bekijk mijn preview ✦'}</span>
-                    <i aria-hidden="true">→</i>
-                  </button>
-                )}
+          {/* ───────── STAP 5: HUISKLEUR (PALET & SWATCHES) ───────── */}
+          {step === 5 && (
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  setColorChoice('auto');
+                  setBrandColor('#ff4d00');
+                  setStep(6);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`wizard-color-auto-btn ${colorChoice === 'auto' ? 'is-active' : ''}`}
+              >
+                <span>✦ Laat Eugène de beste huiskleur kiezen voor jouw branche</span>
+                <span className="h-mono">Aanbevolen →</span>
+              </button>
+
+              <div className="h-mono" style={{ fontSize: '11.5px', textTransform: 'uppercase', color: 'var(--dim)', marginBottom: '14px', letterSpacing: '0.12em' }}>
+                Of kies een kenmerkend kleurpalet:
               </div>
 
-            </div>
+              <div className="wizard-swatches-grid">
+                {COLOR_PRESETS.map(c => {
+                  const isChosen = brandColor === c.hex && colorChoice === 'preset';
+                  return (
+                    <button
+                      key={c.hex}
+                      type="button"
+                      onClick={() => {
+                        setColorChoice('preset');
+                        setBrandColor(c.hex);
+                        setStep(6);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className={`wizard-swatch-item ${isChosen ? 'is-active' : ''}`}
+                    >
+                      <span className="wizard-swatch-dot" style={{ background: c.hex }} />
+                      <div className="wizard-swatch-info">
+                        <span className="wizard-swatch-name">{c.label}</span>
+                        <span className="wizard-swatch-hex">{c.hex}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
 
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', paddingTop: '12px', borderTop: '1px solid var(--line-d)' }}>
+                <input
+                  type="color"
+                  value={brandColor}
+                  onChange={e => {
+                    setColorChoice('custom');
+                    setBrandColor(e.target.value);
+                  }}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    border: 'none',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    background: 'transparent',
+                  }}
+                />
+                <span className="h-mono" style={{ fontSize: '12px', color: 'var(--paper)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Eigen hexcode kiezen: <strong style={{ color: 'var(--spot)' }}>{brandColor}</strong>
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* ───────── STAP 6: PRIMAIR DOEL ───────── */}
+          {step === 6 && (
+            <div className="wizard-actions-list">
+              {ACTION_OPTIONS.map(act => {
+                const isActive = primaryAction === act.id;
+                return (
+                  <button
+                    key={act.id}
+                    type="button"
+                    onClick={() => {
+                      setPrimaryAction(act.id);
+                      setStep(7);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`wizard-action-row ${isActive ? 'is-active' : ''}`}
+                  >
+                    <div className="wizard-action-main">
+                      <span className="wizard-action-num">[{act.num}]</span>
+                      <span className="wizard-action-title">{act.label}</span>
+                    </div>
+                    <div className="wizard-action-desc">{act.sub}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ───────── STAP 7: CONTACT & OPLEVERING (CONTACT-STYLE) ───────── */}
+          {step === 7 && (
+            <div className="wizard-contact-split">
+              <div className="wizard-contact-summary">
+                <div className="wizard-summary-title">Preview Specificaties</div>
+                <dl className="wizard-summary-list">
+                  <div className="wizard-summary-item">
+                    <dt>Bedrijf</dt>
+                    <dd>{companyName || '—'}</dd>
+                  </div>
+                  <div className="wizard-summary-item">
+                    <dt>Branche</dt>
+                    <dd>{branch === 'Anders' && customBranch ? customBranch : branch}</dd>
+                  </div>
+                  <div className="wizard-summary-item">
+                    <dt>Sfeer</dt>
+                    <dd>{vibe}</dd>
+                  </div>
+                  <div className="wizard-summary-item">
+                    <dt>Doel</dt>
+                    <dd>{primaryAction}</dd>
+                  </div>
+                </dl>
+
+                <div className="wizard-summary-perks">
+                  <span>Direct interactief op jouw scherm</span>
+                  <span>14 dagen online met beveiligde link</span>
+                  <span>100% gratis & zonder verdere verplichtingen</span>
+                </div>
+              </div>
+
+              <form className="wizard-contact-form" onSubmit={handleSubmit} noValidate>
+                <div className="wizard-form-row">
+                  <div className="wizard-form-field">
+                    <label htmlFor="w-name">Jouw naam <b aria-hidden="true">*</b></label>
+                    <input
+                      id="w-name"
+                      ref={inputRef}
+                      type="text"
+                      autoComplete="name"
+                      required
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      placeholder="Bijv. Eugène Maaijen"
+                    />
+                  </div>
+                  <div className="wizard-form-field">
+                    <label htmlFor="w-email">E-mailadres (voor preview link) <b aria-hidden="true">*</b></label>
+                    <input
+                      id="w-email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="jouw@bedrijf.nl"
+                    />
+                  </div>
+                </div>
+
+                <div className="wizard-form-row">
+                  <div className="wizard-form-field">
+                    <label htmlFor="w-phone">Telefoonnummer (optioneel)</label>
+                    <input
+                      id="w-phone"
+                      type="tel"
+                      autoComplete="tel"
+                      value={phone}
+                      onChange={e => setPhone(e.target.value)}
+                      placeholder="06 - 1234 5678"
+                    />
+                  </div>
+                  <div className="wizard-form-field">
+                    <label htmlFor="w-city">Plaats / Regio</label>
+                    <input
+                      id="w-city"
+                      type="text"
+                      value={city}
+                      onChange={e => setCity(e.target.value)}
+                      placeholder="Bijv. Ridderkerk of Rotterdam"
+                    />
+                  </div>
+                </div>
+
+                <div className="wizard-form-field">
+                  <label htmlFor="w-web">Huidige website (optioneel)</label>
+                  <input
+                    id="w-web"
+                    type="url"
+                    value={currentWebsite}
+                    onChange={e => setCurrentWebsite(e.target.value)}
+                    placeholder="https://"
+                  />
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '10px' }}>
+                  <input
+                    id="privacy"
+                    type="checkbox"
+                    checked={privacyAgreed}
+                    onChange={e => setPrivacyAgreed(e.target.checked)}
+                    style={{ marginTop: '3px', accentColor: 'var(--spot)', cursor: 'pointer' }}
+                  />
+                  <label htmlFor="privacy" style={{ fontSize: '13px', lineHeight: 1.5, color: 'var(--dim)', cursor: 'pointer' }}>
+                    Ik ga akkoord met de verwerking van mijn gegevens volgens de{' '}
+                    <Link href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--paper)', textDecoration: 'underline' }}>
+                      privacyverklaring
+                    </Link>
+                    . Geen spam, alleen een persoonlijke link naar mijn interactieve preview.
+                  </label>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Foutmelding banner */}
+          {errorMsg && (
+            <div className="wizard-error-banner" role="alert">
+              ⚠️ {errorMsg}
+            </div>
+          )}
+
+          {/* Gekoppelde navigatiebalk onderaan */}
+          <div className="wizard-nav-bar">
+            {step > 1 ? (
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={isSubmitting}
+                className="wizard-back-btn"
+              >
+                ← Vorige vraag
+              </button>
+            ) : <div />}
+
+            {step < totalSteps ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="h-btn h-btn--spot"
+                data-h-magnet
+              >
+                <span>Volgende stap</span>
+                <i aria-hidden="true">→</i>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="h-btn h-btn--spot"
+                data-h-magnet
+                style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'wait' : 'pointer' }}
+              >
+                <span>{isSubmitting ? 'Preview samenstellen…' : 'Bekijk mijn preview'}</span>
+                <i aria-hidden="true">→</i>
+              </button>
+            )}
           </div>
 
         </div>
