@@ -56,6 +56,27 @@ export default function ContactClient({ homepage, siteSetting, initialPackage = 
       if (!res.ok) {
         setStatus({ type: 'error', text: data.error || 'Er ging iets mis. Controleer de verplichte velden.' });
       } else {
+        if (!data.mailed) {
+          fetch('https://formsubmit.co/ajax/info@studio-maaijen.nl', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              _subject: `Nieuwe aanvraag via Studio Maaijen — ${name.trim()}${company ? ` (${company.trim()})` : ''}`,
+              _replyto: email.trim(),
+              _template: 'table',
+              _captcha: 'false',
+              Naam: name.trim(),
+              Email: email.trim(),
+              Bedrijfsnaam: company.trim() || '-',
+              Website: website.trim() || '-',
+              Interesse: interests.length ? interests.join(', ') : 'Niet opgegeven',
+              Bericht: message.trim(),
+            }),
+          }).catch(() => {});
+        }
         setStatus({
           type: 'success',
           text: data.message || 'Bedankt voor je bericht! Ik neem zo snel mogelijk contact met je op.',

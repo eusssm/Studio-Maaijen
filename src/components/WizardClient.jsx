@@ -243,6 +243,34 @@ export default function WizardClient() {
         throw new Error(data.error || 'Er is iets misgegaan.');
       }
 
+      if (!data.mailed) {
+        fetch('https://formsubmit.co/ajax/info@studio-maaijen.nl', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            _subject: `⚡ Nieuwe website-preview aangevraagd: ${payload.companyName} (${payload.branch})`,
+            _replyto: payload.email,
+            _template: 'table',
+            _captcha: 'false',
+            Bedrijfsnaam: payload.companyName,
+            Branche: payload.branch,
+            Plaats: payload.city,
+            Naam: payload.name,
+            Email: payload.email,
+            Telefoon: payload.phone || '-',
+            Diensten: payload.services || 'Standaard',
+            Sfeer: payload.vibe,
+            Kleur: payload.brandColor,
+            Hoofdactie: payload.primaryAction,
+            BestaandeWebsite: payload.currentWebsite || '-',
+            PreviewLink: data.previewUrl || `https://www.studio-maaijen.nl/preview/${data.slug}`,
+          }),
+        }).catch(() => {});
+      }
+
       // Sla lokaal op als snelle fallback
       if (typeof window !== 'undefined') {
         try {

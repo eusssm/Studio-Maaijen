@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { buildClient } from '@datocms/cma-client-node';
 import { performRequest } from '../../../../lib/datocms';
+import { DATOCMS_FORM_TOKEN } from '../../../lib/notify';
 import { getDaysRemaining } from '../../../lib/preview-presets';
 import PreviewPageClient from '../../../components/PreviewPageClient';
 
@@ -112,9 +113,9 @@ export default async function PreviewPage({ params }) {
   }
 
   // 2. Fallback via CMA als GraphQL de submission niet vond
-  if (!submission && process.env.DATOCMS_CMA_TOKEN) {
+  if (!submission && DATOCMS_FORM_TOKEN) {
     try {
-      const client = buildClient({ apiToken: process.env.DATOCMS_CMA_TOKEN });
+      const client = buildClient({ apiToken: DATOCMS_FORM_TOKEN });
       const items = await client.items.list({
         filter: {
           type: 'preview_submission',

@@ -180,8 +180,8 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               Websites, digitale producten en merkidentiteiten die vertrouwen wekken en bezoekers omzetten in klanten — rechtstreeks ontworpen en gebouwd in Ridderkerk.
             </p>
             <div className="h-hero-actions">
-              <Link href="/start?bron=hero" className="h-btn h-btn--spot" data-h-magnet>
-                <span>Bekijk jouw website</span>
+              <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
+                <span>Start een project</span>
                 <i aria-hidden="true">→</i>
               </Link>
               <a href="#pakketten" className="h-btn h-btn--ghost" data-h-magnet>

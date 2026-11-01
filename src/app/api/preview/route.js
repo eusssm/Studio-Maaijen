@@ -1,8 +1,7 @@
 import { buildClient } from '@datocms/cma-client-node';
-import { sendMail } from '../../../lib/notify';
+import { DATOCMS_FORM_TOKEN, sendMail } from '../../../lib/notify';
 import { generateSlug, calculateExpiryDate } from '../../../lib/preview-presets';
 
-const CMA_TOKEN = process.env.DATOCMS_CMA_TOKEN;
 const PREVIEW_MODEL_ID = 'N6S34Sl8SWmvPK376ZaRmg'; // preview_submission model in DatoCMS
 
 export async function POST(request) {
@@ -54,34 +53,54 @@ export async function POST(request) {
     const cleanCity = city?.trim() || 'regio';
     const cleanWebsite = currentWebsite?.trim() || '';
     const cleanBranch = branch || 'MKB / Dienstverlening';
-    const previewUrl = `https://www.studio-maaijen.nl/preview/${slug}`;
 
-    // 2. Opslaan in DatoCMS (Preview Aanvraag model)
-    if (CMA_TOKEN) {
-      try {
-        const client = buildClient({ apiToken: CMA_TOKEN });
-        await client.items.create({
-          item_type: { type: 'item_type', id: PREVIEW_MODEL_ID },
-          company_name: cleanCompany,
-          slug,
-          branch: cleanBranch,
-          services: services?.trim() || '',
-          vibe: vibe || 'Strak & modern',
-          brand_color: brandColor || '#ff4d00',
-          primary_action: primaryAction || 'Offerte aanvragen',
-          name: cleanName,
-          email: cleanEmail,
-          phone: cleanPhone,
-          city: cleanCity,
-          current_website: cleanWebsite,
-          source: source || 'direct',
-          lead_status: 'Nieuw',
-          notes: '',
-          expires_at: expiresAt,
-        });
-      } catch (cmsErr) {
-        console.error('DatoCMS preview submission error:', cmsErr);
-      }
+    const previewPayload = {
+      company_name: cleanCompany,
+      slug,
+      branch: cleanBranch,
+      services: services?.trim() || '',
+      vibe: vibe || 'Strak & modern',
+      brand_color: brandColor || '#ff4d00',
+      primary_action: primaryAction || 'Offerte aanvragen',
+      name: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
+      city: cleanCity,
+      current_website: cleanWebsite,
+      source: source || 'direct',
+      lead_status: 'Nieuw',
+      expires_at: expiresAt,
+    };
+
+    const dataToken = Buffer.from(JSON.stringify(previewPayload)).toString('base64url');
+    const previewUrl = `https://www.studio-maaijen.nl/preview/${slug}?p=${dataToken}`;
+
+    // 2. Altijd opslaan in DatoCMS (Preview Aanvraag model)
+    let saved = false;
+    try {
+      const client = buildClient({ apiToken: DATOCMS_FORM_TOKEN });
+      await client.items.create({
+        item_type: { type: 'item_type', id: PREVIEW_MODEL_ID },
+        company_name: cleanCompany,
+        slug,
+        branch: cleanBranch,
+        services: services?.trim() || '',
+        vibe: vibe || 'Strak & modern',
+        brand_color: brandColor || '#ff4d00',
+        primary_action: primaryAction || 'Offerte aanvragen',
+        name: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
+        city: cleanCity,
+        current_website: cleanWebsite,
+        source: source || 'direct',
+        lead_status: 'Nieuw',
+        notes: '',
+        expires_at: expiresAt,
+      });
+      saved = true;
+    } catch (cmsErr) {
+      console.error('DatoCMS preview submission error:', cmsErr);
     }
 
     // 3. E-mail notificatie naar Eugène (info@studio-maaijen.nl)
@@ -111,67 +130,62 @@ export async function POST(request) {
       `Vervalt op: ${new Date(expiresAt).toLocaleDateString('nl-NL')}`,
     ].join('\n');
 
-    // Klant-bevestiging
-    const customerSubject = `Jouw website-preview voor ${cleanCompany} staat klaar — Studio Maaijen`;
-    const customerText = [
-      `Beste ${cleanName},`,
-      ``,
-      `Leuk dat je een website-preview hebt gegenereerd voor ${cleanCompany}!`,
-      ``,
-      `Je eerste schets staat direct voor je klaar via onderstaande link:`,
-      `${previewUrl}`,
-      ``,
-      `Deze preview is 14 dagen vrijblijvend beschikbaar. In het echte ontwerp werk ik alles persoonlijk uit: de complete vormgeving, teksten, fotografie en interactie, precies afgestemd op jouw bedrijf.`,
-      ``,
-      `Ik neem binnen één werkdag even contact met je op om te horen wat je ervan vindt.`,
-      ``,
-      `Met vriendelijke groet,`,
-      `Eugène Maaijen`,
-      `Studio Maaijen — Ridderkerk`,
-      `www.studio-maaijen.nl`,
-      `06-12345678 · info@studio-maaijen.nl`,
-    ].join('\n');
-
-    // Mail verzenden (fouten worden gelogd; de preview zelf blijft altijd werken)
-    const adminMailed = await sendMail({
+    const adminMail = await sendMail({
       to: 'info@studio-maaijen.nl',
       subject: adminSubject,
       text: adminText,
       replyTo: cleanEmail,
-    });
-    if (!adminMailed) console.error('[preview] Notificatie naar info@ niet verzonden. Lead:', adminText);
-    await sendMail({
-      to: cleanEmail,
-      subject: customerSubject,
-      text: customerText,
-      replyTo: 'info@studio-maaijen.nl',
+      referer: 'https://www.studio-maaijen.nl/start',
+      fields: {
+        Bedrijfsnaam: cleanCompany,
+        Branche: cleanBranch,
+        Plaats: cleanCity,
+        Naam: cleanName,
+        Email: cleanEmail,
+        Telefoon: cleanPhone || '-',
+        Diensten: services?.trim() || 'Standaard',
+        Sfeer: vibe,
+        Kleur: brandColor,
+        Hoofdactie: primaryAction,
+        BestaandeWebsite: cleanWebsite || '-',
+        PreviewLink: previewUrl,
+      },
     });
 
-    const previewPayload = {
-      company_name: cleanCompany,
-      slug,
-      branch: cleanBranch,
-      services: services?.trim() || '',
-      vibe: vibe || 'Strak & modern',
-      brand_color: brandColor || '#ff4d00',
-      primary_action: primaryAction || 'Offerte aanvragen',
-      name: cleanName,
-      email: cleanEmail,
-      phone: cleanPhone,
-      city: cleanCity,
-      current_website: cleanWebsite,
-      source: source || 'direct',
-      lead_status: 'Nieuw',
-      expires_at: expiresAt,
-    };
+    // Optionele klant-bevestiging als Resend actief is
+    if (process.env.RESEND_API_KEY) {
+      const customerSubject = `Jouw website-preview voor ${cleanCompany} staat klaar — Studio Maaijen`;
+      const customerText = [
+        `Beste ${cleanName},`,
+        ``,
+        `Leuk dat je een website-preview hebt gegenereerd voor ${cleanCompany}!`,
+        ``,
+        `Je eerste schets staat direct voor je klaar via onderstaande link:`,
+        `${previewUrl}`,
+        ``,
+        `Deze preview is 14 dagen vrijblijvend beschikbaar.`,
+        ``,
+        `Met vriendelijke groet,`,
+        `Eugène Maaijen`,
+        `Studio Maaijen — Ridderkerk`,
+        `www.studio-maaijen.nl`,
+      ].join('\n');
 
-    const dataToken = Buffer.from(JSON.stringify(previewPayload)).toString('base64url');
+      await sendMail({
+        to: cleanEmail,
+        subject: customerSubject,
+        text: customerText,
+        replyTo: 'info@studio-maaijen.nl',
+      });
+    }
 
     return Response.json({
       ok: true,
+      saved,
+      mailed: adminMail.ok,
       slug,
       dataToken,
-      previewUrl: `https://www.studio-maaijen.nl/preview/${slug}?p=${dataToken}`,
+      previewUrl,
     });
   } catch (error) {
     console.error('API /preview error:', error);

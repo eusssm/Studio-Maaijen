@@ -1,7 +1,6 @@
 import { buildClient } from '@datocms/cma-client-node';
-import { sendMail } from '../../../lib/notify';
+import { DATOCMS_FORM_TOKEN, sendMail } from '../../../lib/notify';
 
-const CMA_TOKEN = process.env.DATOCMS_CMA_TOKEN;
 const CONTACT_MODEL_ID = 'AmmEJM1lQkqyR2xRZUdNxA';
 
 export async function POST(request) {
@@ -44,47 +43,52 @@ export async function POST(request) {
       message.trim(),
     ].join('\n');
 
-    // 1. Opslaan in DatoCMS (Contact Aanvraag model)
+    // 1. Altijd opslaan in DatoCMS (Contact Aanvraag model)
     let saved = false;
-    if (CMA_TOKEN) {
-      try {
-        const client = buildClient({ apiToken: CMA_TOKEN });
-        await client.items.create({
-          item_type: { type: 'item_type', id: CONTACT_MODEL_ID },
-          name: name.trim(),
-          email: email.trim(),
-          company: company?.trim() || '',
-          website: website?.trim() || '',
-          interests: interestsList,
-          message: message.trim(),
-        });
-        saved = true;
-      } catch (cmsErr) {
-        console.error('[contact] DatoCMS opslaan mislukt:', cmsErr);
-      }
-    } else {
-      console.error('[contact] DATOCMS_CMA_TOKEN ontbreekt: aanvraag wordt niet opgeslagen.');
+    try {
+      const client = buildClient({ apiToken: DATOCMS_FORM_TOKEN });
+      await client.items.create({
+        item_type: { type: 'item_type', id: CONTACT_MODEL_ID },
+        name: name.trim(),
+        email: email.trim(),
+        company: company?.trim() || '',
+        website: website?.trim() || '',
+        interests: interestsList,
+        message: message.trim(),
+      });
+      saved = true;
+    } catch (cmsErr) {
+      console.error('[contact] DatoCMS opslaan mislukt:', cmsErr);
     }
 
-    // 2. E-mailnotificatie
-    const mailed = await sendMail({
+    // 2. E-mailnotificatie naar info@studio-maaijen.nl
+    const mailResult = await sendMail({
       to: recipientEmail,
       subject,
       text: plainText,
       replyTo: email.trim(),
+      referer: 'https://www.studio-maaijen.nl/contact',
+      fields: {
+        Naam: name.trim(),
+        Email: email.trim(),
+        Bedrijfsnaam: company?.trim() || '-',
+        Website: website?.trim() || '-',
+        Interesse: interestsList,
+        Bericht: message.trim(),
+      },
     });
 
-    // Als niets is gelukt, laat de bezoeker dat weten i.p.v. nep-succes
-    if (!saved && !mailed) {
-      console.error('[contact] AANVRAAG VERLOREN:', plainText);
+    if (!saved && !mailResult.ok) {
       return Response.json(
-        { error: 'Je bericht kon helaas niet worden verstuurd. Mail me direct via info@studio-maaijen.nl.' },
+        { error: 'Je bericht kon helaas niet worden verstuurd. Mail direct naar info@studio-maaijen.nl.' },
         { status: 502 }
       );
     }
 
     return Response.json({
       ok: true,
+      saved,
+      mailed: mailResult.ok,
       message: 'Bedankt voor je bericht! Je aanvraag is ontvangen en ik neem binnen één werkdag contact met je op.',
     });
   } catch (error) {
