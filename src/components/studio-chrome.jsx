@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import gsap from 'gsap';
 
 /* ─────────────────────────────────────────────────────────────
    Gedeelde "chrome" van studio-maaijen.nl — Möbius × Scandinavisch.
-   Ultra-clean typografische navigatie, rustig mobiel menu en
-   monumentale editorial footer.
+   100% GSAP-aangestuurde micro-interacties (CharSwap, Mobiel Menu,
+   Footer Venetian Blinds en Pijl-Cursor).
    ───────────────────────────────────────────────────────────── */
 
 export const EMAIL = 'info@studio-maaijen.nl';
@@ -51,20 +52,58 @@ export function Reg({ className = '' }) {
   );
 }
 
-/* Möbius Double-Layer Per-Character Hover Wave (Menu Item Container) */
+/* Möbius Double-Layer Per-Character Hover Wave — 100% GSAP gestuurd */
 export function CharSwap({ text = '', className = '' }) {
+  const wrapRef = useRef(null);
   const chars = Array.from(String(text));
+
+  const animateWave = useCallback(toY => {
+    const el = wrapRef.current;
+    if (!el) return;
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+    const items = el.querySelectorAll('[data-m-char-pair]');
+    if (!items.length) return;
+    gsap.to(items, {
+      yPercent: toY,
+      duration: 0.56,
+      ease: 'expo.out',
+      stagger: 0.015,
+      overwrite: 'auto',
+      force3D: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const host = el.closest('a, button') || el;
+    const onEnter = () => animateWave(-100);
+    const onLeave = () => animateWave(0);
+
+    host.addEventListener('mouseenter', onEnter);
+    host.addEventListener('mouseleave', onLeave);
+    host.addEventListener('focus', onEnter);
+    host.addEventListener('blur', onLeave);
+    return () => {
+      host.removeEventListener('mouseenter', onEnter);
+      host.removeEventListener('mouseleave', onLeave);
+      host.removeEventListener('focus', onEnter);
+      host.removeEventListener('blur', onLeave);
+    };
+  }, [animateWave, text]);
+
   return (
-    <span className={`m-charswap ${className}`} aria-label={text}>
+    <span ref={wrapRef} className={`m-charswap ${className}`} aria-label={text}>
       {chars.map((ch, i) => (
-        <span
-          key={i}
-          className="m-char-col"
-          style={{ '--char-i': i }}
-          aria-hidden="true"
-        >
-          <span className="m-char-top">{ch === ' ' ? '\u00A0' : ch}</span>
-          <span className="m-char-bot">{ch === ' ' ? '\u00A0' : ch}</span>
+        <span key={i} className="m-char-col" aria-hidden="true">
+          <span className="m-char-top" data-m-char-pair>
+            {ch === ' ' ? '\u00A0' : ch}
+          </span>
+          <span className="m-char-bot" data-m-char-pair>
+            {ch === ' ' ? '\u00A0' : ch}
+          </span>
         </span>
       ))}
     </span>
@@ -122,7 +161,7 @@ export function LiveClock({ className = '' }) {
   );
 }
 
-/* Voortgangsbalk + subtiele cursor met gecentreerde pijl */
+/* Voortgangsbalk + 100% GSAP aangestuurde cirkel-cursor met gecentreerde pijl */
 export function SiteOverlays() {
   return (
     <>
@@ -130,6 +169,7 @@ export function SiteOverlays() {
         <span data-h-progress />
       </div>
       <div className="h-cursor no-print" aria-hidden="true">
+        <span className="h-cursor-dot" data-h-cursor-dot />
         <span data-h-cursor-label className="h-cursor-arrow">
           <svg
             width="22"
@@ -154,6 +194,43 @@ export function SiteNav({ menuOpen: externalOpen, setMenuOpen: externalSetOpen }
   const [internalOpen, setInternalOpen] = useState(false);
   const menuOpen = externalOpen !== undefined ? externalOpen : internalOpen;
   const setMenuOpen = externalSetOpen || setInternalOpen;
+  const menuRef = useRef(null);
+
+  /* GSAP choreografie voor het openen en sluiten van het mobiele menu */
+  useEffect(() => {
+    const menuEl = menuRef.current;
+    if (!menuEl) return;
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const links = menuEl.querySelectorAll('nav a');
+    const foot = menuEl.querySelector('.h-menu-foot');
+
+    if (menuOpen) {
+      gsap.fromTo(
+        links,
+        { y: 28, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.65,
+          ease: 'expo.out',
+          stagger: 0.055,
+          delay: 0.08,
+          overwrite: 'auto',
+          force3D: true,
+        }
+      );
+      if (foot) {
+        gsap.fromTo(
+          foot,
+          { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.65, ease: 'expo.out', delay: 0.28, overwrite: 'auto' }
+        );
+      }
+    }
+  }, [menuOpen]);
 
   return (
     <>
@@ -189,7 +266,12 @@ export function SiteNav({ menuOpen: externalOpen, setMenuOpen: externalSetOpen }
         </div>
       </header>
 
-      <div id="h-menu" className={`h-menu no-print ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}>
+      <div
+        id="h-menu"
+        ref={menuRef}
+        className={`h-menu no-print ${menuOpen ? 'is-open' : ''}`}
+        aria-hidden={!menuOpen}
+      >
         <nav aria-label="Mobiel menu">
           {NAV_ITEMS.map((item, i) => (
             <Link
@@ -232,12 +314,12 @@ export function SiteFooter({ tagline, location, copyright }) {
     <footer className="h-footer no-print" data-theme="paper">
       <div className="h-wrap">
         <div className="h-footer-grid">
-          <div>
+          <div data-h="up">
             <span className="h-mono">Studio Maaijen®</span>
             <p className="h-footer-lead">{tag}</p>
             <p className="h-footer-dim">{loc.split('\n').map((l, i) => <span key={i} className="h-block">{l}</span>)}</p>
           </div>
-          <div>
+          <div data-h="up">
             <span className="h-mono">Index</span>
             {NAV_ITEMS.map(item => (
               <Link key={item.id} href={item.href}>
@@ -248,7 +330,7 @@ export function SiteFooter({ tagline, location, copyright }) {
               <CharSwap text="Gratis website-preview" />
             </Link>
           </div>
-          <div>
+          <div data-h="up">
             <span className="h-mono">Direct contact</span>
             <a href={`mailto:${EMAIL}`}>
               <CharSwap text={EMAIL} />

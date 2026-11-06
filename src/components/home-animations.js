@@ -179,9 +179,15 @@ export function initHomeMotion(root) {
         }, '-=0.2');
     }
 
-    /* ───────── 2. NAV: thema per sectie, verschijnt bij scrollen ───────── */
+    /* ───────── 2. NAV: thema per sectie, GSAP slide-in/out bij scrollen ───────── */
     const nav = one('[data-h-nav]');
+    const isHome = root.classList.contains('h-home');
     if (nav) {
+      if (isHome) {
+        gsap.set(nav, { y: -14, autoAlpha: 0 });
+      }
+      let navState = isHome ? 'top' : 'shown';
+
       q('[data-theme]').forEach(sec => {
         const theme = sec.getAttribute('data-theme');
         ScrollTrigger.create({
@@ -191,6 +197,7 @@ export function initHomeMotion(root) {
           onToggle: self => self.isActive && nav.setAttribute('data-theme', theme),
         });
       });
+
       ScrollTrigger.create({
         start: 0,
         end: 'max',
@@ -198,9 +205,24 @@ export function initHomeMotion(root) {
           const y = self.scroll();
           const menuOpen = document.body.classList.contains('menu-open');
           nav.classList.toggle('is-scrolled', y > 40);
-          if (menuOpen || y < 240) nav.classList.remove('is-hidden');
-          else if (self.direction === 1) nav.classList.add('is-hidden');
-          else if (self.direction === -1) nav.classList.remove('is-hidden');
+
+          let nextState = 'shown';
+          if (isHome && y <= 40 && !menuOpen) {
+            nextState = 'top';
+          } else if (!menuOpen && y >= 240 && self.direction === 1) {
+            nextState = 'hidden';
+          }
+
+          if (nextState !== navState) {
+            navState = nextState;
+            if (nextState === 'top') {
+              gsap.to(nav, { y: -14, autoAlpha: 0, duration: 0.4, ease: 'power3.out', overwrite: 'auto' });
+            } else if (nextState === 'hidden') {
+              gsap.to(nav, { yPercent: -102, autoAlpha: 1, duration: 0.5, ease: 'expo.out', overwrite: 'auto' });
+            } else {
+              gsap.to(nav, { y: 0, yPercent: 0, autoAlpha: 1, duration: 0.55, ease: 'expo.out', overwrite: 'auto' });
+            }
+          }
         },
       });
     }
@@ -752,20 +774,57 @@ export function initHomeMotion(root) {
       }
     });
 
-    /* ───────── 16. CURSOR + MAGNETISCHE KNOPPEN ───────── */
+    /* ───────── 16. 100% GSAP CURSOR, KNOPPEN, PILLS & CARDS ───────── */
     if (fine) {
       const cur = one('.h-cursor');
-      const label = one('[data-h-cursor-label]');
+      const dot = one('[data-h-cursor-dot]', cur);
+      const arrow = one('[data-h-cursor-label]', cur);
+
       if (cur) {
         root.classList.add('h-cursor-on');
-        const cx = gsap.quickTo(cur, 'x', { duration: 0.32, ease: 'power3.out' });
-        const cy = gsap.quickTo(cur, 'y', { duration: 0.32, ease: 'power3.out' });
+        const cx = gsap.quickTo(cur, 'x', { duration: 0.28, ease: 'power3.out' });
+        const cy = gsap.quickTo(cur, 'y', { duration: 0.28, ease: 'power3.out' });
         let shown = false;
+        let mode = 'idle'; // 'idle' | 'link' | 'label'
+
+        if (dot) gsap.set(dot, { scale: 0, opacity: 0, force3D: true });
+        if (arrow) gsap.set(arrow, { scale: 0.4, opacity: 0, force3D: true });
+
+        const applyCursorMode = nextMode => {
+          if (nextMode === mode) return;
+          mode = nextMode;
+          cur.classList.toggle('is-link', mode === 'link');
+          cur.classList.toggle('is-label', mode === 'label');
+
+          if (dot) {
+            gsap.to(dot, {
+              scale: mode === 'label' ? 6.8 : mode === 'link' ? 3.2 : 1,
+              opacity: shown ? 1 : 0,
+              backgroundColor: mode === 'label' ? '#111111' : '#FFFFFF',
+              duration: 0.42,
+              ease: 'expo.out',
+              overwrite: 'auto',
+              force3D: true,
+            });
+          }
+          if (arrow) {
+            gsap.to(arrow, {
+              scale: mode === 'label' ? 1 : 0.45,
+              opacity: mode === 'label' ? 1 : 0,
+              duration: 0.38,
+              ease: 'expo.out',
+              overwrite: 'auto',
+              force3D: true,
+            });
+          }
+        };
+
         const move = e => {
           if (!shown) {
             gsap.set(cur, { x: e.clientX, y: e.clientY });
             cur.classList.add('is-on');
             shown = true;
+            if (dot) gsap.to(dot, { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' });
           }
           cx(e.clientX);
           cy(e.clientY);
@@ -773,12 +832,16 @@ export function initHomeMotion(root) {
         const over = e => {
           const t = e.target.closest?.('a, button, [data-h-cursor], [role="region"]');
           const lab = e.target.closest?.('[data-h-cursor]')?.getAttribute('data-h-cursor');
-          cur.classList.toggle('is-link', !!t && !lab);
-          cur.classList.toggle('is-label', !!lab);
+          if (lab) applyCursorMode('label');
+          else if (t) applyCursorMode('link');
+          else applyCursorMode('idle');
         };
         const leave = () => {
           cur.classList.remove('is-on');
           shown = false;
+          mode = 'idle';
+          if (dot) gsap.to(dot, { scale: 0, opacity: 0, duration: 0.25 });
+          if (arrow) gsap.to(arrow, { scale: 0.4, opacity: 0, duration: 0.2 });
         };
         window.addEventListener('mousemove', move, { passive: true });
         root.addEventListener('mouseover', over);
@@ -791,23 +854,60 @@ export function initHomeMotion(root) {
         });
       }
 
+      /* Magnetische knoppen + GSAP pijl-shift */
       q('[data-h-magnet]').forEach(el => {
         const xt = gsap.quickTo(el, 'x', { duration: 0.45, ease: 'power3.out' });
         const yt = gsap.quickTo(el, 'y', { duration: 0.45, ease: 'power3.out' });
+        const icon = el.querySelector('i');
         const move = e => {
           const r = el.getBoundingClientRect();
           xt((e.clientX - (r.left + r.width / 2)) * 0.18);
           yt((e.clientY - (r.top + r.height / 2)) * 0.26);
         };
+        const enter = () => {
+          if (icon) gsap.to(icon, { x: 4, duration: 0.35, ease: 'expo.out', overwrite: 'auto' });
+        };
         const out = () => {
           xt(0);
           yt(0);
+          if (icon) gsap.to(icon, { x: 0, duration: 0.45, ease: 'expo.out', overwrite: 'auto' });
         };
+        el.addEventListener('mouseenter', enter);
         el.addEventListener('mousemove', move);
         el.addEventListener('mouseleave', out);
         cleanups.push(() => {
+          el.removeEventListener('mouseenter', enter);
           el.removeEventListener('mousemove', move);
           el.removeEventListener('mouseleave', out);
+        });
+      });
+
+      /* GSAP hover-lift op service pills, proces-kaarten, prijskaarten & partner-cellen */
+      q('.m-service-pill, .m-process-card, .m-price-card, .h-pkg, .m-partner-cell, .m-number-card').forEach(card => {
+        const isPill = card.classList.contains('m-service-pill');
+        const enter = () => {
+          gsap.to(card, {
+            y: isPill ? -3 : -5,
+            duration: 0.45,
+            ease: 'expo.out',
+            overwrite: 'auto',
+            force3D: true,
+          });
+        };
+        const leave = () => {
+          gsap.to(card, {
+            y: 0,
+            duration: 0.55,
+            ease: 'expo.out',
+            overwrite: 'auto',
+            force3D: true,
+          });
+        };
+        card.addEventListener('mouseenter', enter);
+        card.addEventListener('mouseleave', leave);
+        cleanups.push(() => {
+          card.removeEventListener('mouseenter', enter);
+          card.removeEventListener('mouseleave', leave);
         });
       });
     }

@@ -2,7 +2,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import gsap from 'gsap';
+import { CharSwap, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
 
@@ -145,11 +146,62 @@ export default function WizardClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const rootRef = useRef(null);
+  const stepBodyRef = useRef(null);
   const inputRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Auto-focus input on step change
+  /* Globale GSAP site-motion (cursor, magnetische knoppen, nav, footer) */
+  useEffect(() => {
+    let cleanup = null;
+    let cancelled = false;
+    import('./home-animations').then(mod => {
+      if (cancelled || !rootRef.current) return;
+      cleanup = mod.initHomeMotion(rootRef.current);
+    });
+    return () => {
+      cancelled = true;
+      if (cleanup) cleanup();
+    };
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('menu-open', menuOpen);
+    return () => document.body.classList.remove('menu-open');
+  }, [menuOpen]);
+
+  // GSAP stap-voor-stap animatie + auto-focus bij stapwissel
   useEffect(() => {
     setErrorMsg('');
+    if (stepBodyRef.current) {
+      const qTitle = stepBodyRef.current.querySelector('.wizard-question-title');
+      const items = stepBodyRef.current.querySelectorAll(
+        '.wizard-hero-field, .wizard-tile, .wizard-textarea, .wizard-quick-chip, .wizard-mood-card, .wizard-color-auto-btn, .wizard-swatch-item, .wizard-action-row, .wizard-contact-summary, .wizard-form-field'
+      );
+      if (qTitle) {
+        gsap.fromTo(
+          qTitle,
+          { y: 26, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.72, ease: 'expo.out', overwrite: 'auto', force3D: true }
+        );
+      }
+      if (items.length) {
+        gsap.fromTo(
+          items,
+          { y: 22, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.68,
+            ease: 'expo.out',
+            stagger: 0.045,
+            delay: 0.06,
+            overwrite: 'auto',
+            force3D: true,
+          }
+        );
+      }
+    }
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -298,12 +350,12 @@ export default function WizardClient() {
   }
 
   return (
-    <div className="h-root h-subpage" id="top">
+    <div className="h-root h-subpage" ref={rootRef} id="top">
       <SiteOverlays />
-      <SiteNav />
+      <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="wizard-main h-dark" data-theme="dark">
-        <div className="wizard-wrap">
+      <main className="wizard-main h-dark" data-theme="paper">
+        <div className="wizard-wrap" ref={stepBodyRef}>
 
           {/* Strakke Zwitserse voortgangsbalk */}
           <div className="wizard-progress-bar">

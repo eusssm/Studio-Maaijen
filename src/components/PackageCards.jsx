@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
+import { CharSwap } from './studio-chrome';
 
-/* Pakketten als rijen met prijs, doorlooptijd en vinkjes. Het uitgelichte pakket krijgt een oranje accentlijn. */
+/* Pakketten als rijen met prijs, doorlooptijd en vinkjes — voorzien van GSAP reveals en CharSwap knoppen. */
 export function PackageGrid({ packages, compact = false }) {
   return (
     <ol className={`h-pkgs ${compact ? 'h-pkgs--compact' : ''}`} data-h-group>
@@ -37,12 +38,12 @@ export function PackageGrid({ packages, compact = false }) {
                 className={`h-btn ${pkg.isFeatured ? 'h-btn--spot' : 'h-btn--ghost'} h-pkg-btn`}
                 data-h-magnet
               >
-                <span>Kies dit pakket</span>
+                <CharSwap text="Kies dit pakket" />
                 <i aria-hidden="true">→</i>
               </Link>
               {compact && (
                 <Link href="/pakketten" className="h-mono h-pkg-spec-link">
-                  Alle specificaties →
+                  <CharSwap text="Alle specificaties →" />
                 </Link>
               )}
             </div>

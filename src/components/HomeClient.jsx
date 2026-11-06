@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import gsap from 'gsap';
 import HeroVisual from './HeroVisual';
 import {
   EMAIL,
@@ -210,6 +211,10 @@ function MaskedWords({ text }) {
 
 export default function HomeClient({ homepage, projects = [], testimonials = [], packages: packageData = [] }) {
   const rootRef = useRef(null);
+  const expandCardRefs = useRef([]);
+  const faqBodyRefs = useRef([]);
+  const faqIconRefs = useRef([]);
+  const reelImgRefs = useRef([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [expandedCard, setExpandedCard] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
@@ -241,6 +246,84 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
     document.body.classList.toggle('menu-open', menuOpen);
     return () => document.body.classList.remove('menu-open');
   }, [menuOpen]);
+
+  /* GSAP animatie voor de 4-card Expanding Gallery (01 / Geselecteerd werk) */
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1080px)').matches) return;
+    expandCardRefs.current.forEach((cardEl, idx) => {
+      if (!cardEl) return;
+      const isExp = expandedCard === idx;
+      const img = cardEl.querySelector('.m-expand-media img');
+      const arrow = cardEl.querySelector('.m-expand-arrow');
+      gsap.to(cardEl, {
+        flexGrow: isExp ? 2.2 : 1,
+        backgroundColor: isExp ? '#F2EFE9' : '#F7F6F2',
+        duration: 0.78,
+        ease: 'expo.out',
+        overwrite: 'auto',
+      });
+      if (img) {
+        gsap.to(img, {
+          scale: isExp ? 1.035 : 1,
+          duration: 0.9,
+          ease: 'expo.out',
+          overwrite: 'auto',
+          force3D: true,
+        });
+      }
+      if (arrow) {
+        gsap.to(arrow, {
+          x: isExp ? 3 : 0,
+          y: isExp ? -3 : 0,
+          duration: 0.45,
+          ease: 'power3.out',
+          overwrite: 'auto',
+        });
+      }
+    });
+  }, [expandedCard]);
+
+  /* GSAP animatie voor de Showreel crossfade & zoom (02B / Showreel) */
+  useEffect(() => {
+    reelImgRefs.current.forEach((imgEl, idx) => {
+      if (!imgEl) return;
+      const isAct = idx === reelIdx;
+      gsap.to(imgEl, {
+        opacity: isAct ? 1 : 0,
+        scale: isAct ? 1 : 1.06,
+        duration: 1.05,
+        ease: 'expo.out',
+        overwrite: 'auto',
+        force3D: true,
+      });
+    });
+  }, [reelIdx]);
+
+  /* GSAP animatie voor de FAQ Accordion (08 / Veelgestelde vragen) */
+  useEffect(() => {
+    faqBodyRefs.current.forEach((bodyEl, idx) => {
+      if (!bodyEl) return;
+      const isOpen = openFaq === idx;
+      gsap.to(bodyEl, {
+        height: isOpen ? 'auto' : 0,
+        opacity: isOpen ? 1 : 0,
+        duration: 0.55,
+        ease: 'expo.out',
+        overwrite: 'auto',
+      });
+    });
+    faqIconRefs.current.forEach((iconEl, idx) => {
+      if (!iconEl) return;
+      const isOpen = openFaq === idx;
+      gsap.to(iconEl, {
+        rotation: isOpen ? 45 : 0,
+        color: isOpen ? '#111111' : '#78746D',
+        duration: 0.45,
+        ease: 'expo.out',
+        overwrite: 'auto',
+      });
+    });
+  }, [openFaq]);
 
   const h = homepage || {};
   const portraitUrl = h.aboutPortrait?.url || '/images/eugene-portrait.jpg';
@@ -448,6 +531,9 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
                 return (
                   <article
                     key={proj.slug || idx}
+                    ref={el => {
+                      expandCardRefs.current[idx] = el;
+                    }}
                     className={`m-expand-card ${isExpanded ? 'is-expanded' : ''}`}
                     onMouseEnter={() => setExpandedCard(idx)}
                     data-h-cursor="BEKIJK"
@@ -572,6 +658,9 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
                   {reelSlides.map((sl, i) => (
                     <img
                       key={sl.slug || i}
+                      ref={el => {
+                        reelImgRefs.current[i] = el;
+                      }}
                       src={sl.src}
                       alt={sl.client}
                       className={`m-reel-img ${i === reelIdx ? 'is-active' : ''}`}
@@ -986,7 +1075,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
               </form>
             </div>
 
-            {/* FAQ Accordion met vloeiende CSS Grid 0fr -> 1fr hoogtetransitie */}
+            {/* FAQ Accordion met 100% GSAP hoogte- & rotatie-animatie */}
             <div className="m-faq-col" data-h="up">
               <h3 className="m-faq-heading">Veelgestelde vragen</h3>
               <div className="m-faq-list">
@@ -1001,16 +1090,27 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
                         onClick={() => setOpenFaq(isOpen ? -1 : idx)}
                       >
                         <span className="m-faq-q-text">{item.q}</span>
-                        <span className="m-faq-icon" aria-hidden="true">
+                        <span
+                          ref={el => {
+                            faqIconRefs.current[idx] = el;
+                          }}
+                          className="m-faq-icon"
+                          aria-hidden="true"
+                        >
                           +
                         </span>
                       </button>
-                      <div className="m-faq-answer-grid" aria-hidden={!isOpen}>
-                        <div className="m-faq-answer-inner">
-                          <div className="m-faq-answer">
-                            <span className="m-faq-badge" aria-hidden="true">A</span>
-                            <p>{item.a}</p>
-                          </div>
+                      <div
+                        ref={el => {
+                          faqBodyRefs.current[idx] = el;
+                        }}
+                        className="m-faq-answer-gsap"
+                        style={{ height: idx === 0 ? 'auto' : 0, opacity: idx === 0 ? 1 : 0, overflow: 'hidden' }}
+                        aria-hidden={!isOpen}
+                      >
+                        <div className="m-faq-answer">
+                          <span className="m-faq-badge" aria-hidden="true">A</span>
+                          <p>{item.a}</p>
                         </div>
                       </div>
                     </div>

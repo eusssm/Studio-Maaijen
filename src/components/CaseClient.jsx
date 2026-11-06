@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { EMAIL, LINKEDIN, sized, CropMarks, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import { EMAIL, LINKEDIN, sized, CropMarks, CharSwap, SplitChars, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
 
@@ -88,7 +88,7 @@ function Cta({ url, label, fallback = 'Bekijk resultaat online', dark }) {
         className={`h-btn ${dark ? 'h-btn--spot' : 'h-btn--ink'}`}
         data-h-magnet
       >
-        <span>{text}</span>
+        <CharSwap text={text} />
         <i aria-hidden="true">↗</i>
       </a>
     </div>
@@ -249,13 +249,13 @@ export default function CaseClient({ project, nextProject, index = 0, total = 0 
               Case {total ? `${pad(index + 1)} / ${pad(total)}` : ''} — {discipline}
             </span>
             <Link href="/work" className="h-mono h-chero-back">
-              ← Alle cases
+              <CharSwap text="← Alle cases" />
             </Link>
           </div>
 
           <div className="h-chero-top">
-            <h1 className="h-chero-title" data-h-lines>
-              {project.title}
+            <h1 className="h-chero-title">
+              <SplitChars text={project.title || name} attr="data-m-sec-char" />
             </h1>
             {total ? (
               <span className="h-chero-index" aria-hidden="true" data-h="up">
@@ -478,19 +478,19 @@ export default function CaseClient({ project, nextProject, index = 0, total = 0 
           </h2>
           <div className="h-contact-actions" data-h="up">
             <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
-              <span>Start een project</span>
+              <CharSwap text="Start een project" />
               <i aria-hidden="true">→</i>
             </Link>
             <Link href="/pakketten" className="h-btn h-btn--ghost" data-h-magnet>
-              <span>Bekijk pakketten</span>
+              <CharSwap text="Bekijk pakketten" />
               <i aria-hidden="true">→</i>
             </Link>
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="h-btn h-btn--ghost" data-h-magnet>
-              <span>LinkedIn</span>
+              <CharSwap text="LinkedIn" />
               <i aria-hidden="true">↗</i>
             </a>
             <Link href="/work" className="h-btn h-btn--ghost" data-h-magnet>
-              <span>Alle projecten</span>
+              <CharSwap text="Alle projecten" />
               <i aria-hidden="true">←</i>
             </Link>
           </div>

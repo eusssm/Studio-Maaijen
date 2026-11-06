@@ -1,9 +1,10 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import gsap from 'gsap';
 import { resolvePreviewPreset, getDaysRemaining } from '../lib/preview-presets';
-import { sized, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import { sized, CharSwap, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
 
@@ -16,9 +17,42 @@ export default function PreviewPageClient({
   siteSetting,
 }) {
   const searchParams = useSearchParams();
+  const rootRef = useRef(null);
+  const deviceFrameRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [device, setDevice] = useState('desktop'); // 'desktop' | 'mobile'
   const [submission, setSubmission] = useState(initialSubmission);
   const [isLoading, setIsLoading] = useState(!initialSubmission);
+
+  /* Globale GSAP site-motion (cursor, nav, reveals, footer blinds) */
+  useEffect(() => {
+    if (isLoading || !rootRef.current) return;
+    let cleanup = null;
+    let cancelled = false;
+    import('./home-animations').then(mod => {
+      if (cancelled || !rootRef.current) return;
+      cleanup = mod.initHomeMotion(rootRef.current);
+    });
+    return () => {
+      cancelled = true;
+      if (cleanup) cleanup();
+    };
+  }, [isLoading, submission]);
+
+  useEffect(() => {
+    document.body.classList.toggle('menu-open', menuOpen);
+    return () => document.body.classList.remove('menu-open');
+  }, [menuOpen]);
+
+  /* GSAP vloeiende schaal- en fade-animatie bij wissel tussen Desktop en Mobiel */
+  useEffect(() => {
+    if (!deviceFrameRef.current) return;
+    gsap.fromTo(
+      deviceFrameRef.current,
+      { scale: 0.96, opacity: 0.7 },
+      { scale: 1, opacity: 1, duration: 0.65, ease: 'expo.out', overwrite: 'auto', force3D: true }
+    );
+  }, [device]);
 
   // Client-side fallback via URL token (?p=) of sessionStorage
   useEffect(() => {
@@ -171,9 +205,9 @@ export default function PreviewPageClient({
   }
 
   return (
-    <div className="h-root h-subpage" id="top">
+    <div className="h-root h-subpage" ref={rootRef} id="top">
       <SiteOverlays />
-      <SiteNav />
+      <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       {/* ───────── BOVENBALK: STUDIO MAAIJEN PREVIEW FRAME HEADER ───────── */}
       <div
@@ -295,6 +329,7 @@ export default function PreviewPageClient({
       {/* ───────── HET PREVIEW KADER (AWWWARDS / GODLY LEVEL) ───────── */}
       <section className="mock-preview-viewport">
         <div
+          ref={deviceFrameRef}
           className={`mock-device-frame ${device === 'mobile' ? 'mock-device-frame--mobile' : 'mock-device-frame--desktop'}`}
           style={{
             '--mock-brand': brandColor,

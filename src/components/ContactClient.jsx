@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { EMAIL, LINKEDIN, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import { EMAIL, LINKEDIN, CharSwap, SplitChars, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
 
@@ -104,15 +104,15 @@ export default function ContactClient({ homepage, siteSetting, initialPackage = 
       <SiteOverlays />
       <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <section className="h-form-page h-dark" data-theme="dark">
+      <section className="h-form-page h-dark" data-theme="paper">
         <div className="h-wrap h-form-grid">
           <div className="h-form-intro">
             <div className="h-label" data-h="up">
               <span className="h-mono">(01) Contact</span>
               <span className="h-mono">Reactie binnen 2 werkdagen</span>
             </div>
-            <h1 className="h-display" data-h-lines>
-              Laten we <em>kennis&shy;maken.</em>
+            <h1 className="h-display">
+              <SplitChars text="Laten we kennismaken." attr="data-m-sec-char" />
             </h1>
             <p className="h-work-intro" data-h="up">
               Vertel kort waar je mee bezig bent. Ik denk met je mee over het doel, de aanpak en een passend
@@ -122,14 +122,18 @@ export default function ContactClient({ homepage, siteSetting, initialPackage = 
               <div>
                 <dt className="h-mono">E-mail</dt>
                 <dd>
-                  <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+                  <a href={`mailto:${contactEmail}`}>
+                    <CharSwap text={contactEmail} />
+                  </a>
                 </dd>
               </div>
               {siteSetting?.contactPhone ? (
                 <div>
                   <dt className="h-mono">Telefoon</dt>
                   <dd>
-                    <a href={`tel:${siteSetting.contactPhone.replace(/\s/g, '')}`}>{siteSetting.contactPhone}</a>
+                    <a href={`tel:${siteSetting.contactPhone.replace(/\s/g, '')}`}>
+                      <CharSwap text={siteSetting.contactPhone} />
+                    </a>
                   </dd>
                 </div>
               ) : null}
@@ -137,7 +141,7 @@ export default function ContactClient({ homepage, siteSetting, initialPackage = 
                 <dt className="h-mono">LinkedIn</dt>
                 <dd>
                   <a href={LINKEDIN} target="_blank" rel="noopener noreferrer">
-                    Eugène Maaijen ↗
+                    <CharSwap text="Eugène Maaijen ↗" />
                   </a>
                 </dd>
               </div>
@@ -178,8 +182,9 @@ export default function ContactClient({ homepage, siteSetting, initialPackage = 
                     aria-pressed={interests.includes(opt)}
                     className={`h-chip ${interests.includes(opt) ? 'is-on' : ''}`}
                     onClick={() => toggleInterest(opt)}
+                    data-h-magnet
                   >
-                    {opt}
+                    <CharSwap text={opt} />
                   </button>
                 ))}
               </div>
@@ -194,7 +199,7 @@ export default function ContactClient({ homepage, siteSetting, initialPackage = 
 
             <div className="h-form-foot">
               <button type="submit" className="h-btn h-btn--spot" disabled={submitting} data-h-magnet>
-                <span>{submitting ? 'Versturen…' : 'Verstuur aanvraag'}</span>
+                <CharSwap text={submitting ? 'Versturen…' : 'Verstuur aanvraag'} />
                 <i aria-hidden="true">→</i>
               </button>
               <p className="h-mono h-form-note">Je gegevens gebruik ik alleen om je aanvraag te beantwoorden.</p>

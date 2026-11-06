@@ -1,9 +1,13 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { sized, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { sized, CharSwap, SplitChars, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const FILTERS = ['Alles', 'UX/UI Design', 'Brand Identity', 'Video Editing'];
 const pad = n => String(n).padStart(2, '0');
@@ -46,74 +50,88 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
   );
 
   /* Filter switch met zachte scroll reset indien nodig */
-  const handleFilterClick = useCallback((newFilter) => {
-    if (newFilter === filter) return;
-    setFilter(newFilter);
-    if (stackRef.current) {
-      const rect = stackRef.current.getBoundingClientRect();
-      if (rect.top < 100) {
-        const targetY = window.scrollY + rect.top - 120;
-        window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+  const handleFilterClick = useCallback(
+    newFilter => {
+      if (newFilter === filter) return;
+      setFilter(newFilter);
+      if (stackRef.current) {
+        const rect = stackRef.current.getBoundingClientRect();
+        if (rect.top < 100) {
+          const targetY = window.scrollY + rect.top - 120;
+          window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+        }
       }
-    }
-  }, [filter]);
+    },
+    [filter]
+  );
 
-  /* Spector scroll effect: subtiele parallax zoom en depth fade */
+  /* 100% GSAP ScrollTrigger Stacking Parallax, Image Scale & Content Reveal */
   useEffect(() => {
     const stack = stackRef.current;
     if (!stack) return;
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
 
-    const slides = Array.from(stack.querySelectorAll('.spector-slide'));
-    if (slides.length === 0) return;
-
-    let ticking = false;
-
-    function updateScrollEffect() {
-      ticking = false;
-      const windowH = window.innerHeight;
-
-      for (let i = 0; i < slides.length; i++) {
-        const slide = slides[i];
-        const rect = slide.getBoundingClientRect();
+    const ctx = gsap.context(() => {
+      const slides = Array.from(stack.querySelectorAll('.spector-slide'));
+      slides.forEach((slide, i) => {
         const img = slide.querySelector('.spector-slide-img');
+        const content = slide.querySelector('.spector-slide-content');
         const nextSlide = slides[i + 1];
 
-        // Parallax zoom op actieve slide afbeelding bij scrollen
+        // Bij filter-wissel of laden: zachte GSAP entry op de eerste zichtbare slide
+        if (i === 0 && content) {
+          gsap.fromTo(
+            content,
+            { y: 36, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1, ease: 'expo.out', force3D: true }
+          );
+        }
+
+        // GSAP ScrollTrigger parallax zoom op het beeld van elke slide
         if (img) {
-          const zoom = 1.0 + Math.max(0, (1 - rect.top / windowH)) * 0.08;
-          img.style.transform = `scale(${Math.min(1.18, Math.max(1.0, zoom)).toFixed(4)})`;
+          gsap.fromTo(
+            img,
+            { scale: 1.0 },
+            {
+              scale: 1.12,
+              ease: 'none',
+              force3D: true,
+              scrollTrigger: {
+                trigger: slide,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 0.65,
+              },
+            }
+          );
         }
 
-        // Subtiel dimmen wanneer de volgende full-bleed slide omhoog schuift
+        // GSAP ScrollTrigger depth-fade wanneer de volgende slide eroverheen schuift
         if (nextSlide) {
-          const nextRect = nextSlide.getBoundingClientRect();
-          const coverProgress = Math.min(1, Math.max(0, (windowH - nextRect.top) / windowH));
-          const brightness = 1 - coverProgress * 0.45;
-          slide.style.filter = `brightness(${brightness.toFixed(3)})`;
-        } else {
-          slide.style.filter = 'none';
+          gsap.fromTo(
+            slide,
+            { filter: 'brightness(1)' },
+            {
+              filter: 'brightness(0.55)',
+              ease: 'none',
+              scrollTrigger: {
+                trigger: nextSlide,
+                start: 'top bottom',
+                end: 'top top',
+                scrub: 0.5,
+              },
+            }
+          );
         }
-      }
-    }
+      });
+    }, stack);
 
-    function onScroll() {
-      if (!ticking) {
-        requestAnimationFrame(updateScrollEffect);
-        ticking = true;
-      }
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    updateScrollEffect();
-
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
+    return () => ctx.revert();
   }, [shown.length, filter]);
 
-  /* Beweging opnieuw opzetten als de lijst verandert (filter) */
+  /* Globale GSAP site-motion (nav, cursor, reveals, footer blinds) */
   useEffect(() => {
     let cleanup = null;
     let cancelled = false;
@@ -137,14 +155,13 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
       <SiteOverlays />
       <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <section className="h-work-page h-dark" data-theme="dark">
-        {/* Module "Al mijn projecten" + filter — exact zoals in screenshot */}
+      <section className="h-work-page h-dark" data-theme="paper">
         <div className="h-wrap spector-header-wrap">
           <div className="spector-work-head">
             <h1 className="spector-work-title">
-              Al mijn <em>projecten</em>
+              <SplitChars text="Al mijn projecten" attr="data-m-sec-char" />
             </h1>
-            <div className="spector-chips" role="group" aria-label="Filter op discipline">
+            <div className="spector-chips" role="group" aria-label="Filter op discipline" data-h="up">
               {FILTERS.map(f => (
                 <button
                   key={f}
@@ -152,15 +169,16 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
                   aria-pressed={filter === f}
                   className={`spector-chip ${filter === f ? 'is-on' : ''}`}
                   onClick={() => handleFilterClick(f)}
+                  data-h-magnet
                 >
-                  {f}
+                  <CharSwap text={f} />
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Spector Stacking Project Slides — 100% FULL BLEED, VOLWASSEN, ZONDER BORDERS */}
+        {/* Spector Stacking Project Slides — 100% GSAP ScrollTrigger gestuurd */}
         <div className="spector-stack" ref={stackRef}>
           {shown.length > 0 ? (
             shown.map((proj, i) => {
@@ -178,8 +196,8 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
                   className="spector-slide"
                   style={{ zIndex: i + 1 }}
                   data-slide-index={i}
+                  data-h-cursor="OPEN"
                 >
-                  {/* Volledig beeldvullende achtergrondmedia (100vw x 100vh) */}
                   <div className="spector-slide-media">
                     {proj.coverImage?.url ? (
                       <img
@@ -197,7 +215,6 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
                     <div className="spector-slide-overlay" aria-hidden="true" />
                   </div>
 
-                  {/* Gecentreerde monumentale typografie (zoals Spector) */}
                   <div className="spector-slide-content">
                     <div className="spector-slide-tag">
                       <span className="spector-tag-cats">{cats.join(' · ')}</span>
@@ -205,12 +222,9 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
 
                     <h2 className="spector-slide-title">{name}</h2>
 
-                    {subtitle && (
-                      <p className="spector-slide-desc">{subtitle}</p>
-                    )}
+                    {subtitle && <p className="spector-slide-desc">{subtitle}</p>}
                   </div>
 
-                  {/* Spector corner metadata (zoals Spector bottom bar) */}
                   <div className="spector-slide-footer">
                     <span className="spector-slide-index h-mono">
                       {pad(i + 1)} / {pad(shown.length)}
@@ -220,7 +234,6 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
                     </span>
                   </div>
 
-                  {/* Volledig klikbaar naar de intacte detailpagina */}
                   <Link
                     href={`/work/${proj.slug}`}
                     className="spector-slide-link"
@@ -237,19 +250,19 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
         </div>
       </section>
 
-      <section className="h-cs-contact h-contact h-dark" data-theme="dark">
+      <section className="h-cs-contact h-contact h-dark" data-theme="paper">
         <div className="h-wrap">
           <p className="h-contact-eyebrow" data-h="up">Heb je een project in gedachten?</p>
-          <h2 className="h-contact-title" data-h-lines>
-            Laten we <em>kennis&shy;maken.</em>
+          <h2 className="h-contact-title">
+            <SplitChars text="Laten we kennismaken." attr="data-m-sec-char" />
           </h2>
           <div className="h-contact-actions" data-h="up">
             <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
-              <span>Start een project</span>
+              <CharSwap text="Start een project" />
               <i aria-hidden="true">→</i>
             </Link>
             <Link href="/pakketten" className="h-btn h-btn--ghost" data-h-magnet>
-              <span>Bekijk pakketten</span>
+              <CharSwap text="Bekijk pakketten" />
               <i aria-hidden="true">→</i>
             </Link>
           </div>

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { PackageGrid } from './PackageCards';
-import { EMAIL, LINKEDIN, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import { EMAIL, LINKEDIN, CharSwap, SplitChars, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import { normalizePackages, DEFAULT_MAINTENANCE_FEATURES } from '../../lib/packages';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
@@ -41,14 +41,14 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
       <SiteOverlays />
       <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <section className="h-pkt-page h-dark" data-theme="dark">
+      <section className="h-pkt-page h-dark" data-theme="paper">
         <div className="h-wrap">
           <div className="h-label" data-h="up">
-            <span className="h-mono">(01) Pakketten & tarieven</span>
+            <span className="h-mono">(01) Pakketten &amp; tarieven</span>
             <span className="h-mono">Vaste prijzen, geen verrassingen</span>
           </div>
-          <h1 className="h-display" data-h-lines>
-            Heldere pakketten, <em>sleutelklaar</em>
+          <h1 className="h-display">
+            <SplitChars text="Heldere pakketten, sleutelklaar" attr="data-m-sec-char" />
           </h1>
           <p className="h-work-intro" data-h="up">
             Websites inclusief CMS, huisstijlen en video voor ondernemers en MKB. Van ontwerp tot online, zonder
@@ -67,7 +67,7 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
                 Beantwoord 7 gerichte vragen over jouw bedrijf en bekijk direct een interactieve website-preview. 100% vrijblijvend.
               </p>
               <Link href="/start?bron=pakketten" className="h-btn h-btn--spot" data-h-magnet>
-                <span>Bekijk jouw preview</span>
+                <CharSwap text="Bekijk jouw preview" />
                 <i aria-hidden="true">→</i>
               </Link>
             </div>
@@ -78,7 +78,7 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
           <div className="h-maint" data-h="up">
             <div className="h-maint-top">
               <div>
-                <span className="h-mono">Optioneel · Onderhoud & hosting</span>
+                <span className="h-mono">Optioneel · Onderhoud &amp; hosting</span>
                 <h2 className="h-maint-title">Zorgeloos online blijven</h2>
                 <p className="h-maint-sub">
                   Een maandpakket zodat je website altijd snel, veilig en up-to-date blijft.
@@ -98,25 +98,25 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
         </div>
       </section>
 
-      <section className="h-cs-contact h-contact h-dark" data-theme="dark">
+      <section className="h-cs-contact h-contact h-dark" data-theme="paper">
         <div className="h-wrap">
           <p className="h-contact-eyebrow" data-h="up">
             {homepage?.ctaEyebrow || 'Klaar voor een website die werkt?'}
           </p>
-          <h2 className="h-contact-title" data-h-lines>
-            Laten we <em>iets moois</em> maken.
+          <h2 className="h-contact-title">
+            <SplitChars text="Laten we iets moois maken." attr="data-m-sec-char" />
           </h2>
           <div className="h-contact-actions" data-h="up">
             <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
-              <span>Start je project</span>
+              <CharSwap text="Start je project" />
               <i aria-hidden="true">→</i>
             </Link>
             <a href={`mailto:${EMAIL}`} className="h-btn h-btn--ghost" data-h-magnet>
-              <span>{EMAIL}</span>
+              <CharSwap text={EMAIL} />
               <i aria-hidden="true">↗</i>
             </a>
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="h-btn h-btn--ghost" data-h-magnet>
-              <span>LinkedIn</span>
+              <CharSwap text="LinkedIn" />
               <i aria-hidden="true">↗</i>
             </a>
           </div>
