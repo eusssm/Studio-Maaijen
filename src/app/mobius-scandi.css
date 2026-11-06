@@ -1824,18 +1824,20 @@ body:has(.h-root) {
   font-family: var(--ff-sans);
   font-size: clamp(50px, 11.4vw, 200px);
   font-weight: 800;
-  line-height: 0.84;
+  line-height: 1.05;
   letter-spacing: -0.06em;
   color: #111111 !important;
   opacity: 1 !important;
   -webkit-text-stroke: 0 !important;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
+  padding: 0.08em 0;
 }
 
 .m-footer-wordmark-row {
   display: inline-flex;
-  align-items: flex-start;
+  align-items: baseline;
+  overflow: visible;
 }
 
 .m-footer-reg {
@@ -1845,6 +1847,7 @@ body:has(.h-root) {
   margin-left: 0.04em;
   margin-top: 0.06em;
   display: inline-block;
+  vertical-align: super;
 }
 
 /* Möbius Venetian Blinds over het grote Footer Woordmerk */
@@ -1905,10 +1908,15 @@ body:has(.h-root) {
 
 .m-split-char-mask {
   display: inline-block;
-  overflow: hidden;
+  overflow: visible;
   vertical-align: bottom;
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
+}
+
+.h-footer-mark .m-split-char-mask {
+  overflow: visible !important;
+  display: inline-block;
 }
 
 .m-split-char {
@@ -1957,6 +1965,92 @@ body:has(.h-root) {
 .h-contact-title,
 .wizard-question-title {
   color: #111111 !important;
+}
+
+/* ─── CASE DETAIL PAGINA'S & PROSE CONTRAST FIX ─── */
+.h-case-page,
+.h-case-page .h-dark,
+.h-case-page .h-paper,
+.h-case-page .h-cs,
+.h-case-page .h-chero {
+  background-color: #FFFFFF !important;
+  color: #111111 !important;
+}
+
+.h-case-page .h-chero-intro,
+.h-chero-intro {
+  font-family: var(--ff-sans) !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  font-size: clamp(22px, 2.4vw, 38px) !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em !important;
+  color: #222222 !important;
+}
+
+.h-chero-ledger {
+  border-top-color: #EAE7E1 !important;
+}
+.h-chero-ledger > div {
+  border-bottom-color: #EAE7E1 !important;
+}
+.h-chero-ledger dt {
+  color: #78746D !important;
+}
+.h-chero-ledger dd {
+  color: #111111 !important;
+  font-weight: 500;
+}
+
+.h-cs-head {
+  border-top-color: #EAE7E1 !important;
+}
+.h-cs-meta,
+.h-cs-no,
+.h-cs-sub {
+  color: #66635E !important;
+}
+
+.h-cs-body,
+.h-cs-body p,
+.h-prose,
+.h-prose p,
+.h-prose--lead,
+.h-prose--lead p,
+.h-cs-split-text,
+.h-cs-split-text p {
+  color: #262422 !important;
+  font-size: clamp(17px, 1.25vw, 21px);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+.h-prose > p:first-child,
+.h-prose--lead > p {
+  color: #141312 !important;
+  font-size: clamp(21px, 1.7vw, 29px) !important;
+  line-height: 1.45 !important;
+  letter-spacing: -0.015em !important;
+  font-weight: 450 !important;
+}
+
+.h-dark .h-prose > p:first-child,
+.h-paper .h-prose > p:first-child,
+.h-dark .h-prose strong,
+.h-paper .h-prose strong {
+  color: #111111 !important;
+}
+
+.h-fig-cap {
+  color: #78746D !important;
+}
+
+/* Alle cursieve teksten opheffen voor strakke neo-grotesque typografie */
+.h-root em,
+.h-root i:not([aria-hidden]) {
+  font-family: var(--ff-sans) !important;
+  font-style: normal !important;
+  font-weight: inherit !important;
 }
 
 .spector-chip,

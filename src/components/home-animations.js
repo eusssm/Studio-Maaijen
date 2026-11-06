@@ -702,16 +702,17 @@ export function initHomeMotion(root) {
       if (footerChars.length) {
         gsap.fromTo(
           footerChars,
-          { yPercent: 65 },
+          { yPercent: 40, opacity: 0.15 },
           {
             yPercent: 0,
+            opacity: 1,
             ease: 'power2.out',
-            stagger: 0.025,
+            stagger: 0.02,
             scrollTrigger: {
               trigger: footerMark,
-              start: 'top 98%',
-              end: 'bottom 84%',
-              scrub: 0.4,
+              start: 'top 96%',
+              end: 'bottom 82%',
+              scrub: 0.35,
             },
           }
         );

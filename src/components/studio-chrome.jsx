@@ -14,16 +14,17 @@ export const LINKEDIN = 'https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b65834
 
 export const NAV_ITEMS = [
   { id: 'werk', label: 'Werk', href: '/work' },
-  { id: 'studio', label: 'Studio', href: '/#about' },
   { id: 'diensten', label: 'Diensten', href: '/#services' },
   { id: 'pakketten', label: 'Pakketten', href: '/pakketten' },
+  { id: 'studio', label: 'Studio', href: '/#about' },
   { id: 'contact', label: 'Contact', href: '/contact' },
 ];
 
 export const HERO_NAV_ITEMS = [
   { id: 'werk', label: 'WERK', href: '/work' },
-  { id: 'studio', label: 'STUDIO', href: '/#about' },
   { id: 'diensten', label: 'DIENSTEN', href: '/#services' },
+  { id: 'pakketten', label: 'PAKKETTEN', href: '/pakketten' },
+  { id: 'studio', label: 'STUDIO', href: '/#about' },
   { id: 'contact', label: 'CONTACT', href: '/contact' },
 ];
 
@@ -248,9 +249,6 @@ export function SiteNav({ menuOpen: externalOpen, setMenuOpen: externalSetOpen }
         </nav>
 
         <div className="h-nav-right">
-          <Link href="/pakketten" className="h-nav-sublink">
-            <CharSwap text="PAKKETTEN" />
-          </Link>
           <Link href="/start?bron=navbar" className="h-nav-preview-cta" data-h-magnet>
             <span>Gratis preview</span> <span aria-hidden="true">→</span>
           </Link>
@@ -344,9 +342,6 @@ export function SiteFooter({ tagline, location, copyright }) {
         </div>
 
         <div className="h-footer-mark" aria-hidden="true" data-m-footer-mark>
-          <div className="m-footer-blinds" data-m-blinds>
-            <span /><span /><span /><span /><span /><span />
-          </div>
           <span className="m-footer-wordmark-row">
             <SplitChars text="Studio Maaijen" attr="data-m-footer-char" />
             <sup className="m-footer-reg" data-m-footer-char>®</sup>
