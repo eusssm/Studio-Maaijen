@@ -303,60 +303,52 @@ body:has(.h-root) {
   color: #111111;
 }
 
-/* ── CENTRALE GEDRAAIDE CASE-STAPEL (MÖBIUS PHOTO STACK + SCROLL-PEEL) ── */
+/* ── CENTRALE GEDRAAIDE CASE-STAPEL (MÖBIUS PHOTO STACK — 100% GSAP DRIVEN & GROTER FORMAAT) ── */
 .m-hero-stack-stage {
   position: absolute;
-  left: 49%;
-  top: 56%;
+  left: 50%;
+  top: 52%;
   transform: translate(-50%, -50%);
   z-index: 12; /* Ligt bewust vóór het monumentale woordmerk (z-index 5), exact zoals in Möbius */
   pointer-events: auto;
-  --tilt-x: 0px;
-  --tilt-y: 0px;
-  --tilt-r: 0deg;
+  perspective: 1200px;
 }
 
 .m-hero-stack {
   position: relative;
-  width: clamp(270px, 26.5vw, 410px);
-  aspect-ratio: 4 / 4.65;
-  transform: translate3d(var(--tilt-x, 0px), var(--tilt-y, 0px), 0) rotate(var(--tilt-r, 0deg));
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.m-stack-peel-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+  /* Een flinke maat groter, exact in de krachtige verhouding van mobius.framer.website (tot ~530px) */
+  width: clamp(320px, 33.5vw, 530px);
+  aspect-ratio: 4 / 4.55;
+  transform-style: preserve-3d;
   will-change: transform;
 }
 
-/* De karakteristieke zwarte en zandkleurige achterkaarten uit het Möbius-ontwerp */
+.m-stack-peel-layer,
+.m-stack-entry-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* De karakteristieke zwarte en zandkleurige achterkaarten uit het Möbius-ontwerp (GSAP stuurt transform aan) */
 .m-stack-backing {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .m-stack-backing--black {
   background: #0D0D0D;
-  transform: translate(-14px, -6px) rotate(-15deg) scale(0.95);
   z-index: 1;
 }
 
 .m-stack-backing--warm {
   background: #ECE3B8;
-  transform: translate(12px, -8px) rotate(9.5deg) scale(0.97);
   z-index: 2;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-}
-
-.m-hero-stack:hover .m-stack-backing--black {
-  transform: translate(-24px, -12px) rotate(-19deg) scale(0.96);
-}
-.m-hero-stack:hover .m-stack-backing--warm {
-  transform: translate(22px, -14px) rotate(13deg) scale(0.98);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
 }
 
 .m-stack-card {
@@ -365,28 +357,16 @@ body:has(.h-root) {
   background: #F4F2ED;
   overflow: hidden;
   pointer-events: auto;
-  transform: translate(var(--card-x, 0px), var(--card-y, 0px)) rotate(var(--card-rot, 5deg));
-  transition:
-    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.5s ease;
-  box-shadow: 0 22px 50px -12px rgba(0, 0, 0, 0.22);
+  will-change: transform;
+  backface-visibility: hidden;
+  transition: box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 24px 56px -14px rgba(0, 0, 0, 0.22);
   cursor: pointer;
   user-select: none;
 }
 
 .m-stack-card.is-top {
-  box-shadow: 0 28px 68px -14px rgba(0, 0, 0, 0.28);
-}
-
-.m-hero-stack:hover .m-stack-card.is-top {
-  transform: translate(0px, -8px) rotate(2deg) scale(1.025);
-}
-.m-hero-stack:hover .m-stack-card.is-back-1 {
-  transform: translate(-18px, -10px) rotate(-12deg) scale(0.99);
-}
-.m-hero-stack:hover .m-stack-card.is-back-2 {
-  transform: translate(-26px, 12px) rotate(-22deg) scale(0.98);
+  box-shadow: 0 34px 80px -16px rgba(0, 0, 0, 0.3);
 }
 
 .m-stack-img {
@@ -2161,7 +2141,7 @@ button:focus-visible .m-charswap .m-char-bot {
     margin: 16px auto;
   }
   .m-hero-stack {
-    width: min(74vw, 290px);
+    width: min(82vw, 350px);
   }
   .m-stack-caption {
     opacity: 1;

@@ -48,12 +48,14 @@ export function initHomeMotion(root) {
 
     if (heroLines.length) gsap.set(heroLines, { yPercent: 112 });
     if (heroFade.length) gsap.set(heroFade, { opacity: 0, y: 20 });
-    if (heroChars.length) gsap.set(heroChars, { yPercent: 108 });
+    if (heroChars.length) gsap.set(heroChars, { yPercent: 108, force3D: true });
     if (stackEntries.length) {
       gsap.set(stackEntries, {
-        y: 120,
+        y: 165,
         opacity: 0,
-        scale: 0.9,
+        scale: 0.88,
+        rotation: 6,
+        force3D: true,
       });
     }
     if (emblem) gsap.set(emblem, { scale: 0, rotate: -180, opacity: 0 });
@@ -87,15 +89,16 @@ export function initHomeMotion(root) {
           heroChars,
           {
             yPercent: 0,
-            duration: 1.15,
+            duration: 1.35,
             ease: 'expo.out',
-            stagger: 0.028,
+            stagger: 0.024,
+            force3D: true,
           },
-          0.05
+          0.04
         );
       }
 
-      // Centrale gedraaide case-stapel valt kaart-voor-kaart op zijn plek
+      // Centrale gedraaide case-stapel valt kaart-voor-kaart boterzacht op zijn plek
       if (stackEntries.length) {
         tl.to(
           stackEntries,
@@ -103,12 +106,13 @@ export function initHomeMotion(root) {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 1.25,
+            rotation: 0,
+            duration: 1.55,
             ease: 'expo.out',
-            stagger: 0.09,
-            clearProps: 'y,opacity,scale',
+            stagger: 0.085,
+            force3D: true,
           },
-          0.14
+          0.1
         );
       }
 
@@ -212,27 +216,28 @@ export function initHomeMotion(root) {
       });
     }
 
-    /* ───────── 4. MÖBIUS HERO SCROLL-PEEL (`Main` -> `Out`) ───────── */
+    /* ───────── 4. MÖBIUS HERO SCROLL-PEEL (`Main` -> `Out` met zijdezachte GSAP inertia) ───────── */
     const mHero = one('[data-m-hero]');
     if (mHero && !isMobile) {
       const peelLayers = q('[data-m-peel-card]', mHero);
       peelLayers.forEach(layer => {
         const order = parseInt(layer.getAttribute('data-m-peel-card') || '0', 10);
-        const startOffset = order * 55;
-        const rotDelta = order % 2 === 0 ? -8 : 8;
+        const startOffset = order * 42;
+        const rotDelta = order % 2 === 0 ? -7 : 7;
 
         gsap.fromTo(
           layer,
-          { y: 0, rotate: 0 },
+          { y: 0, rotation: 0 },
           {
-            y: () => -window.innerHeight * 0.95,
-            rotate: rotDelta,
-            ease: 'power1.in',
+            y: () => -window.innerHeight * 1.05,
+            rotation: rotDelta,
+            ease: 'none',
+            force3D: true,
             scrollTrigger: {
               trigger: mHero,
               start: `top+=${startOffset} top`,
-              end: `bottom+=${startOffset + 120} top`,
-              scrub: 0.45 + order * 0.12,
+              end: `bottom+=${startOffset + 160} top`,
+              scrub: 0.85 + order * 0.16,
             },
           }
         );
@@ -241,13 +246,14 @@ export function initHomeMotion(root) {
       const wordmarkWrap = one('[data-h-hero-headline]', mHero);
       if (wordmarkWrap) {
         gsap.to(wordmarkWrap, {
-          yPercent: -22,
+          yPercent: -18,
           ease: 'none',
+          force3D: true,
           scrollTrigger: {
             trigger: mHero,
             start: 'top top',
             end: 'bottom top',
-            scrub: true,
+            scrub: 0.75,
           },
         });
       }
