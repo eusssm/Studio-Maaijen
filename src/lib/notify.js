@@ -59,10 +59,11 @@ export async function sendMail({
     }
   }
 
-  // 3. FormSubmit AJAX (werkt zonder API key; vereist Origin + Referer headers en eenmalige activatieklik)
+  // 3. FormSubmit AJAX (fallback zonder API key, met 5s timeout tegen Cloudflare hangs)
   try {
     const res = await fetch(`https://formsubmit.co/ajax/${to}`, {
       method: 'POST',
+      signal: AbortSignal.timeout(5000),
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -89,10 +90,10 @@ export async function sendMail({
       ok: false,
       provider: 'formsubmit',
       needsActivation: Boolean(json?.message && json.message.toLowerCase().includes('activation')),
-      message: json?.message || '',
+      message: json?.message || `HTTP ${res.status}`,
     };
   } catch (err) {
-    console.error('[mail] FormSubmit fout:', err);
+    console.error('[mail] FormSubmit fout:', err.name === 'TimeoutError' ? 'Timeout na 5s' : err.message);
     return { ok: false, provider: 'formsubmit', message: err.message };
   }
 }

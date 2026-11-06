@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "drafts": "node scripts/create-apple-mail-drafts.js"
   },
   "dependencies": {
     "@datocms/cma-client-node": "^5.4.17",

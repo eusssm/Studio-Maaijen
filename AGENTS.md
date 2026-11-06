@@ -18,3 +18,12 @@ Wanneer de gebruiker vraagt om **"nieuwe leads"**, **"zoek MKB klanten"** of **"
 - Screenshot-script: `node scripts/screenshot-helper.js <url> <slug>` → `/leads/screenshots/`
 - Wekelijks rapport: `/leads/week-[weeknummer]-[jaar]-leads.md`
 <!-- END:lead-hunter-rule -->
+
+<!-- BEGIN:design-stijlen-rule -->
+# Designstijlen Bibliotheek (33 Stijlen + Stijl-Mix)
+
+Zodra er gevraagd wordt om een specifieke designstijl (bijv. `/dark-tech`, `/swiss`, `/swiss-brutalism`, `/neo-brutalism`, `/editorial`, `/minimalism`, `/japandi`, `/quiet-luxury`, `/liquid-glass`, `/glassmorphism`, `/bento-grid`, `/scandinavisch`, etc.) of `/stijl-mix`:
+- Laad de skill `design-stijlen` en het bijbehorende bestand uit `stijlen/<naam>.md`.
+- Pas de kleurentabellen, typografie, layout, radius, design tokens en dos & don'ts 1-op-1 toe.
+- Koppel voor de bouw aan `dev-agent`, voor Figma aan `figma-agent`, en voor beweging aan `motion-agent`.
+<!-- END:design-stijlen-rule -->

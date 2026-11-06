@@ -78,6 +78,10 @@ export async function POST(request) {
       },
     });
 
+    if (!mailResult.ok) {
+      console.warn('[contact] ⚠️ Let op: mailnotificatie NIET verzonden naar', recipientEmail, mailResult);
+    }
+
     if (!saved && !mailResult.ok) {
       return Response.json(
         { error: 'Je bericht kon helaas niet worden verstuurd. Mail direct naar info@studio-maaijen.nl.' },
