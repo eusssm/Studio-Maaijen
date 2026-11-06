@@ -1,0 +1,1736 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   MÖBIUS × SCANDINAVISCH — COMPLETE DESIGN SYSTEM OVERRIDE
+   Geïnspireerd op mobius.framer.website + Studio Maaijen /scandinavisch skill.
+   Helder daglicht-canvas, monumentale neo-grotesque typografie, gedraaide
+   centrale case-stapel en rustige Scandinavische architectuur.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.h-root {
+  /* Scandinavisch + Möbius Light Palette */
+  --ink: #FAF9F6;           /* Warm Daylight White (voorkomt steriel ziekenhuis-wit) */
+  --ink-2: #F3F1EC;         /* Soft Birch / Alabaster Surface */
+  --ink-3: #EAE6DF;         /* Elevated Card / Hover Surface */
+  --paper: #111111;         /* Deep Graphite Ink voor primaire typografie */
+  --paper-2: #484643;       /* Slate Grey voor rustige body copy */
+  --paper-3: #8C8881;       /* Muted Stone voor metadata & captions */
+  --spot: #111111;          /* Primair accent = puur grafiet (zoals Möbius) */
+  --spot-ink: #111111;
+  --scandi-warm: #E85D2A;   /* Subtiel warm accent voor actieve status/focus */
+
+  --line-d: #E5E2DC;        /* Haarlijn border (1px) */
+  --line-l: #E5E2DC;
+  --rule: #E5E2DC;
+  --dim: #57544F;
+
+  --pad: clamp(20px, 3.6vw, 56px);
+  --gut: clamp(16px, 2vw, 32px);
+  --nav-h: 72px;
+
+  background: #FFFFFF;
+  color: #111111;
+}
+
+html,
+body,
+body:has(.h-root) {
+  margin: 0;
+  padding: 0;
+  background: #FFFFFF;
+  color: #111111;
+}
+
+/* Verwijder de donkere print-korrel voor maximale Scandinavische helderheid */
+.h-root::after {
+  display: none !important;
+}
+
+/* Forceer alle secties (ook bestaande subpagina's met .h-dark / .h-paper) naar het lichte thema */
+.h-dark,
+.h-paper {
+  background: #FFFFFF;
+  color: #111111;
+  --rule: #E6E3DD;
+  --dim: #57544F;
+  --dot: #111111;
+}
+
+.h-spot {
+  background: #F4F2ED;
+  color: #111111;
+  --rule: #DEDAD2;
+  --dim: #57544F;
+  --dot: #111111;
+}
+
+/* Geen cursieve oranje serif-onderbrekingen meer — één strakke neo-grotesque familie */
+.h-root .h-display em,
+.h-root .h-contact-title em,
+.h-root .spector-work-title em,
+.h-root .wizard-question-title em,
+.h-root h1 em,
+.h-root h2 em,
+.h-root h3 em {
+  font-family: var(--ff-sans) !important;
+  font-style: normal !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  letter-spacing: inherit !important;
+  font-size: inherit !important;
+}
+
+/* ═════════ ULTRA-CLEAN NAVBAR ═════════ */
+.h-nav {
+  --nav-fg: #111111;
+  --nav-bg: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  color: #111111;
+  height: 68px;
+  border-bottom: 1px solid transparent;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease, border-color 0.35s ease;
+}
+
+/* Op de homepage heeft de Möbius Hero z'n eigen geïntegreerde top-grid;
+   de zwevende balk verschijnt pas subtiel zodra je voorbij de hero scrollt */
+.h-home .h-nav:not(.is-scrolled) {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px);
+}
+.h-home .h-nav.is-scrolled {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.h-home .h-nav.is-hidden {
+  transform: translateY(-101%);
+}
+
+.h-nav.is-scrolled,
+.h-subpage .h-nav,
+.h-case-page .h-nav {
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid #EAE7E1;
+}
+
+.h-nav-logo {
+  font-family: var(--ff-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #111111;
+}
+.h-nav-logo sup {
+  font-size: 0.65em;
+  font-weight: 700;
+  margin-left: 1px;
+}
+
+.h-nav-links {
+  gap: clamp(28px, 4vw, 64px);
+}
+.h-nav-links a {
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #111111;
+}
+
+.h-nav-sublink {
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #66635E;
+  transition: color 0.25s ease;
+}
+.h-nav-sublink:hover {
+  color: #111111;
+}
+
+.h-nav-preview-cta {
+  background: #111111;
+  color: #FFFFFF;
+  border: 1px solid #111111;
+  border-radius: 2px;
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 8px 14px 7px;
+}
+.h-nav-preview-cta:hover {
+  background: #333333;
+  color: #FFFFFF;
+  border-color: #333333;
+}
+
+.h-nav-burger {
+  background: #111111;
+  color: #FFFFFF;
+  font-family: var(--ff-sans);
+  font-weight: 600;
+  border-radius: 2px;
+}
+
+/* Mobiel menu in helder Scandinavisch thema */
+.h-menu {
+  background: #FFFFFF;
+  color: #111111;
+}
+.h-menu nav a {
+  border-bottom: 1px solid #E6E3DD;
+  color: #111111;
+}
+.h-menu nav small {
+  color: #8C8881;
+}
+.h-menu-preview-btn {
+  background: #111111 !important;
+  color: #FFFFFF !important;
+  border-radius: 2px !important;
+  font-size: 13px !important;
+  padding: 16px 20px !important;
+  margin-top: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   00. MÖBIUS HERO — EXACT 1-OP-1 COMPOSITIE MET SCREENSHOT
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-hero {
+  position: relative;
+  min-height: 100svh;
+  height: 100svh;
+  max-height: 1180px;
+  width: 100%;
+  background: #FFFFFF;
+  color: #0E0E0E;
+  padding: clamp(22px, 2.8vw, 38px) clamp(22px, 3.2vw, 48px) clamp(16px, 2.2vw, 28px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-bottom: 1px solid #EAE7E1;
+}
+
+/* Top bar: Links de redactionele intro-alinea, rechts de 4 losstaande nav-items */
+.m-hero-top {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  align-items: start;
+  width: 100%;
+}
+
+.m-hero-intro {
+  grid-column: 1 / 5;
+  max-width: 340px;
+  margin: 0;
+  font-family: var(--ff-sans);
+  font-size: clamp(14.5px, 1.08vw, 17px);
+  font-weight: 450;
+  line-height: 1.48;
+  letter-spacing: -0.015em;
+  color: #1A1A1A;
+}
+
+.m-hero-intro strong {
+  font-weight: 700;
+  color: #000000;
+}
+
+.m-hero-intro sup {
+  font-size: 0.65em;
+  font-weight: 700;
+}
+
+.m-hero-topnav {
+  grid-column: 8 / 13;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2px;
+}
+
+.m-hero-topnav-link {
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0E0E0E;
+  padding: 4px 0;
+  position: relative;
+  transition: opacity 0.25s ease;
+}
+
+.m-hero-topnav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: #0E0E0E;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-hero-topnav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.m-hero-mobile-menu-btn {
+  display: none;
+  grid-column: 10 / 13;
+  justify-self: end;
+  font-family: var(--ff-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: 1px solid #111111;
+  color: #111111;
+}
+
+/* ── CENTRALE GEDRAAIDE CASE-STAPEL (MÖBIUS PHOTO STACK) ── */
+.m-hero-stack-stage {
+  position: absolute;
+  left: 49%;
+  top: 56%;
+  transform: translate(-50%, -50%);
+  z-index: 12; /* Ligt bewust vóór het monumentale woordmerk (z-index 5), exact zoals in Möbius */
+  pointer-events: auto;
+}
+
+.m-hero-stack {
+  position: relative;
+  width: clamp(270px, 26.5vw, 410px);
+  aspect-ratio: 4 / 4.65;
+}
+
+/* De karakteristieke zwarte en zandkleurige achterkaarten uit het Möbius-ontwerp */
+.m-stack-backing {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-stack-backing--black {
+  background: #0D0D0D;
+  transform: translate(-14px, -6px) rotate(-15deg) scale(0.95);
+  z-index: 1;
+}
+
+.m-stack-backing--warm {
+  background: #ECE3B8;
+  transform: translate(12px, -8px) rotate(9.5deg) scale(0.97);
+  z-index: 2;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.m-hero-stack:hover .m-stack-backing--black {
+  transform: translate(-22px, -10px) rotate(-18deg) scale(0.96);
+}
+.m-hero-stack:hover .m-stack-backing--warm {
+  transform: translate(20px, -12px) rotate(12.5deg) scale(0.98);
+}
+
+.m-stack-card {
+  position: absolute;
+  inset: 0;
+  background: #F4F2ED;
+  overflow: hidden;
+  transform: translate(var(--card-x, 0px), var(--card-y, 0px)) rotate(var(--card-rot, -4deg));
+  transition:
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.5s ease;
+  box-shadow: 0 22px 50px -12px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  user-select: none;
+}
+
+.m-stack-card.is-top {
+  box-shadow: 0 28px 68px -14px rgba(0, 0, 0, 0.28);
+}
+
+.m-hero-stack:hover .m-stack-card.is-top {
+  transform: translate(0px, -6px) rotate(-2deg) scale(1.02);
+}
+
+.m-stack-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* Subtiele case-caption onderin de bovenste kaart */
+.m-stack-caption {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #111111;
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-hero-stack:hover .m-stack-caption,
+.m-stack-card:focus-within .m-stack-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.m-stack-caption-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.m-stack-client {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m-stack-cta {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #57544F;
+  white-space: nowrap;
+}
+
+.m-stack-next-btn {
+  padding: 4px 8px;
+  background: #111111;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── ONDERKANT HERO: MONUMENTAAL WOORDMERK + JAARTAL + LIVE KLOK ── */
+.m-hero-bottom {
+  position: relative;
+  z-index: 5; /* Ligt achter de onderkant van de centrale foto-stapel */
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  align-items: end;
+  width: 100%;
+  margin-top: auto;
+  pointer-events: none;
+}
+
+.m-hero-wordmark-wrap {
+  grid-column: 1 / 10;
+  min-width: 0;
+  align-self: end;
+}
+
+.m-hero-wordmark {
+  margin: 0;
+  font-family: var(--ff-sans);
+  /* Schaal zodat "Studio Maaijen®" net zo monumentaal en zwaar oogt als "Möbius®" */
+  font-size: clamp(54px, 10.6vw, 184px);
+  font-weight: 800;
+  line-height: 0.78;
+  letter-spacing: -0.06em;
+  color: #000000;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: flex-start;
+  margin-left: -0.04em;
+  margin-bottom: -0.06em;
+}
+
+.m-hero-wordmark-text {
+  display: inline-block;
+}
+
+.m-hero-reg {
+  font-size: 0.34em;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 0.04em;
+  margin-top: 0.06em;
+  top: 0;
+}
+
+.m-hero-right-meta {
+  grid-column: 10 / 13;
+  justify-self: end;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: clamp(95px, 11.5vw, 165px);
+  text-align: right;
+  pointer-events: auto;
+}
+
+.m-hero-copy {
+  font-family: var(--ff-sans);
+  font-size: clamp(20px, 2.1vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #000000;
+}
+
+.m-clock {
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.m-clock-city {
+  color: #999999;
+  font-weight: 600;
+}
+
+.m-clock-time {
+  color: #000000;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ALGEMENE MÖBIUS SECTIE-ARCHITECTUUR
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-section {
+  position: relative;
+  z-index: 2;
+  background: #FFFFFF;
+  color: #111111;
+  padding: clamp(72px, 9vw, 144px) 0;
+  border-bottom: 1px solid #EAE7E1;
+}
+
+.m-sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  padding-bottom: 18px;
+  margin-bottom: clamp(40px, 5vw, 72px);
+  border-bottom: 1px solid #E6E3DD;
+}
+
+.m-sec-label {
+  font-family: var(--ff-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #111111;
+}
+
+.m-sec-note {
+  font-family: var(--ff-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: #8C8881;
+}
+
+.m-sec-link {
+  font-family: var(--ff-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #111111;
+  border-bottom: 1px solid #111111;
+  padding-bottom: 2px;
+  transition: opacity 0.25s ease;
+}
+.m-sec-link:hover {
+  opacity: 0.65;
+}
+
+/* Strakke Scandinavische knoppen */
+.m-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 15px 24px 14px;
+  font-family: var(--ff-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+.m-btn i {
+  font-style: normal;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.m-btn:hover i {
+  transform: translateX(4px);
+}
+.m-btn--primary {
+  background: #111111;
+  color: #FFFFFF;
+  border: 1px solid #111111;
+}
+.m-btn--primary:hover {
+  background: #2B2B2B;
+  border-color: #2B2B2B;
+}
+.m-btn--outline {
+  background: transparent;
+  color: #111111;
+  border: 1px solid #CFCBC2;
+}
+.m-btn--outline:hover {
+  border-color: #111111;
+  background: #F7F5F0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   01. GESELECTEERD WERK — 4-CARD EXPANDING HORIZONTAL GALLERY
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-expand-gallery {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  min-height: 520px;
+}
+
+.m-expand-card {
+  flex: 1;
+  min-width: 0;
+  background: #F7F6F2;
+  border: 1px solid #EAE7E1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: flex 0.7s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
+  overflow: hidden;
+}
+
+.m-expand-card.is-expanded {
+  flex: 2.15;
+  background: #F2EFE9;
+}
+
+.m-expand-card-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 18px;
+}
+
+.m-expand-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.m-expand-letter {
+  font-family: var(--ff-sans);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #C9C5BC;
+  transition: color 0.35s ease;
+}
+
+.m-expand-card.is-expanded .m-expand-letter {
+  color: #111111;
+}
+
+.m-expand-cat {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #78746D;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m-expand-media {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 320px;
+  overflow: hidden;
+  background: #E6E2DA;
+}
+
+.m-expand-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-expand-card:hover .m-expand-media img {
+  transform: scale(1.04);
+}
+
+.m-expand-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+.m-expand-titles {
+  min-width: 0;
+}
+
+.m-expand-title {
+  font-family: var(--ff-sans);
+  font-size: clamp(20px, 1.8vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: #111111;
+}
+
+.m-expand-sub {
+  margin-top: 6px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #57544F;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.m-expand-arrow {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111111;
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-expand-card:hover .m-expand-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   02. MANIFESTO / FILOSOFIE (MÖBIUS WORD REVEAL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-manifesto-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  row-gap: 32px;
+  align-items: start;
+}
+
+.m-manifesto-left {
+  grid-column: 1 / 4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-manifesto-tag {
+  font-size: 13px;
+  color: #78746D;
+}
+
+.m-manifesto-right {
+  grid-column: 4 / 13;
+}
+
+.m-statement {
+  margin: 0 0 clamp(40px, 5vw, 68px) 0 !important;
+  font-family: var(--ff-sans);
+  font-size: clamp(28px, 3.8vw, 58px) !important;
+  font-weight: 700 !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+  color: #111111;
+  max-width: 24ch;
+}
+
+.m-manifesto-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 48px);
+  padding-top: 28px;
+  border-top: 1px solid #E6E3DD;
+}
+
+.m-manifesto-cols p {
+  font-size: clamp(15.5px, 1.15vw, 18px);
+  line-height: 1.62;
+  color: #4A4845;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   03. ONZE DIENSTEN — ARCHITECTURALE A / B / C RIJEN
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-services-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-service-row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  row-gap: 20px;
+  align-items: start;
+  padding: clamp(36px, 4.5vw, 64px) 0;
+  border-bottom: 1px solid #E6E3DD;
+}
+
+.m-service-row:first-child {
+  padding-top: 8px;
+}
+
+.m-service-index {
+  grid-column: 1 / 3;
+  font-family: var(--ff-sans);
+  font-size: clamp(32px, 3.4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #E2DFD7;
+}
+
+.m-service-main {
+  grid-column: 3 / 9;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-service-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #78746D;
+}
+
+.m-service-statement {
+  font-family: var(--ff-sans);
+  font-size: clamp(22px, 2.4vw, 36px);
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+  color: #111111;
+  max-width: 28ch;
+}
+
+.m-service-deliverables {
+  grid-column: 9 / 13;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.m-service-deliverables li {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #484643;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F0EDE7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.m-service-deliverables li::after {
+  content: '+';
+  color: #9E9A92;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   04. STUDIO IN NUMBERS — MILESTONE CARDS MET THUMBNAILS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.m-number-card {
+  background: #F7F6F2;
+  border: 1px solid #EAE7E1;
+  padding: clamp(24px, 3vw, 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 360px;
+}
+
+.m-number-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.m-number-idx {
+  font-size: 12px;
+  font-weight: 700;
+  color: #8C8881;
+}
+
+.m-number-thumbs {
+  display: flex;
+  gap: 6px;
+}
+
+.m-number-thumb {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 2px;
+  background: #E5E2DC;
+}
+
+.m-number-value {
+  font-family: var(--ff-sans);
+  font-size: clamp(64px, 7.5vw, 120px);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.06em;
+  color: #111111;
+  margin: 32px 0 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.m-number-label {
+  font-size: clamp(17px, 1.3vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #111111;
+  margin-bottom: 8px;
+}
+
+.m-number-sub {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #57544F;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   05. DE MAKER / FOUNDER & PARTNERS GRID
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-founder-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  row-gap: 40px;
+  align-items: start;
+}
+
+.m-founder-portrait {
+  grid-column: 1 / 6;
+  margin: 0;
+}
+
+.m-founder-img-wrap {
+  aspect-ratio: 4 / 4.8;
+  overflow: hidden;
+  background: #F2EFE9;
+}
+
+.m-founder-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.m-founder-caption {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #57544F;
+}
+
+.m-founder-content {
+  grid-column: 7 / 13;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.m-founder-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8C8881;
+}
+
+.m-founder-title {
+  font-family: var(--ff-sans);
+  font-size: clamp(26px, 3vw, 44px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: #111111;
+}
+
+.m-founder-lead {
+  font-size: clamp(17px, 1.3vw, 20px);
+  font-weight: 500;
+  line-height: 1.55;
+  color: #1D1C1A;
+}
+
+.m-founder-text {
+  font-size: 16px;
+  line-height: 1.62;
+  color: #57544F;
+}
+
+.m-founder-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.m-partners {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid #E6E3DD;
+}
+
+.m-partners-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8C8881;
+  margin-bottom: 16px;
+}
+
+.m-partners-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid #EAE7E1;
+  border-left: 1px solid #EAE7E1;
+}
+
+.m-partner-cell {
+  padding: 18px 16px;
+  border-right: 1px solid #EAE7E1;
+  border-bottom: 1px solid #EAE7E1;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111111;
+  background: #FAF9F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   06. HET PROCES (01 — 04)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-process-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.m-process-card {
+  padding: 28px 24px;
+  background: #F7F6F2;
+  border: 1px solid #EAE7E1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.m-process-num {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #D2CEC4;
+}
+
+.m-process-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #111111;
+}
+
+.m-process-desc {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #57544F;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   07. PAKKETTEN & INVESTERING (MÖBIUS PRICING CARDS)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-pricing-intro-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(36px, 4.5vw, 56px);
+}
+
+.m-pricing-heading {
+  font-size: clamp(32px, 4.2vw, 60px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  color: #111111;
+  max-width: 18ch;
+}
+
+.m-pricing-sub {
+  font-size: 16px;
+  line-height: 1.55;
+  color: #57544F;
+  max-width: 42ch;
+}
+
+.m-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.m-price-card {
+  background: #FAF9F6;
+  border: 1px solid #E5E2DC;
+  padding: clamp(28px, 3vw, 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.m-price-card.is-featured {
+  background: #F2EFE9;
+  border-color: #111111;
+  box-shadow: inset 0 3px 0 #111111;
+}
+
+.m-price-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.m-price-tier-idx {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #111111;
+}
+
+.m-price-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  background: #111111;
+  color: #FFFFFF;
+}
+
+.m-price-amount-row {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m-price-amount {
+  font-family: var(--ff-sans);
+  font-size: clamp(40px, 4.2vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: #111111;
+}
+
+.m-price-duration {
+  font-size: 12px;
+  font-weight: 600;
+  color: #78746D;
+}
+
+.m-price-tagline {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #484643;
+}
+
+.m-price-features {
+  margin: 24px 0 32px;
+  padding-top: 20px;
+  border-top: 1px solid #E2DFD7;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-price-features li {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #33312E;
+}
+
+.m-price-features li span:first-child {
+  font-weight: 700;
+  color: #111111;
+}
+
+.m-price-cta {
+  width: 100%;
+  margin-top: auto;
+}
+
+/* Preview Tool Banner */
+.m-preview-banner {
+  margin-top: 32px;
+  padding: clamp(28px, 3.5vw, 44px);
+  background: #F4F2ED;
+  border: 1px solid #E2DFD7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.m-preview-banner-left {
+  max-width: 600px;
+}
+
+.m-preview-banner-title {
+  margin-top: 8px;
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: #111111;
+}
+
+.m-preview-banner-desc {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #57544F;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   08. CONVERSATIONAL CONTACT ("LET'S TALK!") + FAQ ACCORDION
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-talk-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  row-gap: 56px;
+  align-items: start;
+}
+
+.m-talk-form-col {
+  grid-column: 1 / 8;
+}
+
+.m-talk-heading {
+  font-size: clamp(36px, 4.6vw, 68px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+  color: #111111;
+}
+
+.m-talk-sub {
+  margin-top: 14px;
+  font-size: 16px;
+  color: #57544F;
+}
+.m-talk-sub a {
+  color: #111111;
+  font-weight: 600;
+  border-bottom: 1px solid #111111;
+}
+
+.m-madlibs-form {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.m-madlibs-sentence {
+  font-family: var(--ff-sans);
+  font-size: clamp(20px, 2.3vw, 32px);
+  font-weight: 600;
+  line-height: 1.65;
+  letter-spacing: -0.03em;
+  color: #111111;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+
+.m-madlibs-sentence input,
+.m-madlibs-sentence select {
+  font: inherit;
+  color: #111111;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid #111111;
+  padding: 0 6px 2px;
+  min-width: 170px;
+  max-width: 260px;
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.m-madlibs-sentence input::placeholder {
+  color: #A8A49C;
+  font-weight: 500;
+}
+
+.m-madlibs-sentence input:focus,
+.m-madlibs-sentence select:focus {
+  background: #F4F2ED;
+}
+
+.m-madlibs-extra input {
+  width: 100%;
+  font-family: var(--ff-sans);
+  font-size: 16px;
+  color: #111111;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #D6D2C9;
+  padding: 12px 0;
+  outline: none;
+}
+.m-madlibs-extra input:focus {
+  border-bottom-color: #111111;
+}
+
+.m-madlibs-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.m-madlibs-privacy {
+  font-size: 13px;
+  color: #78746D;
+}
+
+.m-madlibs-status {
+  padding: 14px 18px;
+  font-size: 14.5px;
+  font-weight: 500;
+  border: 1px solid #111111;
+  background: #F7F6F2;
+}
+.m-madlibs-status.is-error {
+  border-color: #C93B2B;
+  color: #C93B2B;
+}
+
+/* FAQ Kolom */
+.m-faq-col {
+  grid-column: 8 / 13;
+  background: #FAF9F6;
+  border: 1px solid #EAE7E1;
+  padding: clamp(24px, 3vw, 36px);
+}
+
+.m-faq-heading {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  color: #111111;
+}
+
+.m-faq-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-faq-item {
+  border-top: 1px solid #E5E2DC;
+}
+
+.m-faq-question {
+  width: 100%;
+  padding: 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #111111;
+}
+
+.m-faq-icon {
+  font-size: 18px;
+  font-weight: 400;
+  color: #78746D;
+  flex-shrink: 0;
+}
+
+.m-faq-answer {
+  padding: 0 0 20px 0;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.m-faq-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: #111111;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.m-faq-answer p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #57544F;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MÖBIUS MONUMENTALE FOOTER (LIGHT SCANDINAVIAN)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.h-root:not(:has(.mock-preview-viewport)) > .h-footer {
+  position: relative !important;
+  background: #FFFFFF !important;
+  color: #111111 !important;
+  border-top: 1px solid #E5E2DC;
+  padding-top: 56px;
+  padding-bottom: 28px;
+}
+
+.h-footer-grid .h-mono {
+  color: #8C8881 !important;
+  font-weight: 600;
+}
+
+.h-footer-lead {
+  color: #111111;
+  max-width: 34ch;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  margin-bottom: 10px;
+}
+
+.h-footer-dim {
+  color: #78746D !important;
+}
+
+.h-footer-clock {
+  display: block;
+  margin-top: 10px;
+}
+
+.h-root .h-footer-mark {
+  display: block;
+  margin: clamp(48px, 6vw, 88px) 0 clamp(20px, 3vw, 36px);
+  font-family: var(--ff-sans);
+  font-size: clamp(50px, 11.4vw, 200px);
+  font-weight: 800;
+  line-height: 0.84;
+  letter-spacing: -0.06em;
+  color: #111111 !important;
+  opacity: 1 !important;
+  -webkit-text-stroke: 0 !important;
+  white-space: nowrap;
+}
+
+.h-root .h-footer-mark sup {
+  font-size: 0.34em;
+  font-weight: 700;
+  vertical-align: top;
+}
+
+.h-footer-bottom {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-top: 1px solid #E5E2DC;
+  color: #78746D !important;
+}
+
+.h-footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUBPAGINA'S (/work, /pakketten, /contact, /start) IN LICHT SCANDINAVISCH
+   ═══════════════════════════════════════════════════════════════════════════ */
+.spector-work-title,
+.h-chero-title,
+.h-cs-title,
+.h-contact-title,
+.wizard-question-title {
+  color: #111111 !important;
+}
+
+.spector-chip,
+.h-chip {
+  border-color: #D2CEC4 !important;
+  color: #111111 !important;
+}
+.spector-chip.is-on,
+.h-chip.is-on {
+  background: #111111 !important;
+  border-color: #111111 !important;
+  color: #FFFFFF !important;
+}
+
+.h-pkg {
+  background: #FAF9F6;
+  border-color: #E5E2DC;
+}
+.h-pkg.is-featured {
+  background: #F2EFE9 !important;
+  color: #111111 !important;
+  --dim: #484643;
+  --rule: #D6D2C9;
+  box-shadow: inset 0 3px 0 #111111 !important;
+}
+.h-pkg.is-featured .h-pkg-badge,
+.h-pkg.is-featured .h-pkg-feats li span {
+  color: #111111 !important;
+}
+
+.h-maint-feats li {
+  color: #33312E;
+}
+
+.h-field input,
+.h-field textarea,
+.wizard-hero-input,
+.wizard-textarea,
+.wizard-form-field input {
+  color: #111111 !important;
+  border-bottom-color: #D2CEC4 !important;
+}
+.h-field input::placeholder,
+.h-field textarea::placeholder,
+.wizard-hero-input::placeholder {
+  color: #A8A49C !important;
+}
+
+.h-contact-lead {
+  color: #57544F !important;
+}
+.h-contact-mail {
+  border-bottom-color: #111111 !important;
+  color: #111111 !important;
+}
+
+.h-btn--spot {
+  background: #111111 !important;
+  border-color: #111111 !important;
+  color: #FFFFFF !important;
+}
+.h-btn--spot::before {
+  background: #333333 !important;
+}
+.h-btn--ghost {
+  color: #111111 !important;
+  border-color: #CFCBC2 !important;
+}
+.h-btn--ghost::before {
+  background: #111111 !important;
+}
+.h-btn--ghost:hover {
+  color: #FFFFFF !important;
+  border-color: #111111 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS VOOR MÖBIUS HERO & SECTIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1080px) {
+  .m-hero-intro {
+    grid-column: 1 / 6;
+  }
+  .m-hero-topnav {
+    grid-column: 7 / 13;
+  }
+  .m-expand-gallery {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .m-expand-card,
+  .m-expand-card.is-expanded {
+    flex: none;
+  }
+  .m-expand-media {
+    min-height: 260px;
+  }
+  .m-numbers-grid,
+  .m-pricing-grid {
+    grid-template-columns: 1fr;
+  }
+  .m-process-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .m-founder-portrait,
+  .m-founder-content,
+  .m-talk-form-col,
+  .m-faq-col,
+  .m-manifesto-left,
+  .m-manifesto-right {
+    grid-column: 1 / 13;
+  }
+  .m-service-index {
+    grid-column: 1 / 13;
+  }
+  .m-service-main {
+    grid-column: 1 / 13;
+  }
+  .m-service-deliverables {
+    grid-column: 1 / 13;
+  }
+}
+
+@media (max-width: 760px) {
+  .m-hero {
+    height: auto;
+    min-height: 94svh;
+    padding: 20px 18px 22px;
+    gap: 28px;
+  }
+  .m-hero-intro {
+    grid-column: 1 / 10;
+    font-size: 13.5px;
+  }
+  .m-hero-topnav {
+    display: none;
+  }
+  .m-hero-mobile-menu-btn {
+    display: inline-block;
+  }
+  .m-hero-stack-stage {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    margin: 16px auto;
+  }
+  .m-hero-stack {
+    width: min(74vw, 290px);
+  }
+  .m-stack-caption {
+    opacity: 1;
+    transform: none;
+  }
+  .m-hero-bottom {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+  .m-hero-wordmark-wrap {
+    grid-column: 1 / -1;
+  }
+  .m-hero-wordmark {
+    font-size: clamp(40px, 12.2vw, 72px);
+  }
+  .m-hero-right-meta {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: auto;
+  }
+  .m-manifesto-cols,
+  .m-process-grid {
+    grid-template-columns: 1fr;
+  }
+  .m-partners-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

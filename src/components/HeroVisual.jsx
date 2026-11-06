@@ -1,83 +1,115 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 
 /**
- * HeroVisual — "Digital Stage".
- * - Rustige, architecturale achtergrond: diep grafiet, ambient horizon-glow en
- *   fijne 12-koloms haarlijnen (sluit aan op het Swiss grid van de pagina).
- * - Optioneel showreel-venster met coverbeelden van bestaande DatoCMS-cases.
- *   Wisselt alleen als het venster in beeld is en respecteert prefers-reduced-motion.
+ * HeroVisual — Möbius Central Rotated Case Stack.
+ * - Centraal op het heldere canvas geplaatst en overlapt subtiel de bovenrand
+ *   van het monumentale woordmerk onderaan.
+ * - Gebruikt de echte DatoCMS cases van Studio Maaijen.
+ * - Klikken op de kaart bladert naar de volgende case of opent direct de case.
  */
+
+const CARD_ANGLES = [
+  { rotate: -4.5, x: 0, y: 0 },
+  { rotate: 6.5, x: 14, y: -10 },
+  { rotate: -13.5, x: -16, y: 8 },
+  { rotate: 11.5, x: 18, y: 12 },
+];
+
 export default function HeroVisual({ slides = [] }) {
-  const reelRef = useRef(null);
   const [active, setActive] = useState(0);
-  const count = slides.length;
+  const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    const el = reelRef.current;
-    if (!el || count < 2) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const validSlides = slides.length > 0 ? slides : [];
+  const count = validSlides.length;
 
-    let timer = 0;
-    const start = () => {
-      stop();
-      timer = window.setInterval(() => setActive(i => (i + 1) % count), 4200);
-    };
-    const stop = () => {
-      if (timer) window.clearInterval(timer);
-      timer = 0;
-    };
-    const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), {
-      threshold: 0.15,
-    });
-    io.observe(el);
-    const onVis = () => (document.hidden ? stop() : start());
-    document.addEventListener('visibilitychange', onVis);
-
-    return () => {
-      stop();
-      io.disconnect();
-      document.removeEventListener('visibilitychange', onVis);
-    };
+  const nextSlide = useCallback(() => {
+    if (count < 2) return;
+    setActive(prev => (prev + 1) % count);
   }, [count]);
 
-  const pad = n => String(n).padStart(2, '0');
-  const current = slides[active];
+  useEffect(() => {
+    if (count < 2 || isHovered) return;
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+    const timer = window.setInterval(nextSlide, 4200);
+    return () => window.clearInterval(timer);
+  }, [count, isHovered, nextSlide]);
+
+  if (count === 0) return null;
+
+  const current = validSlides[active];
 
   return (
-    <>
-      <div className="h-hero-bg-stage" data-h-hero-bg aria-hidden="true">
-        <div className="h-hero-horizon" />
-        <div className="h-hero-hairlines" />
-        <div className="h-hero-baseline" />
-      </div>
+    <div
+      className="m-hero-stack-stage"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="m-hero-stack" role="region" aria-label="Geselecteerde cases" data-h-hero-fade>
+        {/* Achterliggende donkere/getinte papier-kaart voor het exacte Möbius diepte-effect */}
+        <div className="m-stack-backing m-stack-backing--black" aria-hidden="true" />
+        <div className="m-stack-backing m-stack-backing--warm" aria-hidden="true" />
 
-      {count > 0 && (
-        <div className="h-hero-reel" ref={reelRef} data-h-hero-fade aria-hidden="true">
-          <div className="h-hero-reel-frame">
-            {slides.map((s, i) => (
+        {validSlides.map((slide, idx) => {
+          // Bereken relatieve positie in de stapel (0 = bovenop, 1 = daarachter, etc.)
+          const offset = (idx - active + count) % count;
+          const pose = CARD_ANGLES[offset % CARD_ANGLES.length];
+          const isTop = offset === 0;
+          const zIndex = count - offset + 2;
+
+          return (
+            <div
+              key={slide.slug || idx}
+              className={`m-stack-card ${isTop ? 'is-top' : `is-back-${offset}`}`}
+              style={{
+                zIndex,
+                '--card-rot': `${pose.rotate}deg`,
+                '--card-x': `${pose.x}px`,
+                '--card-y': `${pose.y}px`,
+              }}
+              onClick={() => {
+                if (!isTop) setActive(idx);
+              }}
+            >
               <img
-                key={s.slug || i}
-                src={s.src}
-                alt=""
-                className={`h-hero-reel-img ${i === active ? 'is-active' : ''}`}
-                loading={i === 0 ? 'eager' : 'lazy'}
+                src={slide.src}
+                alt={slide.client || 'Case preview'}
+                className="m-stack-img"
+                loading={idx === 0 ? 'eager' : 'lazy'}
                 decoding="async"
-                fetchPriority={i === 0 ? 'high' : undefined}
+                fetchPriority={idx === 0 ? 'high' : undefined}
               />
-            ))}
-          </div>
-          <div className="h-hero-reel-cap h-mono">
-            <span className="h-hero-reel-no">
-              {pad(active + 1)} / {pad(count)}
-            </span>
-            <span className="h-hero-reel-client">{current?.client}</span>
-          </div>
-          <span className="h-hero-reel-bar">
-            <span key={active} className="h-hero-reel-progress" />
-          </span>
-        </div>
-      )}
-    </>
+
+              {isTop && (
+                <div className="m-stack-caption">
+                  <Link href={`/work/${slide.slug}`} className="m-stack-caption-link">
+                    <span className="m-stack-client">{slide.client}</span>
+                    <span className="m-stack-cta">Bekijk case ↗</span>
+                  </Link>
+                  {count > 1 && (
+                    <button
+                      type="button"
+                      className="m-stack-next-btn"
+                      onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        nextSlide();
+                      }}
+                      aria-label="Volgende case in stapel"
+                      title="Volgende case"
+                    >
+                      {String(active + 1).padStart(2, '0')}/{String(count).padStart(2, '0')} ↻
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

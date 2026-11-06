@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { EMAIL, LINKEDIN, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
+import '../app/mobius-scandi.css';
 
 const INTEREST_OPTIONS = ['Huisstijl / logo', 'Website', 'Video / motion', 'Offerte op maat'];
 

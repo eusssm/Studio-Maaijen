@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { EMAIL, LINKEDIN, sized, CropMarks, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
+import '../app/mobius-scandi.css';
 
 /* ─────────────────────────────────────────────────────────────
    Casepagina in dezelfde "Drukklaar"-taal als de homepage.

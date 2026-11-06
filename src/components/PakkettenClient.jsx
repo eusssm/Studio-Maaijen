@@ -5,6 +5,7 @@ import { PackageGrid } from './PackageCards';
 import { EMAIL, LINKEDIN, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import { normalizePackages, DEFAULT_MAINTENANCE_FEATURES } from '../../lib/packages';
 import '../app/drukklaar.css';
+import '../app/mobius-scandi.css';
 
 export default function PakkettenClient({ packages = [], siteSetting, homepage }) {
   const rootRef = useRef(null);

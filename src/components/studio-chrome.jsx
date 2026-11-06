@@ -1,10 +1,11 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 /* ─────────────────────────────────────────────────────────────
-   Gedeelde "chrome" van studio-maaijen.nl: navigatie, mobiel menu,
-   footer en kleine grafische elementen. Zelfde taal als de CV-site
-   (Drukklaar), maar gericht op opdrachtgevers: pakketten en contact.
+   Gedeelde "chrome" van studio-maaijen.nl — Möbius × Scandinavisch.
+   Ultra-clean typografische navigatie, rustig mobiel menu en
+   monumentale editorial footer.
    ───────────────────────────────────────────────────────────── */
 
 export const EMAIL = 'info@studio-maaijen.nl';
@@ -12,10 +13,17 @@ export const LINKEDIN = 'https://www.linkedin.com/in/eug%C3%A8ne-maaijen-4b65834
 
 export const NAV_ITEMS = [
   { id: 'werk', label: 'Werk', href: '/work' },
+  { id: 'studio', label: 'Studio', href: '/#about' },
+  { id: 'diensten', label: 'Diensten', href: '/#services' },
   { id: 'pakketten', label: 'Pakketten', href: '/pakketten' },
-  { id: 'disciplines', label: 'Disciplines', href: '/#services' },
-  { id: 'over', label: 'Over', href: '/#about' },
   { id: 'contact', label: 'Contact', href: '/contact' },
+];
+
+export const HERO_NAV_ITEMS = [
+  { id: 'werk', label: 'WERK', href: '/work' },
+  { id: 'studio', label: 'STUDIO', href: '/#about' },
+  { id: 'diensten', label: 'DIENSTEN', href: '/#services' },
+  { id: 'contact', label: 'CONTACT', href: '/contact' },
 ];
 
 /* DatoCMS-beelden (imgix) op maat opvragen */
@@ -23,7 +31,7 @@ export function sized(url, w) {
   if (!url) return url;
   if (!/datocms-assets\.com/.test(url)) return url;
   const sep = url.includes('?') ? '&' : '?';
-  return `${url}${sep}w=${w}&auto=format&q=78`;
+  return `${url}${sep}w=${w}&auto=format&q=82`;
 }
 
 export function CropMarks({ className = '' }) {
@@ -43,7 +51,39 @@ export function Reg({ className = '' }) {
   );
 }
 
-/* Voortgangsbalk + cursor (cursor wordt alleen actief bij een fijne pointer) */
+/* Live Ridderkerk klok voor de Möbius Hero & Footer */
+export function LiveClock({ className = '' }) {
+  const [timeStr, setTimeStr] = useState('10:30 AM');
+
+  useEffect(() => {
+    const update = () => {
+      try {
+        const now = new Date();
+        const formatted = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Europe/Amsterdam',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        }).format(now);
+        setTimeStr(formatted);
+      } catch {
+        // fallback
+      }
+    };
+    update();
+    const id = setInterval(update, 15000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <span className={`m-clock ${className}`}>
+      <span className="m-clock-city">RIDDERKERK, NL</span>{' '}
+      <strong className="m-clock-time">{timeStr}</strong>
+    </span>
+  );
+}
+
+/* Voortgangsbalk + subtiele cursor */
 export function SiteOverlays() {
   return (
     <>
@@ -57,28 +97,30 @@ export function SiteOverlays() {
   );
 }
 
-export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar' }) {
+export function SiteNav({ menuOpen: externalOpen, setMenuOpen: externalSetOpen }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const menuOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setMenuOpen = externalSetOpen || setInternalOpen;
+
   return (
     <>
       <header className="h-nav no-print" data-h-nav>
         <Link href="/" className="h-nav-logo" aria-label="Studio Maaijen, naar de homepage">
-          <span className="h-nav-mark" aria-hidden="true">
-            <Reg />
-          </span>
-          Studio Maaijen
+          Studio Maaijen<sup>®</sup>
         </Link>
+
         <nav className="h-nav-links" aria-label="Hoofdnavigatie">
-          {NAV_ITEMS.map((item, i) => (
+          {HERO_NAV_ITEMS.map(item => (
             <Link key={item.id} href={item.href}>
-              <small>0{i + 1}</small>
               {item.label}
             </Link>
           ))}
         </nav>
+
         <div className="h-nav-right">
-          <span className="h-nav-status">
-            <i aria-hidden="true" /> {availability}
-          </span>
+          <Link href="/pakketten" className="h-nav-sublink">
+            PAKKETTEN
+          </Link>
           <Link href="/start?bron=navbar" className="h-nav-preview-cta">
             Gratis preview <span aria-hidden="true">→</span>
           </Link>
@@ -96,14 +138,6 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
 
       <div id="h-menu" className={`h-menu no-print ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}>
         <nav aria-label="Mobiel menu">
-          <Link
-            href="/start?bron=mobile-menu"
-            onClick={() => setMenuOpen(false)}
-            tabIndex={menuOpen ? 0 : -1}
-            className="h-menu-preview-btn"
-          >
-            ✦ Gratis website-preview →
-          </Link>
           {NAV_ITEMS.map((item, i) => (
             <Link
               key={item.id}
@@ -115,6 +149,14 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
               <span>{item.label}</span>
             </Link>
           ))}
+          <Link
+            href="/start?bron=mobile-menu"
+            onClick={() => setMenuOpen(false)}
+            tabIndex={menuOpen ? 0 : -1}
+            className="h-menu-preview-btn"
+          >
+            Gratis website-preview →
+          </Link>
         </nav>
         <div className="h-menu-foot">
           <a href={`mailto:${EMAIL}`} tabIndex={menuOpen ? 0 : -1}>
@@ -131,45 +173,49 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
 
 export function SiteFooter({ tagline, location, copyright }) {
   const year = new Date().getFullYear();
-  const tag = tagline || 'Design dat raakt vandaag\n& inspireert morgen.';
-  const loc = location || 'Ridderkerk / Rotterdam\nBeschikbaar voor remote & on-site';
+  const tag = tagline || 'Een ontwerpstudio die merken en digitale ervaringen vormgeeft met rust, helderheid en tijdloos vakmanschap.';
+  const loc = location || 'Ridderkerk / Rotterdam\nBeschikbaar voor ondernemers & teams';
   return (
-    <footer className="h-footer h-dark no-print" data-theme="dark">
+    <footer className="h-footer no-print" data-theme="paper">
       <div className="h-wrap">
         <div className="h-footer-grid">
           <div>
-            <span className="h-mono">Studio Maaijen</span>
-            <p>{tag.split('\n').map((l, i) => <span key={i} className="h-block">{l}</span>)}</p>
+            <span className="h-mono">Studio Maaijen®</span>
+            <p className="h-footer-lead">{tag}</p>
             <p className="h-footer-dim">{loc.split('\n').map((l, i) => <span key={i} className="h-block">{l}</span>)}</p>
           </div>
           <div>
-            <span className="h-mono">Navigatie</span>
+            <span className="h-mono">Index</span>
             {NAV_ITEMS.map(item => (
               <Link key={item.id} href={item.href}>
                 {item.label}
               </Link>
             ))}
+            <Link href="/start?bron=footer">Gratis website-preview</Link>
           </div>
           <div>
-            <span className="h-mono">Neem contact op</span>
+            <span className="h-mono">Direct contact</span>
             <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer">
               LinkedIn ↗
             </a>
-            <span className="h-footer-dim h-block">KVK-nummer: 92113273</span>
+            <span className="h-footer-dim h-block">KVK: 92113273</span>
+            <LiveClock className="h-footer-clock" />
           </div>
         </div>
 
         <div className="h-footer-mark" aria-hidden="true">
-          <span>Studio</span>
-          <span>Maaijen</span>
+          <span>Studio Maaijen<sup>®</sup></span>
         </div>
 
         <div className="h-footer-bottom">
-          <span className="h-mono">{copyright || `© ${year} Eugène Maaijen — Alle rechten voorbehouden`}</span>
-          <a href="#top" className="h-mono h-totop">
-            Naar boven ↑
-          </a>
+          <span className="h-mono">{copyright || `© 2013–${String(year).slice(-2)} Studio Maaijen — Alle rechten voorbehouden`}</span>
+          <div className="h-footer-bottom-links">
+            <Link href="/privacy" className="h-mono">Privacy</Link>
+            <a href="#top" className="h-mono h-totop">
+              Naar boven ↑
+            </a>
+          </div>
         </div>
       </div>
     </footer>

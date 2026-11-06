@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { sized, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
+import '../app/mobius-scandi.css';
 
 const FILTERS = ['Alles', 'UX/UI Design', 'Brand Identity', 'Video Editing'];
 const pad = n => String(n).padStart(2, '0');

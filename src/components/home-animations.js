@@ -71,7 +71,19 @@ export function initHomeMotion(root) {
         const o = { r: 7 };
         tl.to(o, { r: 0, duration: 2.6, ease: 'power2.inOut', onUpdate: () => dots.style.setProperty('--r', o.r.toFixed(2)), onComplete: () => { dots.style.display = 'none'; } }, 0.5);
       }
-      if (heroFade.length) tl.to(heroFade, { opacity: 1, y: 0, duration: 1, stagger: 0.08 }, 0.5);
+      if (heroFade.length) {
+        tl.to(
+          heroFade,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            stagger: 0.08,
+            clearProps: 'transform',
+          },
+          0.5
+        );
+      }
       return tl;
     };
 

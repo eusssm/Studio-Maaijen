@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { SiteOverlays, SiteNav, SiteFooter } from '../../components/studio-chrome';
 import '../drukklaar.css';
+import '../mobius-scandi.css';
 
 export const metadata = {
   title: 'Privacyverklaring | Studio Maaijen',

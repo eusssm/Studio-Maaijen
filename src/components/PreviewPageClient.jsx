@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { resolvePreviewPreset, getDaysRemaining } from '../lib/preview-presets';
 import { sized, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
+import '../app/mobius-scandi.css';
 
 export default function PreviewPageClient({
   initialSubmission = null,
