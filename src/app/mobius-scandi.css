@@ -1982,7 +1982,7 @@ body:has(.h-root) {
   font-family: var(--ff-sans) !important;
   font-style: normal !important;
   font-weight: 500 !important;
-  font-size: clamp(22px, 2.4vw, 38px) !important;
+  font-size: clamp(18px, 1.7vw, 26px) !important;
   line-height: 1.25 !important;
   letter-spacing: -0.02em !important;
   color: #222222 !important;
@@ -2020,15 +2020,15 @@ body:has(.h-root) {
 .h-cs-split-text,
 .h-cs-split-text p {
   color: #262422 !important;
-  font-size: clamp(17px, 1.25vw, 21px);
-  line-height: 1.65;
+  font-size: clamp(15.5px, 1.1vw, 17.5px);
+  line-height: 1.6;
   font-weight: 400;
 }
 
 .h-prose > p:first-child,
 .h-prose--lead > p {
   color: #141312 !important;
-  font-size: clamp(21px, 1.7vw, 29px) !important;
+  font-size: clamp(18px, 1.45vw, 23px) !important;
   line-height: 1.45 !important;
   letter-spacing: -0.015em !important;
   font-weight: 450 !important;
@@ -2274,4 +2274,171 @@ body:has(.h-root) {
   opacity: 0;
   will-change: transform, opacity;
   pointer-events: none;
+}
+
+/* ═════════ CASE-PAGINA'S: TYPOGRAFIESCHAAL GELIJK AAN DE REST VAN DE SITE ═════════ */
+.h-case-page .h-chero-title,
+.h-case-page .h-chero-index {
+  font-size: clamp(40px, 6.2vw, 108px);
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+.h-case-page .h-chero-index {
+  display: none;
+}
+.h-case-page .h-cs-title {
+  font-size: clamp(28px, 3.7vw, 58px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.h-case-page .h-cs-split-text .h-cs-title {
+  font-size: clamp(26px, 2.8vw, 44px);
+}
+.h-case-page .h-cnext-title {
+  font-size: clamp(40px, 6.4vw, 110px);
+  letter-spacing: -0.05em;
+}
+.h-case-page .h-prose :where(h2, h3, h4) {
+  font-size: 12px;
+}
+
+/* ═════════ WERK — DRAAGBAAR, ONEINDIG CANVAS (naar mobius.framer.website/work) ═════════ */
+html:has(.wk-page),
+body:has(.wk-page) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+.wk-page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #FFFFFF;
+  color: #111111;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.wk-page.is-dragging {
+  cursor: grabbing;
+}
+.wk-title {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-family: var(--ff-sans);
+  font-size: clamp(96px, 13.9vw, 260px);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  color: #111111;
+  pointer-events: none;
+}
+.wk-hint {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: calc(50% + clamp(90px, 11vw, 190px));
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: var(--ff-sans);
+  font-size: clamp(18px, 1.7vw, 26px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #111111;
+  pointer-events: none;
+}
+.wk-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  display: block;
+  overflow: visible;
+  will-change: transform;
+  -webkit-user-drag: none;
+}
+.wk-card-media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #F1EFEA;
+}
+.wk-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.wk-card:hover .wk-card-media img {
+  transform: scale(1.06);
+}
+.wk-card-cap {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--ff-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #111111;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.wk-card-cap small {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #66635E;
+}
+.wk-card:hover .wk-card-cap,
+.wk-card:focus-visible .wk-card-cap {
+  opacity: 1;
+  transform: none;
+}
+.wk-card:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 4px;
+}
+.wk-bar {
+  position: absolute;
+  z-index: 5;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #111111;
+  pointer-events: none;
+}
+.wk-bar a {
+  pointer-events: auto;
+  color: #111111;
+}
+.wk-bar .m-clock {
+  color: #66635E;
+}
+@media (max-width: 760px) {
+  .wk-bar .m-clock { display: none; }
 }
