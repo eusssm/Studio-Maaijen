@@ -78,6 +78,30 @@ body:has(.h-root) {
   font-size: inherit !important;
 }
 
+/* Subtitels en contact-eyebrows: strak sans-serif, nooit cursief */
+.h-root .h-contact-eyebrow,
+.h-cs-contact .h-contact-eyebrow,
+.h-contact-eyebrow {
+  font-family: var(--ff-sans) !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  font-size: clamp(18px, 1.9vw, 30px) !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.025em !important;
+  color: #57544F !important;
+  margin-bottom: clamp(12px, 1.4vw, 20px) !important;
+}
+
+.h-root .h-maint-price,
+.h-maint-price {
+  font-family: var(--ff-sans) !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.05em !important;
+  font-variant-numeric: tabular-nums !important;
+  color: #111111 !important;
+}
+
 /* ═════════ ULTRA-CLEAN NAVBAR (GSAP DRIVEN) ═════════ */
 .h-nav {
   --nav-fg: #111111;

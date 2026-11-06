@@ -474,7 +474,7 @@ export default function CaseClient({ project, nextProject, index = 0, total = 0 
             Een vergelijkbaar project in gedachten?
           </p>
           <h2 className="h-contact-title" data-h-lines>
-            Laten we <em>iets moois</em> maken.
+            Laten we iets moois maken.
           </h2>
           <div className="h-contact-actions" data-h="up">
             <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
