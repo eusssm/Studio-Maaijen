@@ -788,34 +788,33 @@ export function initHomeMotion(root) {
         let shown = false;
         let mode = 'idle'; // 'idle' | 'link' | 'label'
 
-        if (dot) gsap.set(dot, { scale: 0, opacity: 0, force3D: true });
-        if (arrow) gsap.set(arrow, { scale: 0.4, opacity: 0, force3D: true });
+        if (dot) gsap.set(dot, { scale: 0.15, opacity: 0 });
+        if (arrow) gsap.set(arrow, { scale: 0.5, opacity: 0 });
 
         const applyCursorMode = nextMode => {
           if (nextMode === mode) return;
           mode = nextMode;
+          cur.classList.toggle('is-idle', mode === 'idle');
           cur.classList.toggle('is-link', mode === 'link');
           cur.classList.toggle('is-label', mode === 'label');
 
           if (dot) {
             gsap.to(dot, {
-              scale: mode === 'label' ? 6.8 : mode === 'link' ? 3.2 : 1,
+              scale: mode === 'label' ? 1 : mode === 'link' ? 0.38 : 0.15,
               opacity: shown ? 1 : 0,
               backgroundColor: mode === 'label' ? '#111111' : '#FFFFFF',
-              duration: 0.42,
-              ease: 'expo.out',
+              duration: 0.35,
+              ease: 'power3.out',
               overwrite: 'auto',
-              force3D: true,
             });
           }
           if (arrow) {
             gsap.to(arrow, {
-              scale: mode === 'label' ? 1 : 0.45,
+              scale: mode === 'label' ? 1 : 0.5,
               opacity: mode === 'label' ? 1 : 0,
-              duration: 0.38,
-              ease: 'expo.out',
+              duration: 0.28,
+              ease: 'power3.out',
               overwrite: 'auto',
-              force3D: true,
             });
           }
         };
@@ -823,9 +822,9 @@ export function initHomeMotion(root) {
         const move = e => {
           if (!shown) {
             gsap.set(cur, { x: e.clientX, y: e.clientY });
-            cur.classList.add('is-on');
+            cur.classList.add('is-on', 'is-idle');
             shown = true;
-            if (dot) gsap.to(dot, { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' });
+            if (dot) gsap.to(dot, { scale: 0.15, opacity: 1, duration: 0.25, ease: 'power2.out' });
           }
           cx(e.clientX);
           cy(e.clientY);
@@ -838,11 +837,11 @@ export function initHomeMotion(root) {
           else applyCursorMode('idle');
         };
         const leave = () => {
-          cur.classList.remove('is-on');
+          cur.classList.remove('is-on', 'is-idle', 'is-link', 'is-label');
           shown = false;
           mode = 'idle';
-          if (dot) gsap.to(dot, { scale: 0, opacity: 0, duration: 0.25 });
-          if (arrow) gsap.to(arrow, { scale: 0.4, opacity: 0, duration: 0.2 });
+          if (dot) gsap.to(dot, { scale: 0, opacity: 0, duration: 0.2 });
+          if (arrow) gsap.to(arrow, { scale: 0.5, opacity: 0, duration: 0.18 });
         };
         window.addEventListener('mousemove', move, { passive: true });
         root.addEventListener('mouseover', over);
