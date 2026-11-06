@@ -303,7 +303,7 @@ body:has(.h-root) {
   color: #111111;
 }
 
-/* ── CENTRALE GEDRAAIDE CASE-STAPEL (MÖBIUS PHOTO STACK) ── */
+/* ── CENTRALE GEDRAAIDE CASE-STAPEL (MÖBIUS PHOTO STACK + SCROLL-PEEL) ── */
 .m-hero-stack-stage {
   position: absolute;
   left: 49%;
@@ -311,12 +311,24 @@ body:has(.h-root) {
   transform: translate(-50%, -50%);
   z-index: 12; /* Ligt bewust vóór het monumentale woordmerk (z-index 5), exact zoals in Möbius */
   pointer-events: auto;
+  --tilt-x: 0px;
+  --tilt-y: 0px;
+  --tilt-r: 0deg;
 }
 
 .m-hero-stack {
   position: relative;
   width: clamp(270px, 26.5vw, 410px);
   aspect-ratio: 4 / 4.65;
+  transform: translate3d(var(--tilt-x, 0px), var(--tilt-y, 0px), 0) rotate(var(--tilt-r, 0deg));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-stack-peel-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
 }
 
 /* De karakteristieke zwarte en zandkleurige achterkaarten uit het Möbius-ontwerp */
@@ -341,10 +353,10 @@ body:has(.h-root) {
 }
 
 .m-hero-stack:hover .m-stack-backing--black {
-  transform: translate(-22px, -10px) rotate(-18deg) scale(0.96);
+  transform: translate(-24px, -12px) rotate(-19deg) scale(0.96);
 }
 .m-hero-stack:hover .m-stack-backing--warm {
-  transform: translate(20px, -12px) rotate(12.5deg) scale(0.98);
+  transform: translate(22px, -14px) rotate(13deg) scale(0.98);
 }
 
 .m-stack-card {
@@ -352,7 +364,8 @@ body:has(.h-root) {
   inset: 0;
   background: #F4F2ED;
   overflow: hidden;
-  transform: translate(var(--card-x, 0px), var(--card-y, 0px)) rotate(var(--card-rot, -4deg));
+  pointer-events: auto;
+  transform: translate(var(--card-x, 0px), var(--card-y, 0px)) rotate(var(--card-rot, 5deg));
   transition:
     transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.75s cubic-bezier(0.16, 1, 0.3, 1),
@@ -367,7 +380,13 @@ body:has(.h-root) {
 }
 
 .m-hero-stack:hover .m-stack-card.is-top {
-  transform: translate(0px, -6px) rotate(-2deg) scale(1.02);
+  transform: translate(0px, -8px) rotate(2deg) scale(1.025);
+}
+.m-hero-stack:hover .m-stack-card.is-back-1 {
+  transform: translate(-18px, -10px) rotate(-12deg) scale(0.99);
+}
+.m-hero-stack:hover .m-stack-card.is-back-2 {
+  transform: translate(-26px, 12px) rotate(-22deg) scale(0.98);
 }
 
 .m-stack-img {
@@ -761,8 +780,12 @@ body:has(.h-root) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   02. MANIFESTO / FILOSOFIE (MÖBIUS WORD REVEAL)
+   02. MANIFESTO / FILOSOFIE (MÖBIUS SCRAMBLE WORD SCATTER-TO-LOCK)
    ═══════════════════════════════════════════════════════════════════════════ */
+.m-manifesto {
+  overflow: hidden;
+}
+
 .m-manifesto-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -790,12 +813,30 @@ body:has(.h-root) {
 .m-statement {
   margin: 0 0 clamp(40px, 5vw, 68px) 0 !important;
   font-family: var(--ff-sans);
-  font-size: clamp(28px, 3.8vw, 58px) !important;
+  font-size: clamp(28px, 4.1vw, 64px) !important;
   font-weight: 700 !important;
-  line-height: 1.08 !important;
+  line-height: 1.06 !important;
   letter-spacing: -0.04em !important;
   color: #111111;
   max-width: 24ch;
+}
+
+.m-scramble-word {
+  display: inline-block;
+  margin-right: 0.24em;
+  will-change: transform, opacity;
+}
+
+.m-word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  margin-right: 0.24em;
+}
+
+.m-word-inner {
+  display: inline-block;
+  will-change: transform;
 }
 
 .m-manifesto-cols {
@@ -813,42 +854,217 @@ body:has(.h-root) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   03. ONZE DIENSTEN — ARCHITECTURALE A / B / C RIJEN
+   02B. MÖBIUS KINETIC REEL & DUAL OPPOSITE TICKERS ("IDEAS IN MOTION")
    ═══════════════════════════════════════════════════════════════════════════ */
+.m-reel-section {
+  position: relative;
+  background: #FFFFFF;
+  padding: clamp(36px, 5vw, 72px) 0 clamp(64px, 8vw, 120px);
+  border-bottom: 1px solid #EAE7E1;
+  overflow: hidden;
+}
+
+.m-tickers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: clamp(32px, 4.5vw, 64px);
+  user-select: none;
+}
+
+.m-ticker-row {
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid #EAE7E1;
+  border-bottom: 1px solid #EAE7E1;
+  padding: 12px 0;
+  background: #FAF9F6;
+}
+
+.m-ticker-row.is-alt {
+  background: #FFFFFF;
+  border-top: 0;
+}
+
+.m-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  will-change: transform;
+}
+
+.m-ticker-item {
+  font-family: var(--ff-sans);
+  font-size: clamp(26px, 4.2vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  color: #111111;
+}
+
+.m-ticker-row.is-alt .m-ticker-item {
+  color: #9A968E;
+}
+
+.m-ticker-item em {
+  font-style: normal;
+  color: #111111;
+}
+
+.m-reel-stage {
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.m-reel-card {
+  display: block;
+  background: #F4F2ED;
+  border: 1px solid #E5E2DC;
+  padding: clamp(18px, 2.4vw, 32px);
+}
+
+.m-reel-top-meta,
+.m-reel-bottom-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #111111;
+}
+
+.m-reel-top-meta {
+  margin-bottom: 16px;
+}
+
+.m-reel-bottom-meta {
+  margin-top: 16px;
+  color: #57544F;
+}
+
+.m-reel-counter {
+  color: #78746D;
+}
+
+.m-reel-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 8.6;
+  overflow: hidden;
+  background: #111111;
+}
+
+.m-reel-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.05);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-reel-img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   03. ONZE DIENSTEN — STICKY LEFT COLUMN + KINETIC SLASH BAR + PILL TAGS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-services-layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  row-gap: 40px;
+  align-items: start;
+}
+
+.m-services-sticky {
+  grid-column: 1 / 5;
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 16px;
+}
+
+.m-services-heading {
+  margin: 4px 0 0;
+}
+
+.m-services-lead {
+  font-size: 15.5px;
+  line-height: 1.58;
+  color: #57544F;
+  max-width: 34ch;
+}
+
+.m-slash-bar {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-slash-line {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #111111;
+}
+
+.m-slash-track {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--ff-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #9E9A92;
+  overflow: hidden;
+}
+
 .m-services-list {
+  grid-column: 5 / 13;
   display: flex;
   flex-direction: column;
 }
 
 .m-service-row {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--gut);
-  row-gap: 20px;
+  grid-template-columns: 84px 1fr;
+  column-gap: 24px;
+  row-gap: 16px;
   align-items: start;
-  padding: clamp(36px, 4.5vw, 64px) 0;
+  padding: clamp(36px, 4.5vw, 60px) 0;
   border-bottom: 1px solid #E6E3DD;
 }
 
 .m-service-row:first-child {
-  padding-top: 8px;
+  padding-top: 0;
 }
 
 .m-service-index {
-  grid-column: 1 / 3;
   font-family: var(--ff-sans);
-  font-size: clamp(32px, 3.4vw, 48px);
+  font-size: clamp(32px, 3.2vw, 46px);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1;
-  color: #E2DFD7;
+  color: #D8D4CA;
 }
 
 .m-service-main {
-  grid-column: 3 / 9;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .m-service-kicker {
@@ -861,37 +1077,41 @@ body:has(.h-root) {
 
 .m-service-statement {
   font-family: var(--ff-sans);
-  font-size: clamp(22px, 2.4vw, 36px);
+  font-size: clamp(22px, 2.3vw, 34px);
   font-weight: 700;
-  line-height: 1.14;
+  line-height: 1.15;
   letter-spacing: -0.035em;
   color: #111111;
-  max-width: 28ch;
+  max-width: 30ch;
 }
 
-.m-service-deliverables {
-  grid-column: 9 / 13;
+.m-service-tags {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 4px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
 
-.m-service-deliverables li {
-  font-size: 14.5px;
-  font-weight: 500;
-  color: #484643;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #F0EDE7;
-  display: flex;
+.m-service-pill {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  padding: 8px 15px;
+  background: #EFECE6;
+  border: 1px solid #E2DFD7;
+  border-radius: 99px;
+  font-family: var(--ff-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #1A1A1A;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 
-.m-service-deliverables li::after {
-  content: '+';
-  color: #9E9A92;
-  font-weight: 600;
+.m-service-pill:hover {
+  background: #111111;
+  border-color: #111111;
+  color: #FFFFFF;
+  transform: translateY(-2px);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -942,11 +1162,44 @@ body:has(.h-root) {
   font-family: var(--ff-sans);
   font-size: clamp(64px, 7.5vw, 120px);
   font-weight: 800;
-  line-height: 0.88;
+  line-height: 1;
   letter-spacing: -0.06em;
   color: #111111;
   margin: 32px 0 24px;
   font-variant-numeric: tabular-nums;
+}
+
+/* Möbius Vertical Slot-Machine Digit Rollers (0..9) */
+.m-slot-number {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.m-slot-window {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.m-slot-strip {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.m-slot-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1em;
+  line-height: 1;
+}
+
+.m-slot-suffix {
+  display: inline-block;
+  margin-left: 0.02em;
 }
 
 .m-number-label {
@@ -1085,8 +1338,41 @@ body:has(.h-root) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   06. HET PROCES (01 — 04)
+   06. HET PROCES (01 — 04) MET MÖBIUS 01–12 TIMELINE RULER
    ═══════════════════════════════════════════════════════════════════════════ */
+.m-process-ruler {
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-process-ruler-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #9E9A92;
+}
+
+.m-process-ruler-track {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: #EAE7E1;
+  overflow: hidden;
+}
+
+.m-process-ruler-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #111111;
+  transform-origin: left center;
+}
+
 .m-process-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1100,6 +1386,19 @@ body:has(.h-root) {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m-process-card:hover {
+  border-color: #111111;
+  transform: translateY(-4px);
+}
+
+.m-process-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
 }
 
 .m-process-num {
@@ -1107,6 +1406,25 @@ body:has(.h-root) {
   font-weight: 800;
   letter-spacing: -0.04em;
   color: #D2CEC4;
+  transition: color 0.3s ease;
+}
+
+.m-process-card:hover .m-process-num {
+  color: #111111;
+}
+
+.m-process-bar {
+  flex: 1;
+  height: 1px;
+  background: #E5E2DC;
+  overflow: hidden;
+}
+
+.m-process-bar i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #111111;
 }
 
 .m-process-name {
@@ -1442,10 +1760,39 @@ body:has(.h-root) {
 }
 
 .m-faq-icon {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 400;
   color: #78746D;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+
+.m-faq-item.is-open .m-faq-icon {
+  transform: rotate(45deg);
+  color: #111111;
+}
+
+.m-faq-answer-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.35s ease;
+}
+
+.m-faq-item.is-open .m-faq-answer-grid {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.m-faq-answer-inner {
+  overflow: hidden;
 }
 
 .m-faq-answer {
@@ -1510,6 +1857,7 @@ body:has(.h-root) {
 }
 
 .h-root .h-footer-mark {
+  position: relative;
   display: block;
   margin: clamp(48px, 6vw, 88px) 0 clamp(20px, 3vw, 36px);
   font-family: var(--ff-sans);
@@ -1521,12 +1869,122 @@ body:has(.h-root) {
   opacity: 1 !important;
   -webkit-text-stroke: 0 !important;
   white-space: nowrap;
+  overflow: hidden;
 }
 
-.h-root .h-footer-mark sup {
+.m-footer-wordmark-row {
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.m-footer-reg {
   font-size: 0.34em;
   font-weight: 700;
-  vertical-align: top;
+  line-height: 1;
+  margin-left: 0.04em;
+  margin-top: 0.06em;
+  display: inline-block;
+}
+
+/* Möbius Venetian Blinds over het grote Footer Woordmerk */
+.m-footer-blinds {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.m-footer-blinds > span {
+  flex: 1;
+  width: 100%;
+  background: #FFFFFF;
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MÖBIUS PER-CHARACTER HOVER WAVE (`CharSwap`) & SPLIT HEADLINES (`SplitChars`)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-charswap {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: bottom;
+  line-height: 1.15;
+}
+
+.m-char-col {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 1.15em;
+  line-height: 1.15;
+}
+
+.m-char-top,
+.m-char-bot {
+  display: block;
+  height: 1.15em;
+  line-height: 1.15;
+  transition: transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--char-i, 0) * 0.016s);
+  will-change: transform;
+}
+
+.m-char-bot {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+a:hover .m-charswap .m-char-top,
+button:hover .m-charswap .m-char-top,
+a:focus-visible .m-charswap .m-char-top,
+button:focus-visible .m-charswap .m-char-top {
+  transform: translateY(-100%);
+}
+
+a:hover .m-charswap .m-char-bot,
+button:hover .m-charswap .m-char-bot,
+a:focus-visible .m-charswap .m-char-bot,
+button:focus-visible .m-charswap .m-char-bot {
+  transform: translateY(-100%);
+}
+
+.m-split-chars {
+  display: inline-flex;
+  flex-wrap: wrap;
+  vertical-align: bottom;
+}
+
+.m-split-char-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.m-split-char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.m-sec-title-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-sec-display {
+  margin: 0;
+  font-family: var(--ff-sans);
+  font-size: clamp(32px, 4.4vw, 68px);
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+  color: #111111;
 }
 
 .h-footer-bottom {
@@ -1663,17 +2121,18 @@ body:has(.h-root) {
   .m-talk-form-col,
   .m-faq-col,
   .m-manifesto-left,
-  .m-manifesto-right {
+  .m-manifesto-right,
+  .m-services-sticky,
+  .m-services-list {
     grid-column: 1 / 13;
   }
-  .m-service-index {
-    grid-column: 1 / 13;
+  .m-services-sticky {
+    position: relative;
+    top: auto;
+    padding-right: 0;
   }
-  .m-service-main {
-    grid-column: 1 / 13;
-  }
-  .m-service-deliverables {
-    grid-column: 1 / 13;
+  .m-service-row {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1733,4 +2192,20 @@ body:has(.h-root) {
   .m-partners-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .m-process-ruler-ticks span:nth-child(even) {
+    display: none;
+  }
+}
+
+/* ═════════ SCANDINAVISCHE PILL CURSOR OVERRIDE ═════════ */
+.h-cursor.is-label {
+  background: #111111 !important;
+  color: #FFFFFF !important;
+  border-color: #111111 !important;
+  border-radius: 99px !important;
+  padding: 8px 14px !important;
+  font-family: var(--ff-sans) !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
 }

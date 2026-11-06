@@ -5,17 +5,23 @@ import { SplitText } from 'gsap/SplitText';
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 /*
- * Motion voor de homepage. Eén context, één opruimfunctie.
+ * Motion voor de homepage én subpagina's — Möbius × Scandinavisch.
+ * Eén GSAP-context, één opruimfunctie.
  *
- * Principes:
- *  - Alles is zichtbaar zonder JS en bij prefers-reduced-motion.
- *  - Alleen transform/opacity/clip-path worden geanimeerd.
- *  - Het laadscherm (SSR) bedekt de pagina tot de beginstanden gezet zijn,
- *    dus er is geen flits van onzichtbare of verspringende content.
+ * Bevat alle 8 kenmerkende Möbius-motions:
+ *  1. Hero Central Card Stack Entry Deal + Scroll-Peel (`Main` -> `Out` bij scrollen)
+ *  2. Monumentale Hero & Sectie Per-Character Staggered Reveals
+ *  3. Manifesto `Scramble` 2D Word Scatter-to-Lock + Masked Supporting Copy
+ *  4. Kinetische Showreel Expansion + Dual Opposite Tickers (`Ideas in Motion`)
+ *  5. Services Sticky Slash-Bar + Staggered Pill Deliverables
+ *  6. Studio in Numbers Vertical Slot-Machine Digit Rollers (`0..9` strips) + Thumbnail Fan
+ *  7. Founder Multi-Plane Scroll Parallax + Process 01–12 Timeline Progress Scrub
+ *  8. Footer Venetian Blinds + Monumental Wordmark Per-Character Rise + Pill Cursor
  */
 export function initHomeMotion(root) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const isMobile = window.matchMedia('(max-width: 760px)').matches;
   const q = (sel, ctx = root) => Array.from(ctx.querySelectorAll(sel));
   const one = (sel, ctx = root) => ctx.querySelector(sel);
 
@@ -32,6 +38,8 @@ export function initHomeMotion(root) {
     /* ───────── 0. BEGINSTANDEN ───────── */
     const heroLines = q('[data-h-line] > span');
     const heroFade = q('[data-h-hero-fade]');
+    const heroChars = q('[data-m-hero-char]');
+    const stackEntries = q('[data-m-stack-entry]');
     const heroBg = one('[data-h-hero-bg]');
     const emblem = one('[data-h-emblem]');
     const portrait = one('[data-h-portrait]');
@@ -39,14 +47,22 @@ export function initHomeMotion(root) {
     const dots = one('[data-h-dots]');
 
     if (heroLines.length) gsap.set(heroLines, { yPercent: 112 });
-    if (heroFade.length) gsap.set(heroFade, { opacity: 0, y: 18 });
+    if (heroFade.length) gsap.set(heroFade, { opacity: 0, y: 20 });
+    if (heroChars.length) gsap.set(heroChars, { yPercent: 108 });
+    if (stackEntries.length) {
+      gsap.set(stackEntries, {
+        y: 120,
+        opacity: 0,
+        scale: 0.9,
+      });
+    }
     if (emblem) gsap.set(emblem, { scale: 0, rotate: -180, opacity: 0 });
     if (heroBg) gsap.set(heroBg, { scale: 1.08, opacity: 0 });
     if (portrait) gsap.set(portrait, { opacity: 0 });
     if (portraitMedia) gsap.set(portraitMedia, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.14 });
     if (dots) dots.style.setProperty('--r', '7');
 
-    /* ───────── 1. LOADER + HERO INTRO ───────── */
+    /* ───────── 1. LOADER + MÖBIUS HERO INTRO CHOREOGRAFIE ───────── */
     const countEl = one('[data-h-count]');
     const barEl = one('[data-h-bar]');
     const seen = (() => {
@@ -56,20 +72,64 @@ export function initHomeMotion(root) {
         return false;
       }
     })();
-    const loadDur = seen ? 0.55 : 1.3;
+    const loadDur = seen ? 0.55 : 1.2;
     const counter = { v: 0 };
 
     const intro = gsap.timeline({ defaults: { ease: 'power4.out' } });
     const heroIn = () => {
       const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
       if (heroBg) tl.to(heroBg, { opacity: 1, scale: 1, duration: 1.8, ease: 'expo.out' }, 0);
-      if (heroLines.length) tl.to(heroLines, { yPercent: 0, duration: 1.25, stagger: 0.12 }, 0.1);
+      if (heroLines.length) tl.to(heroLines, { yPercent: 0, duration: 1.2, stagger: 0.1 }, 0.08);
+
+      // Monumentale "Studio Maaijen®" per-karakter opkomst (Möbius wordmark reveal)
+      if (heroChars.length) {
+        tl.to(
+          heroChars,
+          {
+            yPercent: 0,
+            duration: 1.15,
+            ease: 'expo.out',
+            stagger: 0.028,
+          },
+          0.05
+        );
+      }
+
+      // Centrale gedraaide case-stapel valt kaart-voor-kaart op zijn plek
+      if (stackEntries.length) {
+        tl.to(
+          stackEntries,
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 1.25,
+            ease: 'expo.out',
+            stagger: 0.09,
+            clearProps: 'y,opacity,scale',
+          },
+          0.14
+        );
+      }
+
       if (emblem) tl.to(emblem, { scale: 1, rotate: 0, opacity: 1, duration: 1.2, ease: 'back.out(1.8)' }, 0.35);
       if (portrait) tl.to(portrait, { opacity: 1, duration: 0.01 }, 0.1);
       if (portraitMedia) tl.to(portraitMedia, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: 1.5, ease: 'expo.out' }, 0.1);
       if (dots) {
         const o = { r: 7 };
-        tl.to(o, { r: 0, duration: 2.6, ease: 'power2.inOut', onUpdate: () => dots.style.setProperty('--r', o.r.toFixed(2)), onComplete: () => { dots.style.display = 'none'; } }, 0.5);
+        tl.to(
+          o,
+          {
+            r: 0,
+            duration: 2.6,
+            ease: 'power2.inOut',
+            onUpdate: () => dots.style.setProperty('--r', o.r.toFixed(2)),
+            onComplete: () => {
+              dots.style.display = 'none';
+            },
+          },
+          0.5
+        );
       }
       if (heroFade.length) {
         tl.to(
@@ -78,43 +138,44 @@ export function initHomeMotion(root) {
             opacity: 1,
             y: 0,
             duration: 1,
-            stagger: 0.08,
+            stagger: 0.07,
             clearProps: 'transform',
           },
-          0.5
+          0.22
         );
       }
       return tl;
     };
 
     if (!loader) {
-      /* pagina's zonder laadscherm (cases): direct de intro */
       heroIn();
       root.classList.add('is-ready');
-    } else intro
-      .to(counter, {
-        v: 100,
-        duration: loadDur,
-        ease: 'power2.inOut',
-        onUpdate: () => {
-          const n = Math.round(counter.v);
-          if (countEl) countEl.textContent = String(n).padStart(3, '0');
-          if (barEl) barEl.style.transform = `scaleX(${counter.v / 100})`;
-        },
-      })
-      .add(() => {
-        try {
-          sessionStorage.setItem('h-seen', '1');
-        } catch (e) {}
-      })
-      .to(loader, { yPercent: -101, duration: 0.95, ease: 'expo.inOut' }, '+=0.1')
-      .add(heroIn, '-=0.55')
-      .add(() => {
-        loader?.classList.add('is-done');
-        root.classList.add('is-ready');
-      }, '-=0.2');
+    } else {
+      intro
+        .to(counter, {
+          v: 100,
+          duration: loadDur,
+          ease: 'power2.inOut',
+          onUpdate: () => {
+            const n = Math.round(counter.v);
+            if (countEl) countEl.textContent = String(n).padStart(3, '0');
+            if (barEl) barEl.style.transform = `scaleX(${counter.v / 100})`;
+          },
+        })
+        .add(() => {
+          try {
+            sessionStorage.setItem('h-seen', '1');
+          } catch (e) {}
+        })
+        .to(loader, { yPercent: -101, duration: 0.95, ease: 'expo.inOut' }, '+=0.1')
+        .add(heroIn, '-=0.55')
+        .add(() => {
+          loader?.classList.add('is-done');
+          root.classList.add('is-ready');
+        }, '-=0.2');
+    }
 
-    /* ───────── 2. NAV: thema per sectie, verbergen bij omlaag scrollen ───────── */
+    /* ───────── 2. NAV: thema per sectie, verschijnt bij scrollen ───────── */
     const nav = one('[data-h-nav]');
     if (nav) {
       q('[data-theme]').forEach(sec => {
@@ -151,62 +212,395 @@ export function initHomeMotion(root) {
       });
     }
 
-    /* ───────── 4. HERO: Spector multi-plane scrubbed parallax ───────── */
-    const hero = one('.h-hero');
-    if (hero) {
-      const heroBgEl = one('[data-h-hero-bg]', hero);
-      const headlineEl = one('[data-h-hero-headline]', hero) || one('.h-hero-name', hero);
+    /* ───────── 4. MÖBIUS HERO SCROLL-PEEL (`Main` -> `Out`) ───────── */
+    const mHero = one('[data-m-hero]');
+    if (mHero && !isMobile) {
+      const peelLayers = q('[data-m-peel-card]', mHero);
+      peelLayers.forEach(layer => {
+        const order = parseInt(layer.getAttribute('data-m-peel-card') || '0', 10);
+        const startOffset = order * 55;
+        const rotDelta = order % 2 === 0 ? -8 : 8;
 
-      // Achtergrondfoto + mesh: daalt langzaam naar beneden met lichte schaling
+        gsap.fromTo(
+          layer,
+          { y: 0, rotate: 0 },
+          {
+            y: () => -window.innerHeight * 0.95,
+            rotate: rotDelta,
+            ease: 'power1.in',
+            scrollTrigger: {
+              trigger: mHero,
+              start: `top+=${startOffset} top`,
+              end: `bottom+=${startOffset + 120} top`,
+              scrub: 0.45 + order * 0.12,
+            },
+          }
+        );
+      });
+
+      const wordmarkWrap = one('[data-h-hero-headline]', mHero);
+      if (wordmarkWrap) {
+        gsap.to(wordmarkWrap, {
+          yPercent: -22,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: mHero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      }
+    }
+
+    /* Legacy hero fallback voor eventuele andere pagina's */
+    const legacyHero = one('.h-hero');
+    if (legacyHero) {
+      const heroBgEl = one('[data-h-hero-bg]', legacyHero);
+      const headlineEl = one('[data-h-hero-headline]', legacyHero) || one('.h-hero-name', legacyHero);
       if (heroBgEl) {
         gsap.to(heroBgEl, {
           yPercent: 18,
           scale: 1.06,
           ease: 'none',
-          scrollTrigger: {
-            trigger: hero,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-          },
+          scrollTrigger: { trigger: legacyHero, start: 'top top', end: 'bottom top', scrub: true },
         });
       }
-
-      // Monumentale typografie: schuift sneller omhoog over de foto
       if (headlineEl) {
         gsap.to(headlineEl, {
           yPercent: -28,
           opacity: 0.25,
           ease: 'none',
-          scrollTrigger: {
-            trigger: hero,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-          },
-        });
-      }
-
-      if (portrait) {
-        gsap.to(portrait, {
-          yPercent: 10,
-          ease: 'none',
-          scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+          scrollTrigger: { trigger: legacyHero, start: 'top top', end: 'bottom top', scrub: true },
         });
       }
     }
 
-    /* ───────── 5. REVEAL: fade-up ───────── */
+    /* ───────── 5. SECTIE-KOPPEN: PER-CHARACTER SCROLL REVEAL ───────── */
+    q('.m-split-chars').forEach(group => {
+      const chars = q('[data-m-sec-char]', group);
+      if (!chars.length) return;
+      gsap.set(chars, { yPercent: 105 });
+      ScrollTrigger.create({
+        trigger: group,
+        start: 'top 90%',
+        once: true,
+        onEnter: () =>
+          gsap.to(chars, {
+            yPercent: 0,
+            duration: 0.95,
+            ease: 'expo.out',
+            stagger: 0.02,
+          }),
+      });
+    });
+
+    /* ───────── 6. REVEAL: FADE-UP VOOR BLOKKEN & KAARTEN ───────── */
     const ups = q('[data-h="up"]');
-    if (ups.length) gsap.set(ups, { opacity: 0, y: 40 });
+    if (ups.length) gsap.set(ups, { opacity: 0, y: 38 });
     ScrollTrigger.batch(ups, {
       start: 'top 92%',
       once: true,
       onEnter: els =>
-        gsap.to(els, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.09, overwrite: true }),
+        gsap.to(els, { opacity: 1, y: 0, duration: 0.95, ease: 'power3.out', stagger: 0.08, overwrite: true }),
     });
 
-    /* ───────── 6. REVEAL: regels met masker (koppen) ───────── */
+    /* ───────── 7. MÖBIUS MANIFESTO `SCRAMBLE` 2D WORD SCATTER-TO-LOCK ───────── */
+    const statement = one('[data-h-statement]');
+    if (statement) {
+      const scrambleWords = q('.m-scramble-word', statement);
+      if (scrambleWords.length) {
+        const scaleFactor = isMobile ? 0.28 : 0.65;
+        gsap.set(scrambleWords, {
+          x: (i, el) => parseFloat(el.getAttribute('data-scatter-x') || '0') * scaleFactor,
+          y: (i, el) => parseFloat(el.getAttribute('data-scatter-y') || '0') * scaleFactor,
+          rotation: (i, el) => parseFloat(el.getAttribute('data-scatter-r') || '0') * (isMobile ? 0.4 : 0.8),
+          opacity: 0.14,
+        });
+
+        gsap.to(scrambleWords, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          opacity: 1,
+          ease: 'power2.out',
+          stagger: {
+            each: 0.025,
+            from: 'random',
+          },
+          scrollTrigger: {
+            trigger: statement,
+            start: 'top 95%',
+            end: 'bottom 58%',
+            scrub: 0.65,
+          },
+        });
+      } else {
+        const words = q('.h-word', statement);
+        gsap.set(words, { opacity: 0.16 });
+        gsap.to(words, {
+          opacity: 1,
+          ease: 'none',
+          stagger: 0.12,
+          scrollTrigger: { trigger: statement, start: 'top 82%', end: 'bottom 52%', scrub: 0.5 },
+        });
+      }
+    }
+
+    /* Gemaskeerde supporting copy (woord-voor-woord slide-up) */
+    q('[data-m-word-group]').forEach(group => {
+      const words = q('[data-m-word-reveal]', group);
+      if (!words.length) return;
+      gsap.set(words, { yPercent: 110 });
+      ScrollTrigger.create({
+        trigger: group,
+        start: 'top 90%',
+        once: true,
+        onEnter: () =>
+          gsap.to(words, {
+            yPercent: 0,
+            duration: 0.85,
+            ease: 'power3.out',
+            stagger: 0.012,
+          }),
+      });
+    });
+
+    /* ───────── 8. MÖBIUS KINETIC REEL & DUAL OPPOSITE TICKERS ───────── */
+    const reelSec = one('[data-m-reel-sec]');
+    if (reelSec) {
+      const leftTicker = one('[data-m-ticker="left"]', reelSec);
+      const rightTicker = one('[data-m-ticker="right"]', reelSec);
+      const reelFrame = one('[data-m-reel-frame]', reelSec);
+
+      if (leftTicker) {
+        gsap.fromTo(
+          leftTicker,
+          { xPercent: 0 },
+          {
+            xPercent: -22,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: reelSec,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.5,
+            },
+          }
+        );
+      }
+
+      if (rightTicker) {
+        gsap.fromTo(
+          rightTicker,
+          { xPercent: -22 },
+          {
+            xPercent: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: reelSec,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.5,
+            },
+          }
+        );
+      }
+
+      if (reelFrame) {
+        gsap.fromTo(
+          reelFrame,
+          { scale: 0.86, y: 40 },
+          {
+            scale: 1,
+            y: 0,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: reelFrame,
+              start: 'top 92%',
+              end: 'center 55%',
+              scrub: 0.6,
+            },
+          }
+        );
+      }
+    }
+
+    /* ───────── 9. SERVICES: RIJ-REVEAL & STAGGERED PILL TAGS ───────── */
+    q('[data-m-service-row]').forEach(row => {
+      const pills = q('[data-m-tag]', row);
+      gsap.set(row, { opacity: 0, y: 36 });
+      if (pills.length) gsap.set(pills, { opacity: 0, y: 18, scale: 0.96 });
+
+      ScrollTrigger.create({
+        trigger: row,
+        start: 'top 88%',
+        once: true,
+        onEnter: () => {
+          gsap.to(row, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' });
+          if (pills.length) {
+            gsap.to(pills, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.75,
+              ease: 'back.out(1.4)',
+              stagger: 0.06,
+              delay: 0.15,
+            });
+          }
+        },
+      });
+    });
+
+    /* ───────── 10. STUDIO IN NUMBERS: VERTICAL SLOT-MACHINE DIGIT ROLLERS ───────── */
+    q('[data-m-number-card]').forEach((card, cardIdx) => {
+      const strips = q('[data-m-slot-digit]', card);
+      const thumbs = q('[data-m-thumb]', card);
+
+      gsap.set(card, { opacity: 0, y: 42 });
+      strips.forEach(strip => gsap.set(strip, { yPercent: 0 }));
+      if (thumbs.length) {
+        gsap.set(thumbs, { opacity: 0, x: 18, rotate: 8, scale: 0.85 });
+      }
+
+      ScrollTrigger.create({
+        trigger: card,
+        start: 'top 88%',
+        once: true,
+        onEnter: () => {
+          gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            duration: 0.95,
+            ease: 'power3.out',
+            delay: cardIdx * 0.08,
+          });
+
+          // Laat elke cijferstrip verticaal naar zijn eindcijfer rollen (0..9 -> -digit * 10%)
+          strips.forEach((strip, sIdx) => {
+            const targetDigit = parseInt(strip.getAttribute('data-m-slot-digit') || '0', 10);
+            const extraDelay = parseFloat(strip.getAttribute('data-m-slot-delay') || '0');
+            // Voor een echt slot-machine gevoel bij het cijfer 0 (zoals de '0' in 20, 50, 30),
+            // rolt hij eerst vanaf 9 terug naar 0!
+            if (targetDigit === 0 && sIdx > 0) {
+              gsap.fromTo(
+                strip,
+                { yPercent: -90 },
+                {
+                  yPercent: 0,
+                  duration: 1.55,
+                  ease: 'expo.inOut',
+                  delay: 0.12 + cardIdx * 0.1 + extraDelay,
+                }
+              );
+            } else {
+              gsap.fromTo(
+                strip,
+                { yPercent: 0 },
+                {
+                  yPercent: -targetDigit * 10,
+                  duration: 1.45,
+                  ease: 'expo.inOut',
+                  delay: 0.08 + cardIdx * 0.1 + extraDelay,
+                }
+              );
+            }
+          });
+
+          // Mini-thumbnails waaieren uit zoals in Möbius
+          if (thumbs.length) {
+            gsap.to(thumbs, {
+              opacity: 1,
+              x: 0,
+              rotate: i => (i - 1) * 4,
+              scale: 1,
+              duration: 0.85,
+              ease: 'back.out(1.7)',
+              stagger: 0.08,
+              delay: 0.25 + cardIdx * 0.08,
+            });
+          }
+        },
+      });
+    });
+
+    /* ───────── 11. FOUNDER MULTI-PLANE PARALLAX & PARTNERS REVEAL ───────── */
+    if (!isMobile) {
+      q('[data-m-parallax]').forEach(el => {
+        const delta = parseFloat(el.getAttribute('data-m-parallax') || '-40');
+        gsap.fromTo(
+          el,
+          { y: -delta * 0.6 },
+          {
+            y: delta * 0.6,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.5,
+            },
+          }
+        );
+      });
+    }
+
+    const partners = q('[data-m-partner]');
+    if (partners.length) {
+      gsap.set(partners, { opacity: 0, y: 18 });
+      ScrollTrigger.batch(partners, {
+        start: 'top 92%',
+        once: true,
+        onEnter: els =>
+          gsap.to(els, {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            ease: 'power3.out',
+            stagger: 0.06,
+          }),
+      });
+    }
+
+    /* ───────── 12. HET PROCES: 01–12 RULER SCRUB & KAARTEN ───────── */
+    const procSec = one('[data-m-process]');
+    if (procSec) {
+      const rulerFill = one('[data-m-process-fill]', procSec);
+      const procCards = q('[data-m-process-card]', procSec);
+
+      if (rulerFill) {
+        gsap.set(rulerFill, { scaleX: 0, transformOrigin: 'left center' });
+        gsap.to(rulerFill, {
+          scaleX: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: procSec,
+            start: 'top 78%',
+            end: 'bottom 55%',
+            scrub: 0.4,
+          },
+        });
+      }
+
+      if (procCards.length) {
+        gsap.set(procCards, { opacity: 0, y: 36 });
+        ScrollTrigger.batch(procCards, {
+          start: 'top 90%',
+          once: true,
+          onEnter: els =>
+            gsap.to(els, {
+              opacity: 1,
+              y: 0,
+              duration: 0.9,
+              ease: 'power3.out',
+              stagger: 0.1,
+            }),
+        });
+      }
+    }
+
+    /* ───────── 13. TELLERS, BALKEN & LIJNEN (SUBPAGINA'S & ALGEMEEN) ───────── */
     const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
     fontsReady.then(() => {
       q('[data-h-lines]').forEach(el => {
@@ -226,56 +620,11 @@ export function initHomeMotion(root) {
               });
             },
           });
-        } catch (e) {
-          /* geen animatie, tekst blijft gewoon staan */
-        }
+        } catch (e) {}
       });
       ScrollTrigger.refresh();
     });
 
-    /* ───────── 7. STATEMENT: woorden lichten op tijdens scrollen ───────── */
-    const statement = one('[data-h-statement]');
-    if (statement) {
-      const words = q('.h-word', statement);
-      gsap.set(words, { opacity: 0.16 });
-      gsap.to(words, {
-        opacity: 1,
-        ease: 'none',
-        stagger: 0.12,
-        scrollTrigger: { trigger: statement, start: 'top 82%', end: 'bottom 52%', scrub: 0.5 },
-      });
-    }
-
-    /* ───────── 8. STAPPEN (tijdlijn): beeld + lijn ───────── */
-    const steps = one('[data-h-steps]');
-    if (steps) {
-      const arts = q('[data-h-step-art]', steps);
-      gsap.set(arts, { clipPath: 'inset(100% 0% 0% 0%)' });
-      ScrollTrigger.batch(arts, {
-        start: 'top 90%',
-        once: true,
-        onEnter: els =>
-          gsap.to(els, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.3, ease: 'expo.out', stagger: 0.14 }),
-      });
-      const items = q('.h-step', steps);
-      gsap.set(items, { opacity: 0, y: 28 });
-      ScrollTrigger.batch(items, {
-        start: 'top 90%',
-        once: true,
-        onEnter: els => gsap.to(els, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.14, delay: 0.2 }),
-      });
-      gsap.fromTo(
-        steps,
-        { '--line': 0 },
-        {
-          '--line': 1,
-          ease: 'none',
-          scrollTrigger: { trigger: steps, start: 'top 80%', end: 'bottom 70%', scrub: true },
-        }
-      );
-    }
-
-    /* ───────── 9. TELLERS, BALKEN, LIJNEN ───────── */
     q('[data-h-count-to]').forEach(el => {
       const target = parseFloat(el.getAttribute('data-h-count-to'));
       const suffix = el.getAttribute('data-h-suffix') || '';
@@ -302,7 +651,7 @@ export function initHomeMotion(root) {
         trigger: el,
         start: 'top 94%',
         once: true,
-        onEnter: () => gsap.to(el, { scaleX: 1, duration: 1.6, ease: 'expo.out' }),
+        onEnter: () => gsap.to(el, { scaleX: 1, duration: 1.5, ease: 'expo.out' }),
       });
     });
 
@@ -316,22 +665,50 @@ export function initHomeMotion(root) {
       });
     });
 
-    /* ───────── 10. FOOTER-WOORDMERK ───────── */
-    const mark = q('.h-footer-mark span');
-    if (mark.length) {
-      gsap.fromTo(
-        mark,
-        { yPercent: 35 },
-        {
-          yPercent: 0,
-          ease: 'none',
-          stagger: 0.04,
-          scrollTrigger: { trigger: '.h-footer-mark', start: 'top 100%', end: 'bottom 85%', scrub: true },
-        }
-      );
+    /* ───────── 14. FOOTER VENETIAN BLINDS + MONUMENTAAL WOORDMERK ───────── */
+    const footerMark = one('[data-m-footer-mark]');
+    if (footerMark) {
+      const footerChars = q('[data-m-footer-char]', footerMark);
+      const blindSlats = q('[data-m-blinds] > span', footerMark);
+
+      if (footerChars.length) {
+        gsap.fromTo(
+          footerChars,
+          { yPercent: 65 },
+          {
+            yPercent: 0,
+            ease: 'power2.out',
+            stagger: 0.025,
+            scrollTrigger: {
+              trigger: footerMark,
+              start: 'top 98%',
+              end: 'bottom 84%',
+              scrub: 0.4,
+            },
+          }
+        );
+      }
+
+      if (blindSlats.length) {
+        gsap.fromTo(
+          blindSlats,
+          { scaleY: 1, transformOrigin: 'top center' },
+          {
+            scaleY: 0,
+            ease: 'none',
+            stagger: 0.04,
+            scrollTrigger: {
+              trigger: footerMark,
+              start: 'top 96%',
+              end: 'bottom 82%',
+              scrub: 0.35,
+            },
+          }
+        );
+      }
     }
 
-    /* ───────── 11. SHOWCASE-GRID: media onthullen bij binnenkomst ───────── */
+    /* ───────── 15. CASE MEDIA REVEALS ───────── */
     q('[data-h-showcase-media]').forEach(media => {
       gsap.set(media, { clipPath: 'inset(12% 0% 0% 0%)' });
       ScrollTrigger.create({
@@ -343,14 +720,40 @@ export function initHomeMotion(root) {
       });
     });
 
-    /* ───────── 12. CURSOR + MAGNETISCHE KNOPPEN ───────── */
+    q('[data-h-media]').forEach(fig => {
+      const inner = one('[data-h-media-in]', fig);
+      gsap.set(fig, { clipPath: 'inset(14% 0% 0% 0%)' });
+      if (inner) gsap.set(inner, { scale: 1.12, transformOrigin: '50% 50%' });
+      ScrollTrigger.create({
+        trigger: fig,
+        start: 'top 90%',
+        once: true,
+        onEnter: () => {
+          gsap.to(fig, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.4, ease: 'expo.out' });
+          if (inner) gsap.to(inner, { scale: 1.04, duration: 1.8, ease: 'expo.out' });
+        },
+      });
+      if (inner && fig.hasAttribute('data-h-parallax')) {
+        gsap.fromTo(
+          inner,
+          { yPercent: -3 },
+          {
+            yPercent: 3,
+            ease: 'none',
+            scrollTrigger: { trigger: fig, start: 'top bottom', end: 'bottom top', scrub: true },
+          }
+        );
+      }
+    });
+
+    /* ───────── 16. CURSOR + MAGNETISCHE KNOPPEN ───────── */
     if (fine) {
       const cur = one('.h-cursor');
       const label = one('[data-h-cursor-label]');
       if (cur) {
         root.classList.add('h-cursor-on');
-        const cx = gsap.quickTo(cur, 'x', { duration: 0.35, ease: 'power3.out' });
-        const cy = gsap.quickTo(cur, 'y', { duration: 0.35, ease: 'power3.out' });
+        const cx = gsap.quickTo(cur, 'x', { duration: 0.32, ease: 'power3.out' });
+        const cy = gsap.quickTo(cur, 'y', { duration: 0.32, ease: 'power3.out' });
         let shown = false;
         const move = e => {
           if (!shown) {
@@ -384,12 +787,12 @@ export function initHomeMotion(root) {
       }
 
       q('[data-h-magnet]').forEach(el => {
-        const xt = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' });
-        const yt = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'power3.out' });
+        const xt = gsap.quickTo(el, 'x', { duration: 0.45, ease: 'power3.out' });
+        const yt = gsap.quickTo(el, 'y', { duration: 0.45, ease: 'power3.out' });
         const move = e => {
           const r = el.getBoundingClientRect();
-          xt((e.clientX - (r.left + r.width / 2)) * 0.22);
-          yt((e.clientY - (r.top + r.height / 2)) * 0.32);
+          xt((e.clientX - (r.left + r.width / 2)) * 0.18);
+          yt((e.clientY - (r.top + r.height / 2)) * 0.26);
         };
         const out = () => {
           xt(0);
@@ -404,34 +807,7 @@ export function initHomeMotion(root) {
       });
     }
 
-    /* ───────── 11b. BEELD: masker-reveal + parallax (cases) ───────── */
-    q('[data-h-media]').forEach(fig => {
-      const inner = one('[data-h-media-in]', fig);
-      gsap.set(fig, { clipPath: 'inset(14% 0% 0% 0%)' });
-      if (inner) gsap.set(inner, { scale: 1.12, transformOrigin: '50% 50%' });
-      ScrollTrigger.create({
-        trigger: fig,
-        start: 'top 90%',
-        once: true,
-        onEnter: () => {
-          gsap.to(fig, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.4, ease: 'expo.out' });
-          if (inner) gsap.to(inner, { scale: 1.04, duration: 1.8, ease: 'expo.out' });
-        },
-      });
-      if (inner && fig.hasAttribute('data-h-parallax')) {
-        gsap.fromTo(
-          inner,
-          { yPercent: -3 },
-          {
-            yPercent: 3,
-            ease: 'none',
-            scrollTrigger: { trigger: fig, start: 'top bottom', end: 'bottom top', scrub: true },
-          }
-        );
-      }
-    });
-
-    /* ───────── 12b. PRINT: toon eindwaarden (tellers/balken) ───────── */
+    /* ───────── 17. PRINT & REFRESH ───────── */
     const beforePrint = () => {
       q('[data-h-count-to]').forEach(el => {
         el.textContent = `${el.getAttribute('data-h-count-to')}${el.getAttribute('data-h-suffix') || ''}`;
@@ -441,7 +817,6 @@ export function initHomeMotion(root) {
     window.addEventListener('beforeprint', beforePrint);
     cleanups.push(() => window.removeEventListener('beforeprint', beforePrint));
 
-    /* ───────── 13. REFRESH na laden van afbeeldingen/lettertypes ───────── */
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener('load', refresh);
     cleanups.push(() => window.removeEventListener('load', refresh));

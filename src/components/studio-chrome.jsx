@@ -51,6 +51,45 @@ export function Reg({ className = '' }) {
   );
 }
 
+/* Möbius Double-Layer Per-Character Hover Wave (Menu Item Container) */
+export function CharSwap({ text = '', className = '' }) {
+  const chars = Array.from(String(text));
+  return (
+    <span className={`m-charswap ${className}`} aria-label={text}>
+      {chars.map((ch, i) => (
+        <span
+          key={i}
+          className="m-char-col"
+          style={{ '--char-i': i }}
+          aria-hidden="true"
+        >
+          <span className="m-char-top">{ch === ' ' ? '\u00A0' : ch}</span>
+          <span className="m-char-bot">{ch === ' ' ? '\u00A0' : ch}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* Möbius Per-Character Scroll Reveal Wrapper (Headlines & Wordmarks) */
+export function SplitChars({ text = '', className = '', attr = 'data-m-char' }) {
+  const chars = Array.from(String(text));
+  return (
+    <span className={`m-split-chars ${className}`} aria-label={text}>
+      {chars.map((ch, i) => {
+        const props = { [attr]: '' };
+        return (
+          <span key={i} className="m-split-char-mask" aria-hidden="true">
+            <span className="m-split-char" style={{ '--char-i': i }} {...props}>
+              {ch === ' ' ? '\u00A0' : ch}
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 /* Live Ridderkerk klok voor de Möbius Hero & Footer */
 export function LiveClock({ className = '' }) {
   const [timeStr, setTimeStr] = useState('10:30 AM');
@@ -112,17 +151,17 @@ export function SiteNav({ menuOpen: externalOpen, setMenuOpen: externalSetOpen }
         <nav className="h-nav-links" aria-label="Hoofdnavigatie">
           {HERO_NAV_ITEMS.map(item => (
             <Link key={item.id} href={item.href}>
-              {item.label}
+              <CharSwap text={item.label} />
             </Link>
           ))}
         </nav>
 
         <div className="h-nav-right">
           <Link href="/pakketten" className="h-nav-sublink">
-            PAKKETTEN
+            <CharSwap text="PAKKETTEN" />
           </Link>
-          <Link href="/start?bron=navbar" className="h-nav-preview-cta">
-            Gratis preview <span aria-hidden="true">→</span>
+          <Link href="/start?bron=navbar" className="h-nav-preview-cta" data-h-magnet>
+            <span>Gratis preview</span> <span aria-hidden="true">→</span>
           </Link>
           <button
             type="button"
@@ -188,32 +227,44 @@ export function SiteFooter({ tagline, location, copyright }) {
             <span className="h-mono">Index</span>
             {NAV_ITEMS.map(item => (
               <Link key={item.id} href={item.href}>
-                {item.label}
+                <CharSwap text={item.label} />
               </Link>
             ))}
-            <Link href="/start?bron=footer">Gratis website-preview</Link>
+            <Link href="/start?bron=footer">
+              <CharSwap text="Gratis website-preview" />
+            </Link>
           </div>
           <div>
             <span className="h-mono">Direct contact</span>
-            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+            <a href={`mailto:${EMAIL}`}>
+              <CharSwap text={EMAIL} />
+            </a>
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer">
-              LinkedIn ↗
+              <CharSwap text="LinkedIn ↗" />
             </a>
             <span className="h-footer-dim h-block">KVK: 92113273</span>
             <LiveClock className="h-footer-clock" />
           </div>
         </div>
 
-        <div className="h-footer-mark" aria-hidden="true">
-          <span>Studio Maaijen<sup>®</sup></span>
+        <div className="h-footer-mark" aria-hidden="true" data-m-footer-mark>
+          <div className="m-footer-blinds" data-m-blinds>
+            <span /><span /><span /><span /><span /><span />
+          </div>
+          <span className="m-footer-wordmark-row">
+            <SplitChars text="Studio Maaijen" attr="data-m-footer-char" />
+            <sup className="m-footer-reg" data-m-footer-char>®</sup>
+          </span>
         </div>
 
         <div className="h-footer-bottom">
           <span className="h-mono">{copyright || `© 2013–${String(year).slice(-2)} Studio Maaijen — Alle rechten voorbehouden`}</span>
           <div className="h-footer-bottom-links">
-            <Link href="/privacy" className="h-mono">Privacy</Link>
+            <Link href="/privacy" className="h-mono">
+              <CharSwap text="Privacy" />
+            </Link>
             <a href="#top" className="h-mono h-totop">
-              Naar boven ↑
+              <CharSwap text="Naar boven ↑" />
             </a>
           </div>
         </div>
