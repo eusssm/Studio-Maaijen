@@ -406,7 +406,7 @@ export function initHomeMotion(root) {
           leftTicker,
           { xPercent: 0 },
           {
-            xPercent: -22,
+            xPercent: -25,
             ease: 'none',
             scrollTrigger: {
               trigger: reelSec,
@@ -421,7 +421,7 @@ export function initHomeMotion(root) {
       if (rightTicker) {
         gsap.fromTo(
           rightTicker,
-          { xPercent: -22 },
+          { xPercent: -25 },
           {
             xPercent: 0,
             ease: 'none',

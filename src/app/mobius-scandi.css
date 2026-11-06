@@ -856,8 +856,8 @@ body:has(.h-root) {
 .m-tickers {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: clamp(32px, 4.5vw, 64px);
+  gap: clamp(10px, 1.2vw, 16px);
+  margin-bottom: clamp(36px, 5vw, 72px);
   user-select: none;
 }
 
@@ -866,7 +866,7 @@ body:has(.h-root) {
   white-space: nowrap;
   border-top: 1px solid #EAE7E1;
   border-bottom: 1px solid #EAE7E1;
-  padding: 12px 0;
+  padding: clamp(14px, 1.8vw, 24px) 0;
   background: #FAF9F6;
 }
 
@@ -878,16 +878,16 @@ body:has(.h-root) {
 .m-ticker-track {
   display: inline-flex;
   align-items: center;
-  gap: 32px;
+  gap: clamp(36px, 4.5vw, 72px);
   will-change: transform;
 }
 
 .m-ticker-item {
   font-family: var(--ff-sans);
-  font-size: clamp(26px, 4.2vw, 64px);
+  font-size: clamp(36px, 6.2vw, 96px);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 1;
+  line-height: 1.05;
   color: #111111;
 }
 
