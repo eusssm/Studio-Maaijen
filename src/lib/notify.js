@@ -16,7 +16,7 @@ export async function sendMail({
   fields = {},
   referer = 'https://www.studio-maaijen.nl/contact',
 }) {
-  const from = process.env.CONTACT_FROM_EMAIL || 'Studio Maaijen <onboarding@resend.dev>';
+  const from = process.env.CONTACT_FROM_EMAIL || 'Studio Maaijen <contact@studio-maaijen.nl>';
 
   // 1. Resend (indien geconfigureerd)
   if (process.env.RESEND_API_KEY) {
@@ -33,14 +33,14 @@ export async function sendMail({
       if (res.ok) return { ok: true, provider: 'resend', recipient: targetRecipient };
 
       const errText = await res.text();
-      console.warn('[mail] Resend waarschuwing:', res.status, errText);
+      console.warn('[mail] Resend primaire poging niet geslaagd:', res.status, errText);
 
       // Als het domein nog niet geverifieerd is op resend.com/domains staat Resend alleen aflevering toe naar het geregistreerde account-adres
       const ownerMatch = errText.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
       const fallbackEmail = ownerMatch ? ownerMatch[1] : 'eusssm@gmail.com';
 
       if (res.status === 403 && fallbackEmail && targetRecipient !== fallbackEmail) {
-        console.warn(`[mail] Resend: '${targetRecipient}' niet toegestaan op test-domein. Direct doorsturen naar account-eigenaar (${fallbackEmail})...`);
+        console.warn(`[mail] Resend: fallback naar account-eigenaar (${fallbackEmail})...`);
         const fallbackRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -48,11 +48,11 @@ export async function sendMail({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from,
+            from: 'Studio Maaijen <onboarding@resend.dev>',
             to: [fallbackEmail],
             reply_to: replyTo,
             subject: `[Doorgestuurd naar ${fallbackEmail}] ${subject}`,
-            text: `(Let op: dit bericht is doorgestuurd naar ${fallbackEmail} omdat studio-maaijen.nl nog geverifieerd moet worden op resend.com/domains)\n\n${text}`,
+            text: `(Let op: dit bericht is doorgestuurd naar ${fallbackEmail} als tijdelijke fallback)\n\n${text}`,
           }),
         });
         if (fallbackRes.ok) {
