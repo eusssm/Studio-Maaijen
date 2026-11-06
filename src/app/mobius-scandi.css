@@ -2302,26 +2302,40 @@ body:has(.h-root) {
   font-size: 12px;
 }
 
-/* ═════════ WERK — DRAAGBAAR, ONEINDIG CANVAS (naar mobius.framer.website/work) ═════════ */
-html:has(.wk-page),
-body:has(.wk-page) {
-  overflow: hidden;
-  overscroll-behavior: none;
-}
+/* ═════════ WERK — DESKTOP: DRAAGBAAR CANVAS · MOBIEL/TABLET: GESTAPELDE LIJST ═════════ */
 .wk-page {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
   background: #FFFFFF;
   color: #111111;
-  touch-action: none;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
 }
-.wk-page.is-dragging {
-  cursor: grabbing;
+.wk-canvas {
+  display: none;
 }
+
+@media (min-width: 1025px) {
+  html:has(.wk-page),
+  body:has(.wk-page) {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  .wk-canvas {
+    display: block;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: #FFFFFF;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .wk-canvas.is-dragging {
+    cursor: grabbing;
+  }
+  .wk-list {
+    display: none;
+  }
+}
+
 .wk-title {
   position: absolute;
   inset: 0;
@@ -2358,12 +2372,12 @@ body:has(.wk-page) {
   top: 0;
   z-index: 2;
   display: block;
-  overflow: visible;
   will-change: transform;
   -webkit-user-drag: none;
 }
 .wk-card-media {
   position: relative;
+  display: block;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -2411,7 +2425,8 @@ body:has(.wk-page) {
   opacity: 1;
   transform: none;
 }
-.wk-card:focus-visible {
+.wk-card:focus-visible,
+.wk-item-link:focus-visible {
   outline: 2px solid #111111;
   outline-offset: 4px;
 }
@@ -2439,6 +2454,81 @@ body:has(.wk-page) {
 .wk-bar .m-clock {
   color: #66635E;
 }
-@media (max-width: 760px) {
-  .wk-bar .m-clock { display: none; }
+
+/* ─── Mobiel & tablet: cases onder elkaar met on-scroll reveal ─── */
+.wk-list {
+  padding: calc(var(--nav-h) + clamp(28px, 6vw, 56px)) var(--pad) clamp(40px, 8vw, 80px);
+}
+.wk-list-title {
+  margin: 0 0 clamp(40px, 9vw, 72px);
+  font-family: var(--ff-sans);
+  font-size: clamp(64px, 19vw, 150px);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+  color: #111111;
+}
+.wk-items {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(64px, 14vw, 120px);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.wk-item-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.wk-item-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 4.6;
+  overflow: hidden;
+  background: #F1EFEA;
+}
+.wk-item-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+.wk-item-body {
+  display: block;
+  margin-top: 22px;
+}
+.wk-item-title {
+  display: block;
+  margin: 0;
+  font-family: var(--ff-sans);
+  font-size: clamp(20px, 3.4vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: #111111;
+}
+.wk-item-desc {
+  display: block;
+  margin: 10px 0 0;
+  max-width: 46ch;
+  font-family: var(--ff-sans);
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #484643;
+}
+.wk-item-cat {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #66635E;
+}
+@media (min-width: 1025px) {
+  .wk-list-footer { display: none; }
 }
