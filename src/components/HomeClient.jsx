@@ -19,7 +19,7 @@ import { normalizePackages } from '../../lib/packages';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
 
-const DEFAULT_CLIENTS = ['PostNL', 'De Kindertelefoon', 'Spotta', 'Enova', 'Blue Bricks', 'Gemeenten'];
+const DEFAULT_CLIENTS = ['Vodafone Ziggo', 'De Kindertelefoon', 'Spotta', 'Enova', 'Blue Bricks', 'Gemeenten'];
 
 const CASE_SUBTITLE_OVERRIDES = {
   'de-kindertelefoon': 'Een platform dat luistert: redesign voor 45 jaar vertrouwen',
@@ -386,7 +386,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
   const clients = h.aboutClients
     ? h.aboutClients
         .split(',')
-        .map(c => c.trim().replace(/^Blubricks$/i, 'Blue Bricks'))
+        .map(c => c.trim().replace(/^Blubricks$/i, 'Blue Bricks').replace(/^PostNL$/i, 'Vodafone Ziggo'))
     : DEFAULT_CLIENTS;
 
   const featuredProjects = projects.slice(0, 4);
