@@ -1299,7 +1299,109 @@ body:has(.h-root) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   06. HET PROCES (01 — 04) MET MÖBIUS 01–12 TIMELINE RULER
+   06. TESTIMONIALS / ERVARINGEN (MÖBIUS × SCANDI QUOTE DECK)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.m-testimonial-card {
+  position: relative;
+  background: #FAF9F6;
+  border: 1px solid #EAE7E1;
+  padding: clamp(28px, 3.2vw, 44px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.m-testimonial-card:hover {
+  border-color: #111111;
+  background: #F4F2EC;
+}
+
+.m-testimonial-quote-mark {
+  font-family: var(--ff-sans);
+  font-size: 38px;
+  line-height: 1;
+  color: #CFCBC2;
+  margin-bottom: -12px;
+  display: block;
+  font-weight: 700;
+}
+
+.m-testimonial-quote {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.m-testimonial-quote p {
+  margin: 0;
+  font-family: var(--ff-sans);
+  font-size: clamp(16px, 1.22vw, 19.5px);
+  line-height: 1.55;
+  color: #1A1A1A;
+  font-weight: 450;
+  letter-spacing: -0.015em;
+}
+
+.m-testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid #EAE7E1;
+}
+
+.m-testimonial-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #111111;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.m-testimonial-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-testimonial-name {
+  font-family: var(--ff-sans);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.01em;
+}
+
+.m-testimonial-role {
+  font-family: var(--ff-sans);
+  font-size: 12.5px;
+  color: #66635E;
+}
+
+@media (max-width: 900px) {
+  .m-testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   07. HET PROCES (01 — 04) MET MÖBIUS 01–12 TIMELINE RULER
    ═══════════════════════════════════════════════════════════════════════════ */
 .m-process-ruler {
   margin-bottom: 28px;
@@ -2409,9 +2511,9 @@ body:has(.h-root) {
   font-weight: 600;
   letter-spacing: -0.01em;
   color: #111111;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  opacity: 0.92;
+  transform: none;
+  transition: opacity 0.25s ease, color 0.25s ease;
   white-space: nowrap;
   pointer-events: none;
 }
@@ -2425,7 +2527,7 @@ body:has(.h-root) {
 .wk-card:hover .wk-card-cap,
 .wk-card:focus-visible .wk-card-cap {
   opacity: 1;
-  transform: none;
+  color: #000000;
 }
 .wk-card:focus-visible,
 .wk-item-link:focus-visible {
@@ -2434,10 +2536,10 @@ body:has(.h-root) {
 }
 .wk-bar {
   position: absolute;
-  z-index: 5;
+  z-index: 50;
   left: var(--pad);
   right: var(--pad);
-  bottom: 18px;
+  bottom: 22px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2455,6 +2557,51 @@ body:has(.h-root) {
 }
 .wk-bar .m-clock {
   color: #66635E;
+}
+
+/* Canvas / Lijst desktop switcher */
+.wk-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid #DEDAD2;
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 3px;
+  pointer-events: auto;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.wk-toggle-pill {
+  border: none;
+  background: transparent;
+  color: #66635E;
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 14px 5px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.wk-toggle-pill:hover {
+  color: #111111;
+}
+
+.wk-toggle-pill.is-active {
+  background: #111111;
+  color: #FFFFFF;
+}
+
+@media (max-width: 1024px) {
+  .wk-view-toggle {
+    display: none;
+  }
 }
 
 /* ─── Mobiel & tablet: cases onder elkaar met on-scroll reveal ─── */
@@ -2533,4 +2680,31 @@ body:has(.h-root) {
 }
 @media (min-width: 1025px) {
   .wk-list-footer { display: none; }
+
+  /* Wanneer gebruiker op desktop kiest voor Lijst-weergave */
+  html:has(.wk-page.is-list-view),
+  body:has(.wk-page.is-list-view) {
+    overflow: auto !important;
+    overscroll-behavior: auto !important;
+  }
+  .wk-page.is-list-view {
+    position: relative !important;
+    overflow: visible !important;
+    min-height: 100vh;
+  }
+  .h-root > .wk-page.is-list-view .wk-canvas,
+  .wk-page.is-list-view .wk-canvas {
+    display: none !important;
+  }
+  .wk-page.is-list-view .wk-list {
+    display: block !important;
+  }
+  .wk-page.is-list-view .wk-list-footer {
+    display: block !important;
+  }
+  .wk-page.is-list-view .wk-bar {
+    position: fixed !important;
+    bottom: 24px;
+    z-index: 50;
+  }
 }

@@ -234,6 +234,7 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
   const listRef = useRef(null);
   const cardRefs = useRef([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('canvas');
 
   const list = useMemo(() => projects.filter(p => p?.slug), [projects]);
 
@@ -262,7 +263,7 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
     return () => document.body.classList.remove('menu-open');
   }, [menuOpen]);
 
-  /* Schakel tussen canvas (desktop) en lijst (tablet/mobiel) */
+  /* Schakel tussen canvas (desktop) en lijst (tablet/mobiel of via toggle op desktop) */
   useEffect(() => {
     if (!items.length) return;
     const mq = window.matchMedia(DESKTOP_MQ);
@@ -270,7 +271,8 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
 
     const setup = () => {
       teardown();
-      if (mq.matches && canvasRef.current) {
+      const isDesktopCanvas = mq.matches && viewMode === 'canvas';
+      if (isDesktopCanvas && canvasRef.current) {
         window.scrollTo(0, 0);
         teardown = initCanvas(canvasRef.current, cardRefs.current.filter(Boolean), items);
       } else if (listRef.current) {
@@ -284,10 +286,10 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
       mq.removeEventListener('change', setup);
       teardown();
     };
-  }, [items]);
+  }, [items, viewMode]);
 
   return (
-    <div className="h-root h-subpage wk-page" ref={rootRef} id="top">
+    <div className={`h-root h-subpage wk-page ${viewMode === 'list' ? 'is-list-view' : ''}`} ref={rootRef} id="top">
       <SiteOverlays />
       <SiteNav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
@@ -332,14 +334,9 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
             </Link>
           );
         })}
-
-        <div className="wk-bar no-print">
-          <Link href="/contact">Start een project →</Link>
-          <LiveClock />
-        </div>
       </section>
 
-      {/* ───────── TABLET & MOBIEL: LIJST ───────── */}
+      {/* ───────── TABLET, MOBIEL & DESKTOP LIJST-MODE ───────── */}
       <section className="wk-list" ref={listRef}>
         <h2 className="wk-list-title">
           <SplitChars text="Werk" attr="data-wk-list-char" />
@@ -368,6 +365,32 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
           })}
         </ul>
       </section>
+
+      {/* Vaste / meelopende onderbalk met CTA, Canvas/Lijst switcher en klok */}
+      <div className="wk-bar no-print">
+        <Link href="/contact" className="wk-bar-cta">Start een project →</Link>
+
+        <div className="wk-view-toggle" role="group" aria-label="Weergavekeuze">
+          <button
+            type="button"
+            className={`wk-toggle-pill ${viewMode === 'canvas' ? 'is-active' : ''}`}
+            onClick={() => setViewMode('canvas')}
+            aria-pressed={viewMode === 'canvas'}
+          >
+            <span>☵ Canvas</span>
+          </button>
+          <button
+            type="button"
+            className={`wk-toggle-pill ${viewMode === 'list' ? 'is-active' : ''}`}
+            onClick={() => setViewMode('list')}
+            aria-pressed={viewMode === 'list'}
+          >
+            <span>☰ Lijst</span>
+          </button>
+        </div>
+
+        <LiveClock />
+      </div>
 
       <div className="wk-list-footer">
         <SiteFooter tagline={homepage?.footerTagline} location={homepage?.footerLocation} copyright={homepage?.footerCopyright} />

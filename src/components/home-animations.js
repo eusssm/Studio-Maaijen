@@ -338,12 +338,12 @@ export function initHomeMotion(root) {
     if (statement) {
       const scrambleWords = q('.m-scramble-word', statement);
       if (scrambleWords.length) {
-        const scaleFactor = isMobile ? 0.28 : 0.65;
+        const scaleFactor = isMobile ? 0.2 : 0.48;
         gsap.set(scrambleWords, {
           x: (i, el) => parseFloat(el.getAttribute('data-scatter-x') || '0') * scaleFactor,
           y: (i, el) => parseFloat(el.getAttribute('data-scatter-y') || '0') * scaleFactor,
-          rotation: (i, el) => parseFloat(el.getAttribute('data-scatter-r') || '0') * (isMobile ? 0.4 : 0.8),
-          opacity: 0.14,
+          rotation: (i, el) => parseFloat(el.getAttribute('data-scatter-r') || '0') * (isMobile ? 0.3 : 0.6),
+          opacity: 0.22,
         });
 
         gsap.to(scrambleWords, {
@@ -351,16 +351,16 @@ export function initHomeMotion(root) {
           y: 0,
           rotation: 0,
           opacity: 1,
-          ease: 'power2.out',
+          ease: 'power3.out',
           stagger: {
-            each: 0.025,
+            each: 0.012,
             from: 'random',
           },
           scrollTrigger: {
             trigger: statement,
-            start: 'top 95%',
-            end: 'bottom 58%',
-            scrub: 0.65,
+            start: 'top 88%',
+            end: 'top 48%',
+            scrub: 0.35,
           },
         });
       } else {
@@ -369,8 +369,8 @@ export function initHomeMotion(root) {
         gsap.to(words, {
           opacity: 1,
           ease: 'none',
-          stagger: 0.12,
-          scrollTrigger: { trigger: statement, start: 'top 82%', end: 'bottom 52%', scrub: 0.5 },
+          stagger: 0.08,
+          scrollTrigger: { trigger: statement, start: 'top 85%', end: 'top 48%', scrub: 0.35 },
         });
       }
     }

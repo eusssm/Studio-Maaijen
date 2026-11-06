@@ -162,6 +162,37 @@ const FAQ_ITEMS = [
   },
 ];
 
+const DEFAULT_TESTIMONIALS = [
+  {
+    quote:
+      'De videoproductie was van een ongelofelijk hoog niveau. Eugène weet precies hoe hij een verhaal visueel moet vertellen — met ritme, sfeer en impact.',
+    authorName: 'Roel Bakker',
+    authorRole: 'Marketing Director',
+    authorAvatarLetter: 'R',
+  },
+  {
+    quote:
+      'Professioneel, creatief en toegankelijk. De samenwerking voelde als een echte partnership — geen uitvoerder, maar een mededenker met visie.',
+    authorName: 'Anna Pietersen',
+    authorRole: 'Communicatie, De Kindertelefoon',
+    authorAvatarLetter: 'A',
+  },
+  {
+    quote:
+      'De nieuwe UX van Spotta heeft onze conversie significant verhoogd. Eugène begrijpt echt hoe mensen denken en hoe je ze door een product loodst.',
+    authorName: 'Sophie Janssen',
+    authorRole: 'Product Lead, Spotta',
+    authorAvatarLetter: 'S',
+  },
+  {
+    quote:
+      'Eugène heeft onze brand identity volledig getransformeerd. Het eindresultaat overtrof al onze verwachtingen — veruit beter dan we hadden durven hopen.',
+    authorName: 'Martijn de Vries',
+    authorRole: 'CEO, Blue Bricks',
+    authorAvatarLetter: 'M',
+  },
+];
+
 const pad = n => String(n).padStart(2, '0');
 
 /* Möbius Vertical Slot-Machine Digit Roller (Digit A / Digit B: 0..9) */
@@ -360,6 +391,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
 
   const featuredProjects = projects.slice(0, 4);
   const tiers = normalizePackages(packageData).slice(0, 3);
+  const testimonialList = testimonials && testimonials.length > 0 ? testimonials : DEFAULT_TESTIMONIALS;
 
   const stats = [
     {
@@ -854,13 +886,50 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          06. HET PROCES — 01–12 TIMELINE RULER + SCRUBBED PROGRESS
+          06. TESTIMONIALS — SOCIAL PROOF & REFERENTIES
+          ═══════════════════════════════════════════════════════════ */}
+      <section id="ervaringen" className="m-section m-testimonials" data-theme="paper">
+        <div className="h-wrap">
+          <div className="m-sec-head" data-h="up">
+            <div className="m-sec-title-stack">
+              <span className="m-sec-label">06 / Ervaringen &amp; Resultaat</span>
+              <h2 className="m-sec-display">
+                <SplitChars text="Wat opdrachtgevers zeggen" attr="data-m-sec-char" />
+              </h2>
+            </div>
+            <span className="m-sec-note">Echte samenwerkingen · 1-op-1 partnerschap</span>
+          </div>
+
+          <div className="m-testimonials-grid">
+            {testimonialList.map((t, idx) => (
+              <article key={idx} className="m-testimonial-card" data-h="up">
+                <span className="m-testimonial-quote-mark" aria-hidden="true">“</span>
+                <blockquote className="m-testimonial-quote">
+                  <p>{t.quote.replace(/^[“"]|[”"]$/g, '')}</p>
+                </blockquote>
+                <div className="m-testimonial-author">
+                  <div className="m-testimonial-avatar" aria-hidden="true">
+                    {t.authorAvatarLetter || t.authorName?.charAt(0) || 'S'}
+                  </div>
+                  <div className="m-testimonial-meta">
+                    <strong className="m-testimonial-name">{t.authorName}</strong>
+                    <span className="m-testimonial-role">{t.authorRole?.replace(/Blubricks/i, 'Blue Bricks')}</span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          07. HET PROCES — 01–12 TIMELINE RULER + SCRUBBED PROGRESS
           ═══════════════════════════════════════════════════════════ */}
       <section id="werkwijze" className="m-section m-process" data-theme="paper" data-m-process>
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">06 / Werkwijze</span>
+              <span className="m-sec-label">07 / Werkwijze</span>
               <h2 className="m-sec-display">
                 <SplitChars text="Het proces" attr="data-m-sec-char" />
               </h2>
@@ -900,13 +969,13 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          07. PAKKETTEN & INVESTERING + GRATIS PREVIEW TOOL
+          08. PAKKETTEN & INVESTERING + GRATIS PREVIEW TOOL
           ═══════════════════════════════════════════════════════════ */}
       <section id="pakketten" className="m-section m-pricing" data-theme="paper">
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">07 / Pakketten &amp; Investering</span>
+              <span className="m-sec-label">08 / Pakketten &amp; Investering</span>
               <h2 className="m-sec-display">
                 <SplitChars text="Pakketten" attr="data-m-sec-char" />
               </h2>
@@ -985,12 +1054,12 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          08. CONVERSATIONAL CONTACT ("LET'S TALK!") + SMOOTH FAQ
+          09. CONVERSATIONAL CONTACT ("LET'S TALK!") + SMOOTH FAQ
           ═══════════════════════════════════════════════════════════ */}
       <section id="cta" className="m-section m-talk" data-theme="paper">
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
-            <span className="m-sec-label">08 / Contact &amp; Vragen</span>
+            <span className="m-sec-label">09 / Contact &amp; Vragen</span>
             <span className="m-sec-note">Reactie binnen 2 werkdagen</span>
           </div>
 
