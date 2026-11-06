@@ -21,16 +21,44 @@ export async function sendMail({
   // 1. Resend (indien geconfigureerd)
   if (process.env.RESEND_API_KEY) {
     try {
+      const targetRecipient = process.env.CONTACT_NOTIFICATION_EMAIL || to;
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ from, to: [to], reply_to: replyTo, subject, text }),
+        body: JSON.stringify({ from, to: [targetRecipient], reply_to: replyTo, subject, text }),
       });
-      if (res.ok) return { ok: true, provider: 'resend' };
-      console.error('[mail] Resend foutstatus:', res.status, await res.text());
+      if (res.ok) return { ok: true, provider: 'resend', recipient: targetRecipient };
+
+      const errText = await res.text();
+      console.warn('[mail] Resend waarschuwing:', res.status, errText);
+
+      // Als het domein nog niet geverifieerd is op resend.com/domains staat Resend alleen aflevering toe naar het geregistreerde account-adres
+      const ownerMatch = errText.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      const fallbackEmail = ownerMatch ? ownerMatch[1] : 'eusssm@gmail.com';
+
+      if (res.status === 403 && fallbackEmail && targetRecipient !== fallbackEmail) {
+        console.warn(`[mail] Resend: '${targetRecipient}' niet toegestaan op test-domein. Direct doorsturen naar account-eigenaar (${fallbackEmail})...`);
+        const fallbackRes = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from,
+            to: [fallbackEmail],
+            reply_to: replyTo,
+            subject: `[Doorgestuurd naar ${fallbackEmail}] ${subject}`,
+            text: `(Let op: dit bericht is doorgestuurd naar ${fallbackEmail} omdat studio-maaijen.nl nog geverifieerd moet worden op resend.com/domains)\n\n${text}`,
+          }),
+        });
+        if (fallbackRes.ok) {
+          return { ok: true, provider: 'resend', recipient: fallbackEmail, forwarded: true };
+        }
+      }
     } catch (err) {
       console.error('[mail] Resend netwerkfout:', err);
     }
