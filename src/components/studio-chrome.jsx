@@ -122,7 +122,7 @@ export function LiveClock({ className = '' }) {
   );
 }
 
-/* Voortgangsbalk + subtiele cursor */
+/* Voortgangsbalk + subtiele cursor met gecentreerde pijl */
 export function SiteOverlays() {
   return (
     <>
@@ -130,7 +130,21 @@ export function SiteOverlays() {
         <span data-h-progress />
       </div>
       <div className="h-cursor no-print" aria-hidden="true">
-        <span data-h-cursor-label />
+        <span data-h-cursor-label className="h-cursor-arrow">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M7 17L17 7" />
+            <path d="M8 7h9v9" />
+          </svg>
+        </span>
       </div>
     </>
   );

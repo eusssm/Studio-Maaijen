@@ -775,7 +775,6 @@ export function initHomeMotion(root) {
           const lab = e.target.closest?.('[data-h-cursor]')?.getAttribute('data-h-cursor');
           cur.classList.toggle('is-link', !!t && !lab);
           cur.classList.toggle('is-label', !!lab);
-          if (label) label.textContent = lab || '';
         };
         const leave = () => {
           cur.classList.remove('is-on');
