@@ -2317,9 +2317,11 @@ body:has(.h-root) {
     overflow: hidden;
     overscroll-behavior: none;
   }
+  .h-root > .wk-canvas,
   .wk-canvas {
     display: block;
     position: fixed;
+    z-index: 2;
     inset: 0;
     overflow: hidden;
     background: #FFFFFF;

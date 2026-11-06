@@ -18,22 +18,22 @@ gsap.registerPlugin(ScrollTrigger);
 
 const DESKTOP_MQ = '(min-width: 1025px)';
 
-/* Vaste compositie (x, y, breedte, hoogte) binnen een tegel van 2600 × 2300 */
+/* Vaste compositie (x, y, breedte, hoogte) op een referentie-tegel van 2600 × 2300 (exact zoals mobius.framer.website/work) */
 const TILE_W = 2600;
 const TILE_H = 2300;
 const SLOTS = [
-  [2416, 1618, 380, 507],
-  [900, 1615, 500, 375],
+  [-184, -682, 380, 507],
+  [900, -685, 500, 375],
   [1550, 1086, 500, 375],
-  [1662, 1733, 380, 507],
-  [2312, 791, 380, 504],
+  [1662, -567, 380, 507],
+  [-288, 791, 380, 504],
   [1610, 307, 380, 507],
   [362, 1066, 380, 507],
-  [2252, 120, 500, 375],
-  [362, 1894, 380, 507],
+  [-348, 120, 500, 375],
+  [362, -406, 380, 507],
   [960, 652, 380, 507],
-  [336, 399, 380, 507],
-  [1090, 2216, 380, 507],
+  [275, 420, 380, 507],
+  [1090, -84, 380, 507],
 ];
 
 const CASE_SUBTITLE_OVERRIDES = {
@@ -58,18 +58,23 @@ function caseDescription(proj) {
 /* ── Desktop canvas: scroll, drag, inertia en oneindige tegel ── */
 function initCanvas(canvas, cards, items) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let scale = 1;
   let tileW = TILE_W;
   let tileH = TILE_H;
+  let minX = -650;
+  let minY = -750;
 
   const layout = () => {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const scale = Math.min(1, Math.max(0.6, vw / 1500));
+    scale = Math.min(1, Math.max(0.65, vw / 1680));
     tileW = Math.max(TILE_W * scale, vw + 760);
     tileH = Math.max(TILE_H * scale, vh + 760);
+    minX = -650 * scale;
+    minY = -750 * scale;
     cards.forEach((el, i) => {
       const [, , w, h] = items[i].slot;
-      gsap.set(el, { width: w * scale, height: h * scale });
+      gsap.set(el, { width: Math.round(w * scale), height: Math.round(h * scale) });
     });
   };
   layout();
@@ -80,11 +85,12 @@ function initCanvas(canvas, cards, items) {
   const render = () => {
     cards.forEach((el, i) => {
       const [sx, sy] = items[i].slot;
-      const x = gsap.utils.wrap(-620, tileW - 620, (sx / TILE_W) * tileW + pos.x);
-      const y = gsap.utils.wrap(-620, tileH - 620, (sy / TILE_H) * tileH + pos.y);
+      const x = gsap.utils.wrap(minX, minX + tileW, sx * scale + pos.x);
+      const y = gsap.utils.wrap(minY, minY + tileH, sy * scale + pos.y);
       gsap.set(el, { x, y, force3D: true });
     });
   };
+  render();
 
   const tick = () => {
     const k = reduce ? 1 : 1 - Math.pow(1 - 0.11, gsap.ticker.deltaRatio());
@@ -292,7 +298,8 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
         </h1>
         <p className="wk-hint">scroll / drag</p>
 
-        {items.map(({ proj }, i) => {
+        {items.map(({ slot, proj }, i) => {
+          const [, , sw, sh] = slot;
           const name = proj.client || proj.title;
           const cat = proj.categories?.[0]?.name || proj.projectType || 'Case';
           return (
@@ -300,6 +307,7 @@ export default function WorkOverviewClient({ projects = [], homepage }) {
               key={`${proj.slug}-${i}`}
               href={`/work/${proj.slug}`}
               className="wk-card"
+              style={{ width: `${sw}px`, height: `${sh}px` }}
               ref={el => (cardRefs.current[i] = el)}
               draggable={false}
               data-h-cursor="OPEN"
