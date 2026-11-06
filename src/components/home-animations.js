@@ -788,8 +788,8 @@ export function initHomeMotion(root) {
         let shown = false;
         let mode = 'idle'; // 'idle' | 'link' | 'label'
 
-        if (dot) gsap.set(dot, { scale: 0.15, opacity: 0 });
-        if (arrow) gsap.set(arrow, { scale: 0.5, opacity: 0 });
+        if (dot) gsap.set(dot, { xPercent: -50, yPercent: -50, width: 0, height: 0, opacity: 0 });
+        if (arrow) gsap.set(arrow, { xPercent: -50, yPercent: -50, opacity: 0 });
 
         const applyCursorMode = nextMode => {
           if (nextMode === mode) return;
@@ -798,9 +798,11 @@ export function initHomeMotion(root) {
           cur.classList.toggle('is-link', mode === 'link');
           cur.classList.toggle('is-label', mode === 'label');
 
+          const targetSize = mode === 'label' ? 68 : mode === 'link' ? 32 : 10;
           if (dot) {
             gsap.to(dot, {
-              scale: mode === 'label' ? 1 : mode === 'link' ? 0.38 : 0.15,
+              width: targetSize,
+              height: targetSize,
               opacity: shown ? 1 : 0,
               backgroundColor: mode === 'label' ? '#111111' : '#FFFFFF',
               duration: 0.35,
@@ -810,9 +812,8 @@ export function initHomeMotion(root) {
           }
           if (arrow) {
             gsap.to(arrow, {
-              scale: mode === 'label' ? 1 : 0.5,
               opacity: mode === 'label' ? 1 : 0,
-              duration: 0.28,
+              duration: 0.25,
               ease: 'power3.out',
               overwrite: 'auto',
             });
@@ -824,7 +825,8 @@ export function initHomeMotion(root) {
             gsap.set(cur, { x: e.clientX, y: e.clientY });
             cur.classList.add('is-on', 'is-idle');
             shown = true;
-            if (dot) gsap.to(dot, { scale: 0.15, opacity: 1, duration: 0.25, ease: 'power2.out' });
+            const targetSize = mode === 'label' ? 68 : mode === 'link' ? 32 : 10;
+            if (dot) gsap.to(dot, { width: targetSize, height: targetSize, opacity: 1, duration: 0.25, ease: 'power2.out' });
           }
           cx(e.clientX);
           cy(e.clientY);
@@ -840,8 +842,8 @@ export function initHomeMotion(root) {
           cur.classList.remove('is-on', 'is-idle', 'is-link', 'is-label');
           shown = false;
           mode = 'idle';
-          if (dot) gsap.to(dot, { scale: 0, opacity: 0, duration: 0.2 });
-          if (arrow) gsap.to(arrow, { scale: 0.5, opacity: 0, duration: 0.18 });
+          if (dot) gsap.to(dot, { width: 0, height: 0, opacity: 0, duration: 0.2 });
+          if (arrow) gsap.to(arrow, { opacity: 0, duration: 0.18 });
         };
         window.addEventListener('mousemove', move, { passive: true });
         root.addEventListener('mouseover', over);

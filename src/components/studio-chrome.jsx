@@ -170,8 +170,8 @@ export function SiteOverlays() {
         <span data-h-progress />
       </div>
       <div className="h-cursor no-print" aria-hidden="true">
-        <span className="h-cursor-dot" data-h-cursor-dot />
-        <span data-h-cursor-label className="h-cursor-arrow">
+        <div className="h-cursor-dot" data-h-cursor-dot />
+        <div data-h-cursor-label className="h-cursor-arrow">
           <svg
             width="20"
             height="20"
@@ -181,14 +181,14 @@ export function SiteOverlays() {
             aria-hidden="true"
           >
             <path
-              d="M5 15L15 5M15 5H7M15 5V13"
+              d="M4 10H16M11 5L16 10L11 15"
               stroke="currentColor"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
-        </span>
+        </div>
       </div>
     </>
   );

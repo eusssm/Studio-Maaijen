@@ -2364,8 +2364,8 @@ body:has(.h-root) {
 
 /* ═════════ SCANDINAVISCHE CIRKEL-CURSOR MET GECENTREERDE PIJL (100% GSAP) ═════════ */
 .h-cursor {
-  mix-blend-mode: normal !important;
-  z-index: 9999 !important;
+  mix-blend-mode: difference;
+  z-index: 2000;
 }
 
 .h-cursor::before {
@@ -2373,61 +2373,44 @@ body:has(.h-root) {
 }
 
 .h-cursor-dot {
-  position: absolute !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: 60px !important;
-  height: 60px !important;
-  margin-left: -30px !important;
-  margin-top: -30px !important;
-  border-radius: 50% !important;
-  background: #FFFFFF !important;
-  pointer-events: none !important;
-  transform-origin: center center !important;
-}
-
-.h-cursor.is-idle .h-cursor-dot,
-.h-cursor.is-link .h-cursor-dot {
-  mix-blend-mode: difference;
-}
-
-.h-cursor.is-label .h-cursor-dot {
-  mix-blend-mode: normal;
-  background: #111111 !important;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .h-cursor.is-label {
+  mix-blend-mode: normal !important;
   background: transparent !important;
   border: 0 !important;
   padding: 0 !important;
   border-radius: 0 !important;
 }
 
-.h-cursor span {
-  transition: none !important;
-}
-
 .h-cursor .h-cursor-arrow {
-  position: absolute !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: 20px !important;
-  height: 20px !important;
-  margin-left: -10px !important;
-  margin-top: -10px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transform-origin: center center !important;
-  color: #FFFFFF !important;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  color: #FFFFFF;
   opacity: 0;
-  pointer-events: none !important;
+  pointer-events: none;
 }
 
 .h-cursor .h-cursor-arrow svg {
-  display: block !important;
-  width: 20px !important;
-  height: 20px !important;
+  display: block;
+  width: 20px;
+  height: 20px;
   shape-rendering: geometricPrecision;
 }
 
