@@ -55,7 +55,7 @@ export const jsonLd = {
   "url": "https://www.studio-maaijen.nl",
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Amsterdam",
+    "addressLocality": "Ridderkerk",
     "addressCountry": "NL"
   },
   "founder": {

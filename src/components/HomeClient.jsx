@@ -2,8 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import HeroVisual from './HeroVisual';
-import { PackageGrid } from './PackageCards';
-import { EMAIL, LINKEDIN, sized, CropMarks, Reg, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
+import { EMAIL, LINKEDIN, sized, Reg, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import { normalizePackages } from '../../lib/packages';
 import '../app/drukklaar.css';
 
@@ -97,7 +96,12 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
   const headline = h.heroHeadline || 'Impactvolle UX/UI<br />&amp; <em>Merkidentiteiten</em>';
   const headlineItems = headlineLines(headline);
   const portraitUrl = h.aboutPortrait?.url || '/images/eugene-portrait.jpg';
-  const heroImage = sized(portraitUrl, 1600) || '/images/eugene-portrait.jpg';
+  const portraitImage = sized(portraitUrl, 1200) || '/images/eugene-portrait.jpg';
+  /* Hero-showreel: uitsluitend cases die al in DatoCMS staan (met coverbeeld) */
+  const reelSlides = projects
+    .filter(p => p.coverImage?.url)
+    .slice(0, 3)
+    .map(p => ({ src: sized(p.coverImage.url, 1400), client: p.client || p.title, slug: p.slug }));
   const clientNames = Array.from(new Set(projects.map(p => p.client).filter(Boolean)));
   const ticker = clientNames.length ? clientNames : DEFAULT_CLIENTS;
   const clients = h.aboutClients
@@ -105,12 +109,13 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
         .split(',')
         .map(c => c.trim().replace(/^Blubricks$/i, 'Blue Bricks'))
     : DEFAULT_CLIENTS;
-  const packages = normalizePackages(packageData).slice(0, 3);
+  const featuredProjects = projects.slice(0, 4);
+  /* zelfde pakketten als /pakketten (DatoCMS of standaard) — op de homepage zonder prijskaarten */
+  const tiers = normalizePackages(packageData).slice(0, 3);
   const stats = [
     { v: h.stat1Value || '20', l: h.stat1Label || 'Jaar werkervaring', s: h.stat1Sub || 'UX/UI & brand' },
     { v: h.stat2Value || '50', l: h.stat2Label || 'Projecten afgeleverd', s: h.stat2Sub || 'Diverse opdrachtgevers' },
     { v: h.stat3Value || '30', l: h.stat3Label || 'Huisstijlen gecreëerd', s: h.stat3Sub || 'Van concept tot delivery' },
-    { v: h.stat4Value || '100', l: h.stat4Label || 'Passie voor craft', s: h.stat4Sub || 'Elke pixel telt' },
   ];
   const services = [1, 2, 3].map((n, i) => ({
     title: h[`service${n}Title`] || DEFAULT_SERVICES[i].title,
@@ -127,7 +132,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
   const email = h.ctaEmail || EMAIL;
 
   return (
-    <div className="h-root" ref={rootRef} id="top">
+    <div className="h-root h-home" ref={rootRef} id="top">
       <div className="h-loader no-print" aria-hidden="true">
         <div className="h-loader-inner">
           <span className="h-loader-label">Studio Maaijen</span>
@@ -145,7 +150,15 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
 
       {/* ───────── 00 HERO (Spector Style) ───────── */}
       <section id="start" className="h-hero h-hero--spector h-dark no-print" data-theme="dark">
-        <HeroVisual heroImage={heroImage} heroMobileImage={heroImage} />
+        <HeroVisual slides={reelSlides} />
+
+        <div className="h-hero-meta h-mono" data-h-hero-fade>
+          <span>Studio Maaijen</span>
+          <span aria-hidden="true">·</span>
+          <span>Digital Product &amp; Brand Design</span>
+          <span aria-hidden="true">·</span>
+          <span>Ridderkerk / Rotterdam</span>
+        </div>
 
         {/* Monumental Headline Across the Bottom */}
         <div className="h-hero-headline-wrap" data-h-hero-headline>
@@ -158,17 +171,6 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               >
                 <span>
                   <span dangerouslySetInnerHTML={{ __html: line }} />
-                  {i === 0 && (
-                    <span className="h-hero-emblem" data-h-emblem aria-hidden="true">
-                      <svg viewBox="0 0 32 32" fill="none">
-                        <path
-                          d="M16 0L17.5 12.5L30 14L17.5 15.5L16 28L14.5 15.5L2 14L14.5 12.5L16 0Z"
-                          fill="currentColor"
-                        />
-                        <circle cx="16" cy="14" r="2.5" fill="#050609" />
-                      </svg>
-                    </span>
-                  )}
                 </span>
               </span>
             ))}
@@ -184,8 +186,8 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
                 <span>Start een project</span>
                 <i aria-hidden="true">→</i>
               </Link>
-              <a href="#pakketten" className="h-btn h-btn--ghost" data-h-magnet>
-                <span>Bekijk pakketten</span>
+              <a href="#werk" className="h-hero-textlink">
+                <span>Geselecteerd werk</span>
                 <i aria-hidden="true">↓</i>
               </a>
             </div>
@@ -194,13 +196,10 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
 
         {/* Bottom Bar: Scroll Indicator & Availability */}
         <div className="h-hero-bottom-bar" data-h-hero-fade>
-          <a href="#werk" className="h-hero-scroll-pill h-mono" data-h-magnet>
-            <span>SCROLL</span>
-            <span className="h-hero-scroll-arr" aria-hidden="true">↓</span>
-          </a>
           <span className="h-hero-avail h-mono">
             <i aria-hidden="true" /> Nu beschikbaar — projecten vanaf 2 weken
           </span>
+          <span className="h-hero-index h-mono">(00) Index</span>
         </div>
       </section>
 
@@ -225,11 +224,11 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
         <div className="h-wrap">
           <div className="h-label" data-h="up">
             <span className="h-mono">(01) Geselecteerd werk</span>
-            <span className="h-mono">{pad(projects.length)} cases</span>
+            <span className="h-mono">Selectie uit {stats[1].v}+ projecten</span>
           </div>
           <div className="h-work-head">
             <h2 className="h-display" data-h-lines>
-              Projecten die <em>resultaat</em> leveren
+              Projecten die resultaat leveren
             </h2>
             <p className="h-work-intro" data-h="up">
               Van brand identity tot digitale producten. Elk project vertelt een verhaal dat blijft hangen, en
@@ -237,60 +236,45 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
             </p>
           </div>
 
-          <ol className="h-cases" data-h-cases>
-            {projects.length > 0 ? (
-              projects.map((proj, i) => {
-                const cats = proj.categories?.length
-                  ? proj.categories.map(c => c.name)
-                  : proj.projectType
-                  ? [proj.projectType]
-                  : ['Case'];
+          {featuredProjects.length > 0 ? (
+            <div className="h-showcase-grid" data-h-showcase>
+              {featuredProjects.map((proj, idx) => {
                 const name = proj.client || proj.title;
                 const subtitle = resolveCaseSubtitle(proj);
                 return (
-                  <li key={proj.slug || i} className="h-case-item" data-h="up">
-                    <Link href={`/work/${proj.slug}`} className="h-case" data-h-case={i}>
-                      <span className="h-case-no h-mono">{pad(i + 1)}</span>
-                      <span className="h-case-main">
-                        <span className="h-case-name">{name}</span>
-                        {subtitle ? <span className="h-case-sub">{subtitle}</span> : null}
-                      </span>
-                      <span className="h-case-cats h-mono">{cats.join(' / ')}</span>
-                      <span className="h-case-arrow" aria-hidden="true">↗</span>
-                      <span className="h-case-inline" aria-hidden="true">
+                  <article key={proj.slug || idx} className="h-showcase-card" data-h="up">
+                    <Link href={`/work/${proj.slug}`} className="h-showcase-link" data-h-cursor="Bekijk">
+                      <div className="h-showcase-media" data-h-showcase-media>
                         {proj.coverImage?.url ? (
-                          <img src={sized(proj.coverImage.url, 1000)} alt="" loading="lazy" decoding="async" />
+                          <img
+                            src={sized(proj.coverImage.url, 1400)}
+                            alt={proj.title || name}
+                            loading={idx === 0 ? 'eager' : 'lazy'}
+                            decoding="async"
+                            className="h-showcase-img"
+                          />
                         ) : (
                           <span className="h-case-noimg">{(name || 'SM').slice(0, 2)}</span>
                         )}
-                        <CropMarks />
-                      </span>
+                        <div className="h-showcase-overlay" aria-hidden="true" />
+                        {proj.client ? <span className="h-showcase-badge h-mono">{proj.client}</span> : null}
+                      </div>
+                      <div className="h-showcase-meta">
+                        <span className="h-mono h-showcase-idx">{pad(idx + 1)}</span>
+                        <div className="h-showcase-info">
+                          <h3 className="h-showcase-title">{proj.title || name}</h3>
+                          {subtitle ? <p className="h-showcase-sub">{subtitle}</p> : null}
+                        </div>
+                        <span className="h-showcase-arrow" aria-hidden="true">↗</span>
+                      </div>
                     </Link>
-                  </li>
+                  </article>
                 );
-              })
-            ) : (
-              <li className="h-case-item">
-                <span className="h-mono">Projecten worden geladen…</span>
-              </li>
-            )}
-          </ol>
-
-          <div className="h-peek" data-h-peek aria-hidden="true">
-            <div className="h-peek-frame">
-              {projects.map((proj, i) => (
-                <div className="h-peek-img" data-h-peek-img={i} key={proj.slug || i}>
-                  {proj.coverImage?.url ? (
-                    <img src={sized(proj.coverImage.url, 900)} alt="" loading="lazy" decoding="async" />
-                  ) : (
-                    <span className="h-case-noimg">{(proj.client || proj.title || 'SM').slice(0, 2)}</span>
-                  )}
-                </div>
-              ))}
-              <CropMarks />
+              })}
             </div>
-            <span className="h-peek-cap h-mono" data-h-peek-cap />
-          </div>
+          ) : (
+            <p className="h-mono h-showcase-empty">Projecten worden geladen…</p>
+          )}
 
           <div className="h-work-more" data-h="up">
             <Link href="/work" className="h-btn h-btn--ghost" data-h-magnet>
@@ -311,7 +295,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
           <div className="h-preview-feature-grid">
             <div className="h-preview-feature-left">
               <h2 className="h-display" data-h-lines>
-                Benieuwd hoe jouw website er <em>uit kan zien?</em>
+                Zie je nieuwe website in 2 minuten
               </h2>
             </div>
             <div className="h-preview-feature-right" data-h="up">
@@ -319,18 +303,8 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
                 Geen vage offertes vooraf. Beantwoord 7 gerichte vragen over jouw bedrijf en bekijk direct een eerste professionele, interactieve schets van jouw homepage. Vrijblijvend en zonder account.
               </p>
               <div className="h-preview-feature-meta">
-                <div className="h-preview-feature-director">
-                  <img
-                    src="/images/eugene-portrait.jpg"
-                    alt="Eugène Maaijen"
-                    className="h-preview-avatar"
-                  />
-                  <div className="h-preview-avatar-info">
-                    <span className="h-preview-avatar-name">Eugène Maaijen</span>
-                    <span className="h-preview-avatar-role">Studio Maaijen · Ridderkerk</span>
-                  </div>
-                </div>
-                <Link href="/start?bron=home-banner" className="h-btn h-btn--spot" data-h-magnet>
+                <span className="h-mono h-preview-feature-note">7 vragen · Geen account · Vrijblijvend</span>
+                <Link href="/start?bron=home-banner" className="h-preview-cta" data-h-magnet>
                   <span>Start de gratis preview</span>
                   <i aria-hidden="true">→</i>
                 </Link>
@@ -348,7 +322,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
             <span className="h-mono">Wat ik doe</span>
           </div>
           <h2 className="h-display h-display--ink" data-h-lines>
-            Wat ik doe &amp; <em>hoe ik het doe</em>
+            Wat ik doe &amp; hoe ik het doe
           </h2>
           <p className="h-svc-intro" data-h="up">
             {h.servicesSubtitle || '20 jaar ervaring op het snijvlak van strategie, esthetiek en techniek.'}
@@ -379,9 +353,27 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
             <Link href="/pakketten" className="h-mono h-chero-back">Alle pakketten →</Link>
           </div>
           <h2 className="h-display" data-h-lines>
-            Heldere pakketten, <em>sleutelklaar</em>
+            Heldere pakketten, sleutelklaar
           </h2>
-          <PackageGrid packages={packages} compact />
+          <ol className="h-tier" data-h-group>
+            {tiers.map((row, i) => (
+              <li key={row.id} data-h="up">
+                <Link href="/pakketten" className="h-tier-row">
+                  <span className="h-mono h-tier-no">({row.num || pad(i + 1)})</span>
+                  <h3 className="h-tier-name">{row.name}</h3>
+                  <p className="h-tier-desc">{row.tagline}</p>
+                  <span className="h-mono h-tier-time">{row.duration}</span>
+                  <span className="h-tier-arrow" aria-hidden="true">→</span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+          <div className="h-tier-foot" data-h="up">
+            <Link href="/pakketten" className="h-hero-textlink">
+              <span>Bekijk alle pakketspecificaties &amp; tarieven</span>
+              <i aria-hidden="true">→</i>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -402,13 +394,22 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
           </p>
 
           <div className="h-story-body">
+            <figure className="h-story-portrait" data-h="up">
+              <img
+                src={portraitImage}
+                alt="Eugène Maaijen, oprichter van Studio Maaijen"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption className="h-mono">Eugène Maaijen — oprichter</figcaption>
+            </figure>
             <div className="h-story-facts" data-h-group>
               {stats.map((st, i) => (
                 <div key={i} className="h-fact" data-h="up">
                   <span
                     className="h-fact-num"
                     data-h-count-to={st.v}
-                    data-h-suffix={i === 3 ? '%' : i === 0 ? '' : '+'}
+                    data-h-suffix={i === 0 ? '' : '+'}
                   >
                     {st.v}
                   </span>
@@ -424,7 +425,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               ) : (
                 <p className="h-story-lead" data-h="up">
                   <strong>Ik ben Eugène Maaijen.</strong> Senior UX/UI-designer, front-end developer en brand creator.
-                  Met ruim 20 jaar ervaring help ik bedrijven om <em>digitale ervaringen te maken</em> die raken,
+                  Met ruim 20 jaar ervaring help ik bedrijven om digitale ervaringen te maken die raken,
                   helder communiceren en converteren.
                 </p>
               )}
@@ -481,7 +482,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               <span dangerouslySetInnerHTML={{ __html: h.processTitle }} />
             ) : (
               <>
-                Van brief naar <em>briljant resultaat</em>
+                Van brief naar briljant resultaat
               </>
             )}
           </h2>
@@ -514,7 +515,7 @@ export default function HomeClient({ homepage, projects = [], packages: packageD
               <span dangerouslySetInnerHTML={{ __html: h.ctaTitle }} />
             ) : (
               <>
-                Laten we <em>iets moois</em> maken.
+                Laten we iets moois maken.
               </>
             )}
           </h2>

@@ -104,7 +104,7 @@ body:has(.h-root)::after {
   inset: 0;
   z-index: 40;
   pointer-events: none;
-  opacity: 0.06;
+  opacity: 0.022; /* subtiel, tactiel — geen grauwsluier op diepzwart */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 1.1 -.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -661,71 +661,126 @@ body:has(.h-root)::after {
   box-sizing: border-box;
 }
 
-/* ──────── Full-bleed background visual stage ──────── */
+/* ──────── Digital Stage: ambient horizon + architecturale haarlijnen ──────── */
 .h-hero-bg-stage {
   position: absolute;
-  inset: -12% -6%;
-  width: 112%;
-  height: 124%;
+  inset: 0;
   z-index: 1;
-  pointer-events: auto;
+  pointer-events: none;
   overflow: hidden;
   will-change: transform;
+  background: #0b0a09;
 }
-.h-hero-bg-inner {
+.h-hero-horizon {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0);
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  background:
+    radial-gradient(120% 70% at 72% 118%, rgba(255, 77, 0, 0.16) 0%, rgba(255, 77, 0, 0.05) 32%, transparent 58%),
+    radial-gradient(90% 60% at 18% 0%, rgba(238, 232, 220, 0.05) 0%, transparent 60%),
+    linear-gradient(180deg, #0b0a09 0%, #100e0c 55%, #14110f 100%);
 }
-.h-hero-picture {
+.h-hero-hairlines {
+  position: absolute;
+  inset: 0 var(--pad, 32px);
+  background-image: linear-gradient(90deg, rgba(238, 232, 220, 0.055) 1px, transparent 1px);
+  background-size: calc((100% + var(--gut)) / 12) 100%;
+  background-position: calc(-1 * var(--gut) / 2) 0;
+  border-right: 1px solid rgba(238, 232, 220, 0.055);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
+.h-hero-baseline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 58%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(238, 232, 220, 0.12) 20%, rgba(238, 232, 220, 0.12) 80%, transparent);
+}
+
+/* ──────── Metadata boven de kop ──────── */
+.h-hero-meta {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #a39d94;
+}
+
+/* ──────── Showreel-venster (bestaande cases uit DatoCMS) ──────── */
+.h-hero-reel {
+  /* hoogte begrensd door de viewport, zodat het venster nooit de kop raakt */
+  --reel-h: clamp(170px, calc(100svh - 640px), 360px);
+  position: absolute;
+  z-index: 4;
+  top: calc(var(--nav-h, 72px) + 64px);
+  right: var(--pad, 32px);
+  width: min(calc(var(--reel-h) * 1.6), 40vw);
+}
+.h-hero-reel-frame {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ink-3);
+  border: 1px solid rgba(238, 232, 220, 0.12);
+}
+.h-hero-reel-img {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.h-hero-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 65% 20%;
-  filter: contrast(1.08) brightness(0.94);
+  opacity: 0;
+  transform: scale(1.06);
+  filter: contrast(1.04) brightness(0.92);
+  transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1), transform 2.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.h-hero-reel-img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+.h-hero-reel-cap {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #a39d94;
+  font-variant-numeric: tabular-nums;
+}
+.h-hero-reel-client {
+  color: var(--paper);
+}
+.h-hero-reel-bar {
   display: block;
-  user-select: none;
-  -webkit-user-drag: none;
+  margin-top: 10px;
+  height: 1px;
+  background: rgba(238, 232, 220, 0.12);
+  overflow: hidden;
 }
-.h-hero-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+.h-hero-reel-progress {
+  display: block;
   height: 100%;
-  pointer-events: none;
-  z-index: 2;
-  mix-blend-mode: screen;
+  background: var(--spot);
+  transform-origin: left center;
+  animation: h-reel-progress 4.2s linear forwards;
 }
-
-/* Vignette overlays */
-.h-hero-vignette {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
+@keyframes h-reel-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
-.h-hero-vignette--top {
-  background: linear-gradient(180deg, rgba(5, 6, 9, 0.88) 0%, rgba(5, 6, 9, 0.45) 25%, transparent 60%);
+@media (max-width: 1100px), (max-height: 780px) {
+  .h-hero-reel { display: none; }
 }
-.h-hero-vignette--bottom {
-  background: linear-gradient(0deg, #050609 0%, rgba(5, 6, 9, 0.88) 30%, rgba(5, 6, 9, 0.4) 65%, transparent 100%);
-}
-.h-hero-vignette--left {
-  background: linear-gradient(90deg, rgba(5, 6, 9, 0.75) 0%, rgba(5, 6, 9, 0.25) 35%, transparent 65%);
-}
-.h-hero-vignette--spot {
-  background: radial-gradient(circle at 65% 26%, rgba(249, 65, 55, 0.22), transparent 45%);
-  mix-blend-mode: screen;
+@media (prefers-reduced-motion: reduce) {
+  .h-hero-reel-img { transition: none; transform: none; }
+  .h-hero-reel-progress { animation: none; transform: scaleX(1); }
 }
 
 /* ──────── Monumental Headline Across the Bottom ──────── */
@@ -739,10 +794,11 @@ body:has(.h-root)::after {
 .h-hero-monumental {
   margin: 0;
   font-family: var(--ff-d);
-  font-size: clamp(68px, 10.5vw, 178px);
+  font-size: clamp(64px, 9.5vw, 150px);
   font-weight: 700;
-  line-height: 0.88;
-  letter-spacing: -0.045em;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
   display: flex;
   flex-direction: column;
 }
@@ -773,25 +829,6 @@ body:has(.h-root)::after {
 .h-hero-line--spot {
   color: var(--spot, #F94137);
 }
-.h-hero-emblem {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(42px, 7.2vw, 108px);
-  height: clamp(42px, 7.2vw, 108px);
-  color: var(--spot, #F94137);
-  animation: h-spin 18s linear infinite;
-  transform-origin: center center;
-}
-.h-hero-emblem svg {
-  width: 100%;
-  height: 100%;
-}
-@keyframes h-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 /* ──────── Hero Subcopy & Directe Actieknoppen ──────── */
 .h-hero-lead-row {
   position: relative;
@@ -815,12 +852,12 @@ body:has(.h-root)::after {
   text-wrap: pretty;
 }
 .h-hero-actions {
-  grid-column: 7 / 13;
+  grid-column: 8 / 13;
   justify-self: end;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px 14px;
+  gap: 12px clamp(20px, 2.4vw, 36px);
 }
 
 /* ──────── Bottom Bar: Scroll + Status ──────── */
@@ -834,6 +871,36 @@ body:has(.h-root)::after {
   padding-top: 18px;
   margin-top: 18px;
   border-top: 1px solid rgba(238, 232, 220, 0.1);
+}
+.h-hero-textlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 2px 12px;
+  font-family: var(--ff-mon);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  transition: background-size 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.h-hero-textlink:hover {
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+  color: var(--spot);
+}
+.h-hero-textlink i {
+  font-style: normal;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.h-hero-textlink:hover i {
+  transform: translateY(3px);
+}
+.h-hero-index {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: #a39d94;
 }
 .h-hero-scroll-pill {
   display: inline-flex;
@@ -856,7 +923,7 @@ body:has(.h-root)::after {
 .h-hero-avail {
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: rgba(232, 217, 200, 0.65);
+  color: #a39d94;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -950,9 +1017,12 @@ body:has(.h-root)::after {
   align-items: center;
   gap: clamp(28px, 3.4vw, 56px);
   padding-right: clamp(28px, 3.4vw, 56px);
-  font-family: var(--ff-ser);
-  font-style: italic;
-  font-size: clamp(28px, 3.4vw, 54px);
+  font-family: var(--ff-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: clamp(20px, 2.4vw, 36px);
+  color: #8a847c; /* vaste kleur i.p.v. opacity: meetbaar contrast op --ink */
   line-height: 1;
   white-space: nowrap;
 }
@@ -992,8 +1062,33 @@ body:has(.h-root)::after {
   row-gap: 48px;
   align-items: start;
 }
-.h-story-facts {
+.h-story-portrait {
   grid-column: 1 / 5;
+  grid-row: 1;
+  margin: 0;
+}
+.h-story-portrait img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: 50% 22%;
+  filter: grayscale(0.15) contrast(1.04);
+  border: 1px solid var(--line-l);
+}
+.h-story-portrait figcaption {
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(20, 17, 15, 0.7);
+}
+.h-story-facts {
+  grid-column: 1 / 13;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--gut);
+  margin-top: clamp(24px, 4vw, 64px);
 }
 .h-fact {
   padding: 18px 0 26px;
@@ -1014,6 +1109,8 @@ body:has(.h-root)::after {
 }
 .h-story-prose {
   grid-column: 6 / 13;
+  grid-row: 1;
+  align-self: end;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -1761,8 +1858,9 @@ body:has(.h-root)::after {
 
 @media (max-width: 1023px) {
   .h-hero-role { grid-column: 1 / 9; }
-  .h-story-facts { grid-column: 1 / 13; display: grid; grid-template-columns: repeat(3, 1fr); column-gap: var(--gut); }
-  .h-story-prose { grid-column: 1 / 13; }
+  .h-story-facts { grid-column: 1 / 13; grid-row: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gut); }
+  .h-story-portrait { grid-column: 1 / 7; grid-row: auto; }
+  .h-story-prose { grid-column: 1 / 13; grid-row: auto; }
   .h-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .h-step:nth-child(even) { margin-top: 0; }
   .h-cv-side { grid-column: 1 / 13; margin-bottom: 56px; }
@@ -1825,6 +1923,7 @@ body:has(.h-root)::after {
   .h-hero-avail, .h-hero-scroll { justify-self: start; grid-column: auto; }
   .h-hero-scroll { display: none; }
   .h-story-facts { grid-template-columns: 1fr; }
+  .h-story-portrait { grid-column: 1 / 13; }
   .h-fact { flex-direction: row; align-items: baseline; justify-content: space-between; }
   .h-cv-cols { grid-template-columns: 1fr; }
   .h-exp-item { grid-template-columns: minmax(0, 1fr) 44px; }
@@ -4483,3 +4582,350 @@ body:has(.h-root)::after {
   }
 }
 
+
+
+/* ═════════ REDESIGN RONDE A — typografische discipline (alleen homepage) ═════════
+   <em> is gereserveerd voor de hero-kop en het manifesto (.h-word.is-em).
+   CMS-koppen die nog <em> bevatten worden hier geneutraliseerd. */
+.h-home .h-display em,
+.h-home .h-contact-title em,
+.h-home .h-story-prose em,
+.h-home .h-preview-feature-left .h-display em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+@media (max-width: 760px) {
+  .h-home .h-hero { min-height: 92svh; }
+  .h-hero-meta { gap: 4px; flex-direction: column; font-size: 10px; }
+  .h-hero-meta [aria-hidden='true'] { display: none; }
+  .h-hero-index { display: none; }
+}
+
+/* ═════════ REDESIGN RONDE B ═════════ */
+
+/* ── Fase 3: asymmetrisch 12-koloms case-grid ── */
+.h-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  row-gap: clamp(80px, 12vw, 180px);
+  margin-top: clamp(60px, 8vw, 120px);
+}
+/* ritme loopt uitsluitend via nth-child: oneven 8 kolommen links, even 7 kolommen rechts en verlaagd */
+.h-showcase-card:nth-child(odd) {
+  grid-column: 1 / 9;
+}
+.h-showcase-card:nth-child(even) {
+  grid-column: 6 / 13;
+  margin-top: clamp(40px, 6vw, 100px);
+}
+@media (max-width: 900px) {
+  .h-showcase-card:nth-child(odd),
+  .h-showcase-card:nth-child(even) {
+    grid-column: 1 / 13;
+    margin-top: 0;
+  }
+}
+.h-showcase-link {
+  display: block;
+}
+.h-showcase-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ink-3);
+  border: 1px solid rgba(238, 232, 220, 0.12);
+}
+.h-showcase-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: contrast(1.04) brightness(0.96);
+}
+.h-showcase-media .h-case-noimg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(60px, 10vw, 160px);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  color: rgba(238, 232, 220, 0.18);
+}
+.h-showcase-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(12, 10, 9, 0.38) 0%, transparent 28%);
+}
+.h-showcase-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 7px 10px 6px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(12, 10, 9, 0.72);
+  border: 1px solid rgba(238, 232, 220, 0.16);
+  border-radius: 2px;
+}
+.h-showcase-meta {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  column-gap: var(--gut);
+  align-items: start;
+  padding-top: 20px;
+  margin-top: 16px;
+  border-top: 1px solid var(--line-d);
+}
+.h-showcase-idx {
+  padding-top: 0.5em;
+  color: #a39d94;
+  font-variant-numeric: tabular-nums;
+}
+.h-showcase-title {
+  font-size: clamp(26px, 2.6vw, 44px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.h-showcase-sub {
+  margin-top: 10px;
+  max-width: 52ch;
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.5;
+  color: var(--dim);
+  text-wrap: pretty;
+}
+.h-showcase-arrow {
+  font-size: clamp(22px, 2vw, 32px);
+  line-height: 1;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.h-showcase-card:hover .h-showcase-img {
+  transform: scale(1.06);
+  filter: contrast(1.08) brightness(1.02);
+}
+.h-showcase-card:hover .h-showcase-arrow {
+  transform: translate(4px, -4px);
+  color: var(--spot);
+}
+.h-showcase-link:focus-visible {
+  outline-offset: 8px;
+}
+.h-showcase-empty {
+  margin-top: clamp(60px, 8vw, 120px);
+  color: var(--dim);
+}
+@media (prefers-reduced-motion: reduce) {
+  .h-showcase-img,
+  .h-showcase-arrow { transition: none; }
+  .h-showcase-card:hover .h-showcase-img { transform: none; }
+}
+
+/* ── Fase 4.1: preview-tool als redactionele feature-strip ── */
+.h-home .h-preview-feature-left .h-display {
+  font-size: clamp(44px, 6.4vw, 108px);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+}
+.h-preview-feature-note {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: #a39d94;
+}
+.h-preview-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 0 14px;
+  font-size: clamp(18px, 1.5vw, 24px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+  border-bottom: 1px solid var(--spot);
+  transition: color 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.h-preview-cta i {
+  font-style: normal;
+  color: var(--spot);
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.h-preview-cta:hover { color: var(--spot); }
+.h-preview-cta:hover i { transform: translateX(6px); }
+
+/* ── Fase 4.2: Swiss Ledger (.h-tier — .h-ledger is al in gebruik op de CV-pagina) i.p.v. prijskaarten op de homepage ── */
+.h-tier {
+  margin-top: clamp(50px, 6vw, 96px);
+  border-top: 1px solid var(--line-d);
+}
+.h-tier-row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  align-items: baseline;
+  padding: clamp(22px, 2.6vw, 40px) 0;
+  border-bottom: 1px solid var(--line-d);
+  transition: color 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.h-tier-no {
+  grid-column: 1 / 2;
+  color: #a39d94;
+  font-variant-numeric: tabular-nums;
+}
+.h-tier-name {
+  grid-column: 2 / 7;
+  font-size: clamp(26px, 3vw, 52px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.h-tier-desc {
+  grid-column: 7 / 11;
+  color: var(--dim);
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.5;
+}
+.h-tier-time {
+  grid-column: 11 / 12;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #a39d94;
+  white-space: nowrap;
+}
+.h-tier-arrow {
+  grid-column: 12 / 13;
+  justify-self: end;
+  color: var(--spot);
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.h-tier-row:hover .h-tier-name { transform: translateX(10px); }
+.h-tier-row:hover .h-tier-arrow { transform: translateX(6px); }
+.h-tier-foot {
+  margin-top: clamp(32px, 4vw, 56px);
+}
+@media (max-width: 900px) {
+  .h-tier-row { row-gap: 10px; }
+  .h-tier-no { grid-column: 1 / 13; }
+  .h-tier-name { grid-column: 1 / 12; }
+  .h-tier-arrow { grid-column: 12 / 13; }
+  .h-tier-desc { grid-column: 1 / 13; }
+  .h-tier-time { grid-column: 1 / 13; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .h-tier-row:hover .h-tier-name,
+  .h-tier-row:hover .h-tier-arrow { transform: none; }
+}
+
+/* ── Fase 4.3: scherpe technische badges i.p.v. pills ── */
+.h-home .h-svc-tags li {
+  border-radius: 2px;
+  border: 1px solid rgba(20, 17, 15, 0.15);
+  font-family: var(--ff-mon);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(20, 17, 15, 0.72);
+}
+
+/* ── Fase 5: grand-finale sticky curtain footer (hele site, behalve de klant-preview) ── */
+.h-root:not(:has(.mock-preview-viewport)) > .h-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1; /* ligt achter de content — nooit negatief, anders worden links onklikbaar */
+  background: #080706;
+}
+/* alle secties boven de footer: dekkende achtergrond + z-index 2 */
+.h-home .h-hero,
+.h-home .h-ticker,
+.h-home .h-work,
+.h-home .h-preview-feature,
+.h-home .h-svc,
+.h-home .h-pkt-teaser,
+.h-home .h-story,
+.h-home .h-proc,
+.h-home .h-contact {
+  position: relative;
+  z-index: 2;
+}
+.h-home .h-contact {
+  box-shadow: 0 1px 0 var(--line-d);
+}
+/* fallback: is de footer hoger dan het scherm, dan gewoon meescrollen */
+/* subpagina's: elke sectie/main boven de footer dekt hem af */
+.h-root > section,
+.h-root > main {
+  position: relative;
+  z-index: 2;
+}
+:where(.h-root > main) {
+  background-color: var(--ink);
+}
+@media (max-height: 760px), (max-width: 900px) {
+  .h-root:not(:has(.mock-preview-viewport)) > .h-footer { position: relative; z-index: 2; }
+}
+.h-root .h-footer-mark {
+  color: var(--paper);
+  opacity: 0.12;
+  -webkit-text-stroke: 0;
+  font-weight: 700;
+  letter-spacing: -0.07em;
+}
+@media (max-width: 640px) {
+  .h-showcase-meta { grid-template-columns: 28px minmax(0, 1fr) auto; column-gap: 12px; }
+}
+
+/* ═════════ RONDE C — stijl sitebreed doorgevoerd ═════════ */
+
+/* <em>-discipline: het cursieve accent blijft alleen in de paginatitel (h1).
+   Tussenkoppen (h2/h3) worden recht. De klant-mockup in de preview blijft ongemoeid. */
+.h-root :is(h2, h3) em:not(.mock-preview-viewport em) {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+/* geen generieke pills: scherpe technische badges */
+.h-root .h-clients li,
+.h-root .h-chip,
+.h-root .spector-chip,
+.h-root .wizard-quick-chip,
+.h-root .h-nav-preview-cta,
+.h-root .h-menu-preview-btn {
+  border-radius: 2px;
+}
+
+/* uitgelicht pakket: geen feloranje SaaS-kaart meer, wel een duidelijke accentlijn */
+.h-pkg.is-featured {
+  background: var(--ink-2);
+  color: var(--paper);
+  --dim: rgba(238, 232, 220, 0.66);
+  --rule: var(--line-d);
+  box-shadow: inset 0 2px 0 var(--spot);
+}
+.h-pkg.is-featured .h-pkg-badge {
+  color: var(--spot);
+}
+
+/* prijzen: geen cursief meer — strakke sans met tabulaire cijfers */
+.h-pkg-price {
+  font-family: var(--ff-sans);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+.h-pkg.is-featured .h-pkg-feats li span { color: var(--spot); }

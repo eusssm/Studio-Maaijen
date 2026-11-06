@@ -319,76 +319,17 @@ export function initHomeMotion(root) {
       );
     }
 
-    /* ───────── 11. CASES: zwevend voorbeeld + hover ───────── */
-    const list = one('[data-h-cases]');
-    const peek = one('[data-h-peek]');
-    if (list && peek && fine && window.matchMedia('(min-width: 900px)').matches) {
-      const imgs = q('[data-h-peek-img]', peek);
-      const cap = one('[data-h-peek-cap]', peek);
-      const frame = one('.h-peek-frame', peek);
-      const rows = q('[data-h-case]', list);
-      gsap.set(peek, { autoAlpha: 0, scale: 0.86, xPercent: 0, yPercent: -50 });
-      gsap.set(imgs, { autoAlpha: 0 });
-
-      const xTo = gsap.quickTo(peek, 'x', { duration: 0.7, ease: 'power3.out' });
-      const yTo = gsap.quickTo(peek, 'y', { duration: 0.7, ease: 'power3.out' });
-      const rotTo = gsap.quickTo(peek, 'rotation', { duration: 0.9, ease: 'power3.out' });
-      let lastX = 0;
-      let current = -1;
-
-      const place = e => {
-        const w = peek.offsetWidth;
-        const toLeft = e.clientX > window.innerWidth - w - 120;
-        xTo(toLeft ? e.clientX - w - 56 : e.clientX + 56);
-        yTo(e.clientY);
-        rotTo(gsap.utils.clamp(-4, 4, (e.clientX - lastX) * 0.25));
-        lastX = e.clientX;
-      };
-
-      const show = i => {
-        if (i === current) return;
-        const prev = imgs[current];
-        const next = imgs[i];
-        current = i;
-        list.classList.add('is-hovering');
-        rows.forEach((r, k) => r.classList.toggle('is-active', k === i));
-        if (prev) gsap.to(prev, { autoAlpha: 0, duration: 0.3, overwrite: true });
-        if (next) {
-          gsap.fromTo(next, { autoAlpha: 0, clipPath: 'inset(0% 0% 100% 0%)' }, { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 0.7, ease: 'expo.out', overwrite: true });
-        }
-        if (cap) cap.textContent = `Fig. ${String(i + 1).padStart(2, '0')} — ${rows[i].querySelector('.h-case-name')?.textContent || ''}`;
-        gsap.to(peek, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power3.out', overwrite: 'auto' });
-      };
-
-      const hide = () => {
-        current = -1;
-        list.classList.remove('is-hovering');
-        rows.forEach(r => r.classList.remove('is-active'));
-        gsap.to(peek, { autoAlpha: 0, scale: 0.9, duration: 0.4, ease: 'power3.in', overwrite: 'auto' });
-      };
-
-      const onMove = e => place(e);
-      const handlers = rows.map((row, i) => {
-        const enter = e => {
-          if (current === -1) {
-            gsap.set(peek, { x: e.clientX + 56, y: e.clientY });
-            lastX = e.clientX;
-          }
-          show(i);
-        };
-        row.addEventListener('mouseenter', enter);
-        row.addEventListener('focus', () => show(i));
-        row.addEventListener('blur', hide);
-        return [row, enter];
+    /* ───────── 11. SHOWCASE-GRID: media onthullen bij binnenkomst ───────── */
+    q('[data-h-showcase-media]').forEach(media => {
+      gsap.set(media, { clipPath: 'inset(12% 0% 0% 0%)' });
+      ScrollTrigger.create({
+        trigger: media,
+        start: 'top 92%',
+        once: true,
+        onEnter: () =>
+          gsap.to(media, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.4, ease: 'expo.out' }),
       });
-      list.addEventListener('mousemove', onMove);
-      list.addEventListener('mouseleave', hide);
-      cleanups.push(() => {
-        list.removeEventListener('mousemove', onMove);
-        list.removeEventListener('mouseleave', hide);
-        handlers.forEach(([row, enter]) => row.removeEventListener('mouseenter', enter));
-      });
-    }
+    });
 
     /* ───────── 12. CURSOR + MAGNETISCHE KNOPPEN ───────── */
     if (fine) {

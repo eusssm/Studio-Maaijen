@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 
-/* Pakketten als rijen met prijs, doorlooptijd en vinkjes. Het uitgelichte pakket is oranje. */
+/* Pakketten als rijen met prijs, doorlooptijd en vinkjes. Het uitgelichte pakket krijgt een oranje accentlijn. */
 export function PackageGrid({ packages, compact = false }) {
   return (
     <ol className={`h-pkgs ${compact ? 'h-pkgs--compact' : ''}`} data-h-group>
@@ -34,7 +34,7 @@ export function PackageGrid({ packages, compact = false }) {
             <div className="h-pkg-actions">
               <Link
                 href={`/contact?pakket=${encodeURIComponent(pkg.name)}`}
-                className={`h-btn ${pkg.isFeatured ? 'h-btn--ink' : 'h-btn--ghost'} h-pkg-btn`}
+                className={`h-btn ${pkg.isFeatured ? 'h-btn--spot' : 'h-btn--ghost'} h-pkg-btn`}
                 data-h-magnet
               >
                 <span>Kies dit pakket</span>

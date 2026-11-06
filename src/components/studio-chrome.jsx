@@ -132,7 +132,7 @@ export function SiteNav({ menuOpen, setMenuOpen, availability = 'Nu beschikbaar'
 export function SiteFooter({ tagline, location, copyright }) {
   const year = new Date().getFullYear();
   const tag = tagline || 'Design dat raakt vandaag\n& inspireert morgen.';
-  const loc = location || 'Amsterdam, Nederland\nBeschikbaar voor remote & on-site';
+  const loc = location || 'Ridderkerk / Rotterdam\nBeschikbaar voor remote & on-site';
   return (
     <footer className="h-footer h-dark no-print" data-theme="dark">
       <div className="h-wrap">
