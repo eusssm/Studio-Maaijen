@@ -1,4 +1,5 @@
 import { performRequest } from "../../../lib/datocms";
+import { curateProjects } from "../../lib/curated-cases";
 import WorkOverviewClient from "../../components/WorkOverviewClient";
 
 export const metadata = {
@@ -40,5 +41,7 @@ export default async function WorkPage() {
     console.error("Work page query error:", e);
   }
 
-  return <WorkOverviewClient projects={projects} homepage={homepage} />;
+  const curatedProjects = curateProjects(projects);
+
+  return <WorkOverviewClient projects={curatedProjects} homepage={homepage} />;
 }

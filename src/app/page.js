@@ -1,4 +1,5 @@
 import { performRequest } from "../../lib/datocms";
+import { curateProjects } from "../lib/curated-cases";
 import HomeClient from "../components/HomeClient";
 
 const PAGE_QUERY = `
@@ -69,7 +70,7 @@ const PAGE_QUERY = `
       footerLocation
       footerCopyright
     }
-    allProjects(first: 6, filter: { showOnHomepage: { eq: true } }, orderBy: position_ASC) {
+    allProjects(first: 100, orderBy: position_ASC) {
       title
       slug
       client
@@ -123,7 +124,9 @@ export default async function Home() {
     console.error("Home page query error:", e);
   }
 
+  const curatedProjects = curateProjects(projects);
+
   return (
-    <HomeClient homepage={homepage} projects={projects} testimonials={testimonials} packages={packages} />
+    <HomeClient homepage={homepage} projects={curatedProjects} testimonials={testimonials} packages={packages} />
   );
 }

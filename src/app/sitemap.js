@@ -1,4 +1,5 @@
 import { performRequest } from "../../lib/datocms";
+import { CURATED_ORDER } from "../lib/curated-cases";
 
 export default async function sitemap() {
   const SITEMAP_QUERY = `
@@ -18,11 +19,12 @@ export default async function sitemap() {
     console.error("Sitemap query failed");
   }
 
+  const updatedBySlug = new Map(projects.map((p) => [p.slug, p._updatedAt]));
   const baseUrl = "https://www.studio-maaijen.nl";
   
-  const projectUrls = projects.map((p) => ({
-    url: `${baseUrl}/work/${p.slug}`,
-    lastModified: new Date(p._updatedAt),
+  const projectUrls = CURATED_ORDER.map((slug) => ({
+    url: `${baseUrl}/work/${slug}`,
+    lastModified: updatedBySlug.get(slug) ? new Date(updatedBySlug.get(slug)) : new Date(),
     changeFrequency: 'monthly',
     priority: 0.8,
   }));

@@ -3,6 +3,7 @@ import { buildClient } from '@datocms/cma-client-node';
 import { performRequest } from '../../../../lib/datocms';
 import { DATOCMS_FORM_TOKEN } from '../../../lib/notify';
 import { getDaysRemaining } from '../../../lib/preview-presets';
+import { curateProjects } from '../../../lib/curated-cases';
 import PreviewPageClient from '../../../components/PreviewPageClient';
 
 export const metadata = {
@@ -47,7 +48,7 @@ const PREVIEW_AND_SUPPORT_QUERY = `
         }
       }
     }
-    allProjects(first: 4, orderBy: position_ASC) {
+    allProjects(first: 100, orderBy: position_ASC) {
       id
       title
       slug
@@ -102,7 +103,7 @@ export default async function PreviewPage({ params }) {
       query: PREVIEW_AND_SUPPORT_QUERY,
       variables: { slug },
     });
-    cases = res?.data?.allProjects || [];
+    cases = curateProjects(res?.data?.allProjects || []).slice(0, 4);
     packages = res?.data?.allPackages || [];
     siteSetting = res?.data?.siteSetting || null;
     if (res?.data?.previewSubmission) {
