@@ -2,9 +2,9 @@ import { performRequest } from '../../../lib/datocms';
 import PakkettenClient from '../../components/PakkettenClient';
 
 export const metadata = {
-  title: 'Pakketten',
+  title: 'Pakketten & tarieven',
   description:
-    'Heldere pakketten voor een professionele landingspagina, bedrijfswebsite met CMS of compleet merktraject door Studio Maaijen.',
+    "Geen duizenden euro's vooraf. Kies een Landingspagina of Gewone website voor € 80 per maand excl. btw, daarna automatisch € 30 per maand voor hosting en onderhoud.",
 };
 
 const PAKKETTEN_QUERY = `

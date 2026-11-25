@@ -96,7 +96,8 @@ export function CharSwap({ text = '', className = '' }) {
   }, [animateWave, text]);
 
   return (
-    <span ref={wrapRef} className={`m-charswap ${className}`} aria-label={text}>
+    <span ref={wrapRef} className={`m-charswap ${className}`}>
+      <span className="sr-only">{text}</span>
       {chars.map((ch, i) => (
         <span key={i} className="m-char-col" aria-hidden="true">
           <span className="m-char-top" data-m-char-pair>
@@ -113,19 +114,33 @@ export function CharSwap({ text = '', className = '' }) {
 
 /* Möbius Per-Character Scroll Reveal Wrapper (Headlines & Wordmarks) */
 export function SplitChars({ text = '', className = '', attr = 'data-m-char' }) {
-  const chars = Array.from(String(text));
+  const words = String(text).split(' ');
+  let charIndex = 0;
   return (
-    <span className={`m-split-chars ${className}`} aria-label={text}>
-      {chars.map((ch, i) => {
-        const props = { [attr]: '' };
-        return (
-          <span key={i} className="m-split-char-mask" aria-hidden="true">
-            <span className="m-split-char" style={{ '--char-i': i }} {...props}>
-              {ch === ' ' ? '\u00A0' : ch}
+    <span className={`m-split-chars ${className}`}>
+      <span className="sr-only">{text}</span>
+      {words.map((word, wIdx) => (
+        <span key={wIdx} className="m-split-word" aria-hidden="true">
+          {Array.from(word).map((ch, cIdx) => {
+            const props = { [attr]: '' };
+            const currentIdx = charIndex++;
+            return (
+              <span key={cIdx} className="m-split-char-mask">
+                <span className="m-split-char" style={{ '--char-i': currentIdx }} {...props}>
+                  {ch}
+                </span>
+              </span>
+            );
+          })}
+          {wIdx < words.length - 1 ? (
+            <span className="m-split-char-mask m-split-space">
+              <span className="m-split-char" style={{ '--char-i': charIndex++ }} {...{ [attr]: '' }}>
+                {'\u00A0'}
+              </span>
             </span>
-          </span>
-        );
-      })}
+          ) : null}
+        </span>
+      ))}
     </span>
   );
 }
@@ -316,12 +331,12 @@ export function SiteFooter({ tagline, location, copyright }) {
       <div className="h-wrap">
         <div className="h-footer-grid">
           <div data-h="up">
-            <span className="h-mono">Studio Maaijen®</span>
+            <span className="m-footer-label">Studio Maaijen®</span>
             <p className="h-footer-lead">{tag}</p>
             <p className="h-footer-dim">{loc.split('\n').map((l, i) => <span key={i} className="h-block">{l}</span>)}</p>
           </div>
           <div data-h="up">
-            <span className="h-mono">Index</span>
+            <span className="m-footer-label">Index</span>
             {NAV_ITEMS.map(item => (
               <Link key={item.id} href={item.href}>
                 <CharSwap text={item.label} />
@@ -332,7 +347,7 @@ export function SiteFooter({ tagline, location, copyright }) {
             </Link>
           </div>
           <div data-h="up">
-            <span className="h-mono">Direct contact</span>
+            <span className="m-footer-label">Direct contact</span>
             <a href={`mailto:${EMAIL}`}>
               <CharSwap text={EMAIL} />
             </a>
@@ -352,12 +367,12 @@ export function SiteFooter({ tagline, location, copyright }) {
         </div>
 
         <div className="h-footer-bottom">
-          <span className="h-mono">{copyright || `© 2013–${String(year).slice(-2)} Studio Maaijen — Alle rechten voorbehouden`}</span>
+          <span className="m-footer-label">{copyright || `© 2013–${String(year).slice(-2)} Studio Maaijen — Alle rechten voorbehouden`}</span>
           <div className="h-footer-bottom-links">
-            <Link href="/privacy" className="h-mono">
+            <Link href="/privacy" className="m-footer-label">
               <CharSwap text="Privacy" />
             </Link>
-            <a href="#top" className="h-mono h-totop">
+            <a href="#top" className="m-footer-label h-totop">
               <CharSwap text="Naar boven ↑" />
             </a>
           </div>

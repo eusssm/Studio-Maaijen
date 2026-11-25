@@ -4,6 +4,8 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { resolvePreviewPreset, getDaysRemaining } from '../lib/preview-presets';
+import { normalizePackages } from '../../lib/packages';
+import { PackageGrid } from './PackageCards';
 import { sized, CharSwap, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
@@ -115,6 +117,8 @@ export default function PreviewPageClient({
       city: submission?.city,
     });
   }, [submission]);
+
+  const waasPackages = useMemo(() => normalizePackages(packages), [packages]);
 
   // Splits eventueel handmatig ingevoerde diensten of val terug op redactionele presets
   const parsedServices = useMemo(() => {
@@ -381,9 +385,9 @@ export default function PreviewPageClient({
               </div>
 
               <nav className="mock-nav-links">
-                <span className="mock-nav-link">01 // Specialismen</span>
-                <span className="mock-nav-link">02 // Over ons</span>
-                <span className="mock-nav-link">03 // Locatie</span>
+                <span className="mock-nav-link">01 · Specialismen</span>
+                <span className="mock-nav-link">02 · Over ons</span>
+                <span className="mock-nav-link">03 · Locatie</span>
               </nav>
 
               <button
@@ -598,7 +602,7 @@ export default function PreviewPageClient({
           {/* 2. WAT JE KRIJGT ALS JE DOORGAAT */}
           <div style={{ marginBottom: 'clamp(70px, 9vh, 120px)' }}>
             <div className="h-label" style={{ marginBottom: '24px' }}>
-              <span className="h-mono">(01) Volledige ontzorging</span>
+              <span className="h-mono">01 · Volledig traject</span>
               <span className="h-mono">Wat zit er in een definitief traject?</span>
             </div>
 
@@ -612,7 +616,7 @@ export default function PreviewPageClient({
                 { title: 'Alle gewenste pagina’s', desc: 'Home, over ons, diensten, projecten/portfolio en een conversiegericht contactformulier.' },
                 { title: '100% mobielvriendelijk', desc: 'Optimaal leesbaar en soepel werkend op smartphone, tablet en desktop.' },
                 { title: 'Vindbaar in Google (SEO)', desc: 'Technische SEO, snelle laadtijden en gestructureerde data voor maximale lokale vindbaarheid.' },
-                { title: 'Domeinnaam & hosting geregeld', desc: 'Inclusief veilige SSL-verbinding, dagelijkse back-ups en snel onderhoud voor € 25/mnd.' },
+                { title: 'Domeinnaam & hosting geregeld', desc: 'Inclusief veilige SSL-verbinding, dagelijkse back-ups en snel onderhoud voor € 30/mnd excl. btw (vanaf maand 13 of 19).' },
                 { title: 'Eén vast aanspreekpunt', desc: 'Direct contact met Eugène. Geen accountmanagers of trage tickets, gewoon korte lijnen.' },
               ].map((item, idx) => (
                 <div
@@ -701,65 +705,19 @@ export default function PreviewPageClient({
           {/* 4. PAKKETTEN KEUZE */}
           <div id="pakketten" style={{ marginBottom: 'clamp(70px, 9vh, 120px)' }}>
             <div className="h-label" style={{ marginBottom: '24px' }}>
-              <span className="h-mono">(03) Tarieven</span>
-              <span className="h-mono">Heldere vaste prijzen</span>
+              <span className="waas-eyebrow">03 · Pakketten &amp; tarieven</span>
+              <span className="waas-meta">Alle bedragen excl. btw</span>
             </div>
 
-            <h2 className="h-display" style={{ fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: 'clamp(32px, 5vh, 50px)' }}>
-              Kies het pakket dat <em>bij jou past</em>
+            <h2 className="h-display" style={{ fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: '16px' }}>
+              Geen duizenden euro&apos;s vooraf
             </h2>
+            <p className="waas-preview-sub">
+              Start met ontwerp en bouw voor € 80 per maand excl. btw. Zodra de opstartperiode voorbij is, zakt je
+              maandtarief automatisch naar € 30 voor hosting, beveiliging en onderhoud.
+            </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-              {packages.map(pkg => (
-                <div
-                  key={pkg.id}
-                  style={{
-                    padding: 'clamp(28px, 4vw, 36px)',
-                    borderRadius: '20px',
-                    background: pkg.isFeatured ? 'rgba(255, 77, 0, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                    border: pkg.isFeatured ? '2px solid var(--spot)' : '1px solid rgba(238, 232, 220, 0.15)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>
-                    {pkg.isFeatured && (
-                      <span className="h-mono" style={{ fontSize: '11px', color: 'var(--spot)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
-                        ★ Meest gekozen door MKB
-                      </span>
-                    )}
-                    <h3 style={{ fontSize: '24px', fontWeight: 600, color: '#fff', marginBottom: '8px' }}>
-                      {pkg.name}
-                    </h3>
-                    <p style={{ fontSize: '14px', color: 'rgba(238, 232, 220, 0.7)', lineHeight: 1.4, marginBottom: '20px' }}>
-                      {pkg.tagline}
-                    </p>
-                    <div style={{ fontSize: '32px', fontWeight: 700, color: '#fff', marginBottom: '24px' }}>
-                      {pkg.priceLabel}
-                    </div>
-
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {pkg.features?.map((f, fi) => (
-                        <li key={fi} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', color: 'rgba(238, 232, 220, 0.85)' }}>
-                          <span style={{ color: 'var(--spot)' }}>✓</span>
-                          <span>{f.feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <Link
-                    href={`/contact?pakket=${encodeURIComponent(pkg.name)}&bedrijf=${encodeURIComponent(company)}`}
-                    className={pkg.isFeatured ? 'h-btn h-btn--spot' : 'h-btn h-btn--ghost'}
-                    style={{ textAlign: 'center', justifyContent: 'center' }}
-                  >
-                    <span>Kies {pkg.name}</span>
-                    <i aria-hidden="true">→</i>
-                  </Link>
-                </div>
-              ))}
-            </div>
+            <PackageGrid packages={waasPackages} variant="preview" company={company} />
           </div>
 
           {/* 5. GROTE AFSLUITENDE CTA */}

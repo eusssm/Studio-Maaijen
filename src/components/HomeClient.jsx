@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import HeroVisual from './HeroVisual';
+import { PackageGrid } from './PackageCards';
 import {
   EMAIL,
   LINKEDIN,
@@ -154,7 +155,11 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Kan ik mijn website na oplevering zelf aanpassen?',
-    a: 'Zeker. Elke website lever ik op met een overzichtelijk CMS waarin je zelf eenvoudig teksten, foto’s en nieuwe projecten of pagina’s kunt beheren — inclusief persoonlijke uitleg.',
+    a: 'Bij een Gewone website lever ik een overzichtelijk CMS mee waarin je zelf eenvoudig teksten, foto’s en nieuwe projecten aanpast. Kies je voor een Landingspagina, dan voer ik kleine wijzigingen vlot voor je door binnen het maandtarief.',
+  },
+  {
+    q: 'Hoe werkt het maandbedrag van € 80 en € 30 per maand?',
+    a: 'Je betaalt geen duizenden euro’s vooraf. Je gaat een vast opbouwtraject aan van € 80 per maand excl. btw (12 maanden bij een Landingspagina, 18 maanden bij een Gewone website) voor ontwerp, bouw en lancering. Na die looptijd zakt het tarief automatisch naar € 30 per maand excl. btw voor hosting, beveiliging en doorlopend onderhoud.',
   },
   {
     q: 'Kan ik eerst vrijblijvend zien wat je voor mijn bedrijf kunt betekenen?',
@@ -390,7 +395,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
     : DEFAULT_CLIENTS;
 
   const featuredProjects = projects.slice(0, 4);
-  const tiers = normalizePackages(packageData).slice(0, 3);
+  const tiers = normalizePackages(packageData);
   const testimonialList = testimonials && testimonials.length > 0 ? testimonials : DEFAULT_TESTIMONIALS;
 
   const stats = [
@@ -541,7 +546,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">01 / Portfolio</span>
+              <span className="m-sec-label">01 · Portfolio</span>
               <h2 className="m-sec-display">
                 <SplitChars text="Geselecteerd werk" attr="data-m-sec-char" />
               </h2>
@@ -613,7 +618,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
         <div className="h-wrap">
           <div className="m-manifesto-grid">
             <div className="m-manifesto-left" data-h="up">
-              <span className="m-sec-label">02 / Filosofie</span>
+              <span className="m-sec-label">02 · Filosofie</span>
               <span className="m-manifesto-tag">Eén senior maker · Korte lijnen</span>
             </div>
 
@@ -680,7 +685,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
                 data-h-cursor="BEKIJK CASE"
               >
                 <div className="m-reel-top-meta">
-                  <span className="m-sec-label">Showreel / Uitgelicht werk</span>
+                  <span className="m-sec-label">Showreel · Uitgelicht werk</span>
                   <span className="m-reel-counter">
                     {pad(reelIdx + 1)} / {pad(reelSlides.length)} — {activeReelSlide.client}
                   </span>
@@ -719,7 +724,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
           <div className="m-services-layout">
             {/* Linkerkolom: Sticky kop + Möbius kinetische /////// slash-bar */}
             <div className="m-services-sticky">
-              <span className="m-sec-label">03 / Expertise &amp; Diensten</span>
+              <span className="m-sec-label">03 · Expertise &amp; Diensten</span>
               <h2 className="m-sec-display m-services-heading">
                 <SplitChars text="Onze diensten" attr="data-m-sec-char" />
               </h2>
@@ -768,7 +773,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">04 / Studio Maaijen in cijfers</span>
+              <span className="m-sec-label">04 · Studio Maaijen in cijfers</span>
               <h2 className="m-sec-display">
                 <SplitChars text="In cijfers" attr="data-m-sec-char" />
               </h2>
@@ -816,7 +821,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">05 / De Studio &amp; Oprichter</span>
+              <span className="m-sec-label">05 · De Studio &amp; Oprichter</span>
               <h2 className="m-sec-display">
                 <SplitChars text="De Studio" attr="data-m-sec-char" />
               </h2>
@@ -892,7 +897,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">06 / Ervaringen &amp; Resultaat</span>
+              <span className="m-sec-label">06 · Ervaringen &amp; Resultaat</span>
               <h2 className="m-sec-display">
                 <SplitChars text="Wat opdrachtgevers zeggen" attr="data-m-sec-char" />
               </h2>
@@ -929,7 +934,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">07 / Werkwijze</span>
+              <span className="m-sec-label">07 · Werkwijze</span>
               <h2 className="m-sec-display">
                 <SplitChars text="Het proces" attr="data-m-sec-char" />
               </h2>
@@ -975,7 +980,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
             <div className="m-sec-title-stack">
-              <span className="m-sec-label">08 / Pakketten &amp; Investering</span>
+              <span className="m-sec-label">08 · Pakketten &amp; tarieven</span>
               <h2 className="m-sec-display">
                 <SplitChars text="Pakketten" attr="data-m-sec-char" />
               </h2>
@@ -985,67 +990,33 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
             </Link>
           </div>
 
-          <div className="m-pricing-intro-row" data-h="up">
-            <h3 className="m-pricing-heading">Heldere pakketten, sleutelklaar opgeleverd.</h3>
+          <div className="m-pricing-intro-row">
+            <h3 className="m-pricing-heading">Geen duizenden euro&apos;s vooraf</h3>
             <p className="m-pricing-sub">
-              Transparante vaste prijzen zonder verrassingen achteraf. Kies het traject dat past bij de groeifase van jouw onderneming.
+              Een nieuwe bedrijfswebsite vraagt normaal een flinke investering ineens. Bij Studio Maaijen spreid je
+              ontwerp en bouw over een overzichtelijk maandbedrag van € 80, zodat je werkkapitaal vrijhoudt voor je
+              onderneming. Zodra die periode voorbij is, zakt het tarief automatisch naar € 30 per maand. Alle bedragen
+              zijn excl. btw.
             </p>
           </div>
 
-          <div className="m-pricing-grid">
-            {tiers.map((pkg, idx) => (
-              <div
-                key={pkg.id || idx}
-                className={`m-price-card ${pkg.isFeatured ? 'is-featured' : ''}`}
-                data-h="up"
-              >
-                <div className="m-price-card-top">
-                  <span className="m-price-tier-idx">{['A', 'B', 'C'][idx] || pad(idx + 1)} / {pkg.name}</span>
-                  {pkg.isFeatured && <span className="m-price-badge">Meest gekozen</span>}
-                </div>
-
-                <div className="m-price-amount-row">
-                  <span className="m-price-amount">{pkg.priceLabel}</span>
-                  {pkg.duration && <span className="m-price-duration">Doorlooptijd: {pkg.duration}</span>}
-                </div>
-
-                <p className="m-price-tagline">{pkg.tagline}</p>
-
-                <ul className="m-price-features">
-                  {(pkg.features || []).slice(0, 5).map((f, fi) => (
-                    <li key={fi}>
-                      <span aria-hidden="true">+</span>
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={`/contact?pakket=${encodeURIComponent(pkg.name)}`}
-                  className={`m-btn ${pkg.isFeatured ? 'm-btn--primary' : 'm-btn--outline'} m-price-cta`}
-                  data-h-magnet
-                >
-                  <CharSwap text={`Start met ${pkg.name}`} />
-                  <i aria-hidden="true">→</i>
-                </Link>
-              </div>
-            ))}
-          </div>
+          <PackageGrid packages={tiers} variant="home" />
 
           {/* Subtiele, strakke Scandinavische banner voor de Gratis Website-Preview */}
-          <div className="m-preview-banner" data-h="up">
+          <div className="m-preview-banner">
             <div className="m-preview-banner-left">
-              <span className="m-sec-label">Interactieve Preview Tool · 2 minuten</span>
+              <span className="m-sec-label">Gratis website-preview · Binnen 2 minuten</span>
               <h3 className="m-preview-banner-title">
-                Benieuwd hoe jouw nieuwe website eruit kan zien?
+                Eerst zien hoe jouw website wordt, voordat je iets beslist.
               </h3>
               <p className="m-preview-banner-desc">
-                Beantwoord 7 korte vragen over je bedrijf en ontvang direct een vrijblijvende, interactieve schets van je nieuwe homepage.
+                Beantwoord 7 korte vragen over je bedrijf, stijl en diensten. Je ziet direct op je scherm een werkende
+                opzet voor jouw onderneming — gratis en zonder belafspraak.
               </p>
             </div>
             <div className="m-preview-banner-right">
               <Link href="/start?bron=home-banner" className="m-btn m-btn--primary" data-h-magnet>
-                <CharSwap text="Genereer gratis preview" />
+                <CharSwap text="Maak gratis preview" />
                 <i aria-hidden="true">→</i>
               </Link>
             </div>
@@ -1059,7 +1030,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
       <section id="cta" className="m-section m-talk" data-theme="paper">
         <div className="h-wrap">
           <div className="m-sec-head" data-h="up">
-            <span className="m-sec-label">09 / Contact &amp; Vragen</span>
+            <span className="m-sec-label">09 · Contact &amp; Vragen</span>
             <span className="m-sec-note">Reactie binnen 2 werkdagen</span>
           </div>
 

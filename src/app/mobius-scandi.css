@@ -1010,7 +1010,7 @@ body:has(.h-root) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: var(--ff-mono, monospace);
+  font-family: var(--ff-sans, 'Plus Jakarta Sans', sans-serif);
   font-size: 11px;
   letter-spacing: 0.08em;
   color: #9E9A92;
@@ -1546,13 +1546,15 @@ body:has(.h-root) {
   line-height: 1.02;
   color: #111111;
   max-width: 18ch;
+  text-wrap: balance;
 }
 
 .m-pricing-sub {
   font-size: 16px;
   line-height: 1.55;
-  color: #57544F;
-  max-width: 42ch;
+  color: #484643;
+  max-width: 54ch;
+  text-wrap: pretty;
 }
 
 .m-pricing-grid {
@@ -1921,9 +1923,15 @@ body:has(.h-root) {
   padding-bottom: 28px;
 }
 
-.h-footer-grid .h-mono {
-  color: #8C8881 !important;
-  font-weight: 600;
+.h-footer-grid .h-mono,
+.m-footer-label {
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.45;
+  color: #484643 !important;
 }
 
 .h-footer-lead {
@@ -1935,7 +1943,7 @@ body:has(.h-root) {
 }
 
 .h-footer-dim {
-  color: #78746D !important;
+  color: #57544F !important;
 }
 
 .h-footer-clock {
@@ -2030,6 +2038,13 @@ body:has(.h-root) {
   display: inline-flex;
   flex-wrap: wrap;
   vertical-align: bottom;
+}
+
+.m-split-word {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  align-items: baseline;
 }
 
 .m-split-char-mask {
@@ -2742,5 +2757,685 @@ body:has(.h-root) {
     position: fixed !important;
     bottom: 24px;
     z-index: 50;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WAAS PRIJZENMODULE (WEBSITE-AS-A-SERVICE) — MÖBIUS × SCANDINAVISCH
+   ═══════════════════════════════════════════════════════════════════════════ */
+.waas-eyebrow,
+.waas-meta {
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.45;
+  color: #484643;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-meta {
+  font-weight: 600;
+  color: #57544F;
+}
+
+/* Pakketten- & Contact-subpagina refinements zonder monospace */
+.h-pkt-page .h-display {
+  margin-top: clamp(24px, 3vw, 44px);
+  font-size: clamp(42px, 6.8vw, 112px);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  color: #111111;
+  text-wrap: balance;
+}
+
+.h-pkt-page .h-work-intro {
+  margin-top: clamp(20px, 2.6vw, 32px);
+  max-width: 60ch;
+  font-size: clamp(16px, 1.25vw, 18.5px);
+  line-height: 1.6;
+  color: #484643;
+  text-wrap: pretty;
+}
+
+.h-pkt-page .h-pkt-preview-strip {
+  margin: clamp(44px, 5.5vw, 72px) 0 0;
+  padding: clamp(28px, 3.6vw, 44px);
+  background: #F4F2ED;
+  border: 1px solid #E2DFD7;
+}
+
+.waas-strip-kicker {
+  display: inline-block;
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #B43B0E;
+  margin-bottom: 10px;
+}
+
+.h-pkt-page .h-pkt-strip-title {
+  color: #111111;
+  text-wrap: balance;
+}
+
+.h-pkt-page .h-pkt-strip-desc {
+  color: #484643;
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+
+.waas-strip-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.waas-strip-note {
+  font-family: var(--ff-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: #484643;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Open 2-koloms Onderhoud & hosting sectie op /pakketten (geen box-kader) */
+.h-pkt-page .h-maint {
+  margin-top: clamp(56px, 7vw, 96px);
+  padding: clamp(36px, 4.5vw, 60px) 0 0;
+  background: transparent;
+  border: none;
+  border-top: 1px solid #E5E2DC;
+}
+
+.h-pkt-page .h-maint-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px 48px;
+  flex-wrap: wrap;
+}
+
+.h-pkt-page .h-maint-title {
+  margin-top: 12px;
+  color: #111111;
+  font-size: clamp(28px, 3.2vw, 46px);
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.h-pkt-page .h-maint-sub {
+  margin-top: 12px;
+  max-width: 58ch;
+  color: #484643;
+  line-height: 1.58;
+  text-wrap: pretty;
+}
+
+.h-pkt-page .h-maint-price {
+  font-size: clamp(28px, 3vw, 44px);
+  letter-spacing: -0.045em;
+  color: #111111;
+  white-space: nowrap;
+}
+
+.h-pkt-page .h-maint-feats {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #E5E2DC;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 40px;
+}
+
+.h-pkt-page .h-maint-feats li {
+  color: #262422;
+  font-size: 15px;
+  line-height: 1.5;
+  align-items: start;
+}
+
+.h-pkt-page .h-maint-feats li span:first-child {
+  color: #B43B0E;
+  font-weight: 700;
+}
+
+/* Contactformulier zonder monospace op chips, labels en knoppen */
+.h-form-page .h-mono,
+.h-form-page .h-chip,
+.h-form-page .h-btn,
+.h-form-page .h-form-note {
+  font-family: var(--ff-sans);
+}
+
+.h-form-page .h-chip {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-transform: none;
+}
+
+.h-form-page .h-field label b {
+  color: #B43B0E;
+}
+
+/* Preview pagina subcopy */
+.waas-preview-sub {
+  font-family: var(--ff-sans);
+  font-size: 16px;
+  line-height: 1.58;
+  color: #484643;
+  max-width: 58ch;
+  margin-bottom: clamp(28px, 4vw, 44px);
+  text-wrap: pretty;
+}
+
+/* WaaS Module Container & Open Add-on Strip (geen box) */
+.waas-module {
+  width: 100%;
+  margin-top: clamp(24px, 3vw, 40px);
+}
+
+.waas-addon-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px 36px;
+  padding: 0 0 clamp(24px, 3vw, 32px);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #E5E2DC;
+  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.waas-addon-bar.is-active {
+  border-bottom-color: #111111;
+}
+
+.waas-addon-info {
+  min-width: 0;
+}
+
+.waas-addon-kicker {
+  display: inline-block;
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #B43B0E;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-addon-title {
+  margin-top: 6px;
+  font-family: var(--ff-sans);
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: #111111;
+}
+
+.waas-addon-desc {
+  margin-top: 6px;
+  font-family: var(--ff-sans);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #484643;
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+.waas-addon-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 18px;
+  background: #FAF9F6;
+  color: #111111;
+  border: 1px solid #CFCBC2;
+  border-radius: 2px;
+  font-family: var(--ff-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.waas-addon-switch:hover {
+  border-color: #111111;
+  background: #F2EFE9;
+}
+
+.waas-addon-switch.is-on {
+  background: #111111;
+  color: #FAF9F6;
+  border-color: #111111;
+}
+
+.waas-addon-switch.is-on:hover {
+  background: #232323;
+}
+
+.waas-switch-track {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border-radius: 999px;
+  background: #D8D3C9;
+  flex-shrink: 0;
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.waas-addon-switch.is-on .waas-switch-track {
+  background: #E85D2A;
+}
+
+.waas-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  transform: translateX(0);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.waas-addon-switch.is-on .waas-switch-thumb {
+  transform: translateX(16px);
+}
+
+/* Asymmetrisch 5/7 WaaS Grid (1-kolom vs. complete website) */
+.waas-grid {
+  margin-top: clamp(28px, 3vw, 40px);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(20px, 2.2vw, 28px);
+  align-items: stretch;
+}
+
+.waas-card {
+  background: #FAF9F6;
+  border: 1px solid #E5E2DC;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  padding: clamp(28px, 3.4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  color: #111111;
+  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.waas-card.is-featured {
+  background: #111111;
+  border-color: #111111;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #FAF9F6;
+}
+
+.waas-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 28px;
+}
+
+.waas-card.is-featured .waas-eyebrow {
+  color: #C8C4BC;
+}
+
+.waas-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  background: #FAF9F6;
+  color: #111111;
+  border-radius: 2px;
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.waas-card-name {
+  margin-top: clamp(24px, 2.8vw, 36px);
+  font-family: var(--ff-sans);
+  font-size: clamp(28px, 2.9vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  color: #111111;
+  text-wrap: balance;
+}
+
+.waas-card.is-featured .waas-card-name {
+  color: #FAF9F6;
+}
+
+.waas-card-tagline {
+  margin-top: 10px;
+  font-family: var(--ff-sans);
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: #484643;
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+
+.waas-card.is-featured .waas-card-tagline {
+  color: #C8C4BC;
+}
+
+.waas-price-block {
+  margin-top: clamp(26px, 3vw, 36px);
+  padding-bottom: 20px;
+}
+
+.waas-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.waas-price-amount {
+  font-family: var(--ff-sans);
+  font-size: clamp(48px, 4.8vw, 72px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+  color: #111111;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-card.is-featured .waas-price-amount {
+  color: #FAF9F6;
+}
+
+.waas-price-unit {
+  font-family: var(--ff-sans);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #484643;
+}
+
+.waas-card.is-featured .waas-price-unit {
+  color: #C8C4BC;
+}
+
+.waas-price-meta-row {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+}
+
+.waas-price-meta {
+  font-family: var(--ff-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #484643;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-card.is-featured .waas-price-meta {
+  color: #C8C4BC;
+}
+
+.waas-card.is-addon-active .waas-price-meta {
+  color: #B43B0E;
+}
+
+.waas-card.is-featured.is-addon-active .waas-price-meta {
+  color: #FF8457;
+}
+
+.waas-duration {
+  font-family: var(--ff-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #57544F;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-card.is-featured .waas-duration {
+  color: #C8C4BC;
+}
+
+/* 2-Fasen Tijdlijn als strakke haarlijn-rijen (geen geneste boxjes) */
+.waas-timeline {
+  margin-top: 4px;
+  display: grid;
+}
+
+.waas-timeline-step {
+  padding: 14px 0;
+  border-top: 1px solid #DFDBD2;
+}
+
+.waas-card.is-featured .waas-timeline-step {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+
+.waas-timeline-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.waas-timeline-period {
+  font-family: var(--ff-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #111111;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-card.is-featured .waas-timeline-period {
+  color: #FAF9F6;
+}
+
+.waas-timeline-rate {
+  font-family: var(--ff-sans);
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #111111;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-card.is-featured .waas-timeline-rate {
+  color: #FAF9F6;
+}
+
+.waas-timeline-desc {
+  margin-top: 3px;
+  font-family: var(--ff-sans);
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #484643;
+}
+
+.waas-card.is-featured .waas-timeline-desc {
+  color: #C8C4BC;
+}
+
+/* Feature-lijst */
+.waas-feats {
+  margin: 10px 0 32px;
+  padding-top: 22px;
+  border-top: 1px solid #DFDBD2;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.waas-card.is-featured .waas-feats {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+
+.waas-feats li {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  font-family: var(--ff-sans);
+  font-size: 14.5px;
+  line-height: 1.48;
+  color: #262422;
+}
+
+.waas-card.is-featured .waas-feats li {
+  color: #ECE9E2;
+}
+
+.waas-feats li span:first-child {
+  font-weight: 700;
+  color: #111111;
+}
+
+.waas-card.is-featured .waas-feats li span:first-child {
+  color: #FF8457;
+}
+
+/* CTA & Microcopy */
+.waas-card-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.waas-cta {
+  width: 100%;
+  min-height: 48px;
+}
+
+.waas-cta--light {
+  background: #FAF9F6;
+  color: #111111;
+  border: 1px solid #FAF9F6;
+}
+
+.waas-cta--light:hover {
+  background: #E85D2A;
+  color: #FFFFFF;
+  border-color: #E85D2A;
+}
+
+.waas-card-note {
+  font-family: var(--ff-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #484643;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.waas-card.is-featured .waas-card-note {
+  color: #C8C4BC;
+}
+
+/* Open redactionele maatwerk onderregel (geen box) */
+.waas-custom-note {
+  margin-top: clamp(24px, 3vw, 34px);
+  padding: 20px 0 0;
+  background: transparent;
+  border: none;
+  border-top: 1px solid #E5E2DC;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 24px;
+}
+
+.waas-custom-note p {
+  font-family: var(--ff-sans);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #484643;
+}
+
+.waas-custom-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-family: var(--ff-sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #111111;
+  border-bottom: 1px solid #111111;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.waas-custom-link:hover {
+  color: #B43B0E;
+  border-color: #B43B0E;
+}
+
+@media (max-width: 900px) {
+  .waas-addon-bar {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .waas-addon-switch {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 12px 16px;
+  }
+  .waas-grid {
+    grid-template-columns: 1fr;
+  }
+  .h-pkt-page .h-maint-feats {
+    grid-template-columns: 1fr;
+  }
+  .h-pkt-page .h-maint-price {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 640px) {
+  .waas-addon-kicker {
+    font-size: 10.5px;
+    letter-spacing: 0.045em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waas-addon-bar,
+  .waas-addon-switch,
+  .waas-switch-track,
+  .waas-switch-thumb,
+  .waas-card,
+  .waas-custom-link {
+    transition: none;
   }
 }

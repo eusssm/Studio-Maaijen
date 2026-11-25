@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { PackageGrid } from './PackageCards';
 import { EMAIL, LINKEDIN, CharSwap, SplitChars, SiteOverlays, SiteNav, SiteFooter } from './studio-chrome';
-import { normalizePackages, DEFAULT_MAINTENANCE_FEATURES } from '../../lib/packages';
+import {
+  normalizePackages,
+  resolveMaintenancePrice,
+  resolveMaintenanceFeatures,
+} from '../../lib/packages';
 import '../app/drukklaar.css';
 import '../app/mobius-scandi.css';
 
@@ -12,11 +16,8 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
   const [menuOpen, setMenuOpen] = useState(false);
 
   const items = normalizePackages(packages);
-  const maintenancePrice = siteSetting?.maintenancePrice || '€ 25 / maand';
-  const maintenanceFeatures =
-    siteSetting?.maintenanceFeatures?.length > 0
-      ? siteSetting.maintenanceFeatures.map(f => f.feature).filter(Boolean)
-      : DEFAULT_MAINTENANCE_FEATURES;
+  const maintenancePrice = resolveMaintenancePrice(siteSetting?.maintenancePrice);
+  const maintenanceFeatures = resolveMaintenanceFeatures(siteSetting?.maintenanceFeatures);
 
   useEffect(() => {
     let cleanup = null;
@@ -43,45 +44,52 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
 
       <section className="h-pkt-page h-dark" data-theme="paper">
         <div className="h-wrap">
-          <div className="h-label" data-h="up">
-            <span className="h-mono">(01) Pakketten &amp; tarieven</span>
-            <span className="h-mono">Vaste prijzen, geen verrassingen</span>
+          <div className="h-label">
+            <span className="waas-eyebrow">01 · Pakketten &amp; tarieven</span>
+            <span className="waas-meta">Alle bedragen excl. btw</span>
           </div>
           <h1 className="h-display">
-            <SplitChars text="Heldere pakketten, sleutelklaar" attr="data-m-sec-char" />
+            <SplitChars text="Geen duizenden euro's vooraf" attr="data-m-sec-char" />
           </h1>
-          <p className="h-work-intro" data-h="up">
-            Websites inclusief CMS, huisstijlen en video voor ondernemers en MKB. Van ontwerp tot online, zonder
-            verrassingen achteraf.
+          <p className="h-work-intro">
+            Een nieuwe bedrijfswebsite vraagt normaal een flinke investering ineens. Bij Studio Maaijen spreid je
+            ontwerp en bouw over een overzichtelijk maandbedrag van € 80, zodat je werkkapitaal vrijhoudt voor je
+            onderneming. Zodra die periode voorbij is, zakt het tarief automatisch naar € 30 per maand. Alle bedragen
+            zijn excl. btw.
           </p>
 
-          <div className="h-pkt-preview-strip" data-h="up">
+          <PackageGrid packages={items} variant="page" />
+
+          <div className="h-pkt-preview-strip">
             <div className="h-pkt-strip-left">
-              <span className="h-mono h-pkt-strip-tag">[ Eerst zien, dan beslissen? ]</span>
-              <h3 className="h-pkt-strip-title">
-                Zie binnen 2 minuten hoe jouw nieuwe website eruit kan zien.
-              </h3>
+              <span className="waas-strip-kicker">Gratis website-preview · Binnen 2 minuten</span>
+              <h2 className="h-pkt-strip-title">
+                Eerst zien hoe jouw website wordt, voordat je iets beslist.
+              </h2>
             </div>
             <div className="h-pkt-strip-right">
               <p className="h-pkt-strip-desc">
-                Beantwoord 7 gerichte vragen over jouw bedrijf en bekijk direct een interactieve website-preview. 100% vrijblijvend.
+                Beantwoord 7 korte vragen over je bedrijf, stijl en diensten. Je ziet direct op je scherm een werkende
+                opzet voor jouw onderneming — gratis en zonder belafspraak.
               </p>
-              <Link href="/start?bron=pakketten" className="h-btn h-btn--spot" data-h-magnet>
-                <CharSwap text="Bekijk jouw preview" />
-                <i aria-hidden="true">→</i>
-              </Link>
+              <div className="waas-strip-actions">
+                <Link href="/start?bron=pakketten" className="m-btn m-btn--primary" data-h-magnet>
+                  <CharSwap text="Maak gratis preview" />
+                  <i aria-hidden="true">→</i>
+                </Link>
+                <span className="waas-strip-note">14 dagen online te bekijken · Zonder verplichtingen</span>
+              </div>
             </div>
           </div>
 
-          <PackageGrid packages={items} />
-
-          <div className="h-maint" data-h="up">
+          <div className="h-maint">
             <div className="h-maint-top">
               <div>
-                <span className="h-mono">Optioneel · Onderhoud &amp; hosting</span>
-                <h2 className="h-maint-title">Zorgeloos online blijven</h2>
+                <span className="waas-eyebrow">02 · Hosting &amp; onderhoud</span>
+                <h2 className="h-maint-title">Veilig online, technisch bijgehouden</h2>
                 <p className="h-maint-sub">
-                  Een maandpakket zodat je website altijd snel, veilig en up-to-date blijft.
+                  Na het opbouwtraject van 12 maanden (landingspagina) of 18 maanden (gewone website) zakt je maandbedrag
+                  automatisch naar € 30 excl. btw voor hosting, beveiliging en doorlopend onderhoud.
                 </p>
               </div>
               <div className="h-maint-price">{maintenancePrice}</div>
@@ -90,7 +98,7 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
               {maintenanceFeatures.map((f, i) => (
                 <li key={i}>
                   <span aria-hidden="true">✓</span>
-                  {f}
+                  <span>{f}</span>
                 </li>
               ))}
             </ul>
@@ -100,22 +108,22 @@ export default function PakkettenClient({ packages = [], siteSetting, homepage }
 
       <section className="h-cs-contact h-contact h-dark" data-theme="paper">
         <div className="h-wrap">
-          <p className="h-contact-eyebrow" data-h="up">
-            {homepage?.ctaEyebrow || 'Klaar voor een website die werkt?'}
+          <p className="waas-eyebrow">
+            03 · Kennismaken
           </p>
           <h2 className="h-contact-title">
-            <SplitChars text="Laten we iets moois maken." attr="data-m-sec-char" />
+            <SplitChars text="Bespreek jouw website." attr="data-m-sec-char" />
           </h2>
-          <div className="h-contact-actions" data-h="up">
-            <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
+          <div className="h-contact-actions">
+            <Link href="/contact" className="m-btn m-btn--primary" data-h-magnet>
               <CharSwap text="Start je project" />
               <i aria-hidden="true">→</i>
             </Link>
-            <a href={`mailto:${EMAIL}`} className="h-btn h-btn--ghost" data-h-magnet>
+            <a href={`mailto:${EMAIL}`} className="m-btn m-btn--outline" data-h-magnet>
               <CharSwap text={EMAIL} />
               <i aria-hidden="true">↗</i>
             </a>
-            <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="h-btn h-btn--ghost" data-h-magnet>
+            <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="m-btn m-btn--outline" data-h-magnet>
               <CharSwap text="LinkedIn" />
               <i aria-hidden="true">↗</i>
             </a>

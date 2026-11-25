@@ -29,7 +29,10 @@ const CONTACT_PAGE_QUERY = `
 
 export default async function ContactPage({ searchParams }) {
   const resolvedParams = await searchParams;
-  const initialPackage = resolvedParams?.pakket || '';
+  const initialPackage = typeof resolvedParams?.pakket === 'string' ? resolvedParams.pakket : '';
+  const initialAddon = typeof resolvedParams?.addon === 'string' ? resolvedParams.addon : '';
+  const initialSubject = typeof resolvedParams?.onderwerp === 'string' ? resolvedParams.onderwerp : '';
+  const initialCompany = typeof resolvedParams?.bedrijf === 'string' ? resolvedParams.bedrijf : '';
   let homepage = null;
   let siteSetting = null;
 
@@ -43,9 +46,13 @@ export default async function ContactPage({ searchParams }) {
 
   return (
     <ContactClient
+      key={`${initialPackage}:${initialAddon}:${initialSubject}:${initialCompany}`}
       homepage={homepage}
       siteSetting={siteSetting}
       initialPackage={initialPackage}
+      initialAddon={initialAddon}
+      initialSubject={initialSubject}
+      initialCompany={initialCompany}
     />
   );
 }
