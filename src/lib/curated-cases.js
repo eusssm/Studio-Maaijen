@@ -8,8 +8,8 @@
 
 export const CURATED_ORDER = [
   'de-kindertelefoon',
-  'vodafoneziggo-ztv',
   'twelve-turns',
+  'vodafoneziggo-ztv',
   'studiochair',
   'ontdeklab',
   'enova',
