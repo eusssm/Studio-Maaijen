@@ -288,13 +288,13 @@ export default function PreviewPageClient({
                   borderRadius: '999px',
                   padding: '5px 12px',
                   fontSize: '12px',
-                  fontFamily: 'var(--ff-mon)',
+                  fontFamily: 'var(--ff-sans)',
                   cursor: 'pointer',
                   fontWeight: 600,
                   transition: 'all 0.2s ease',
                 }}
               >
-                🖥️ Desktop
+                Desktop
               </button>
               <button
                 type="button"
@@ -306,13 +306,13 @@ export default function PreviewPageClient({
                   borderRadius: '999px',
                   padding: '5px 12px',
                   fontSize: '12px',
-                  fontFamily: 'var(--ff-mon)',
+                  fontFamily: 'var(--ff-sans)',
                   cursor: 'pointer',
                   fontWeight: 600,
                   transition: 'all 0.2s ease',
                 }}
               >
-                📱 Mobiel
+                Mobiel
               </button>
             </div>
 
@@ -646,7 +646,7 @@ export default function PreviewPageClient({
           {cases.length > 0 && (
             <div style={{ marginBottom: 'clamp(70px, 9vh, 120px)' }}>
               <div className="h-label" style={{ marginBottom: '24px' }}>
-                <span className="h-mono">(02) Portfolio</span>
+                <span className="h-mono">02 · Portfolio</span>
                 <span className="h-mono">Echt opgeleverd werk</span>
               </div>
 

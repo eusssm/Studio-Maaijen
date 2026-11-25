@@ -78,6 +78,21 @@ body:has(.h-root) {
   font-size: inherit !important;
 }
 
+/* Geen afwijkend monospacefont op UI-labels, knoppen of captions: alles in Instrument Sans */
+.h-root .h-mono,
+.h-root .h-btn,
+.h-root .h-fig-cap {
+  font-family: var(--ff-sans) !important;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+.h-root .h-dark .h-mono,
+.h-root .h-paper .h-mono {
+  --dim: #484643;
+}
+
 /* Subtitels en contact-eyebrows: strak sans-serif, nooit cursief */
 .h-root .h-contact-eyebrow,
 .h-cs-contact .h-contact-eyebrow,

@@ -35,7 +35,7 @@ export default function PrivacyClient() {
       <section className="h-work-page h-dark" data-theme="paper" style={{ minHeight: '80vh' }}>
         <div className="h-wrap" style={{ maxWidth: '840px' }}>
           <div className="h-label" data-h="up" style={{ marginBottom: '32px' }}>
-            <span className="h-mono">(Privacy) Studio Maaijen</span>
+            <span className="h-mono">Privacy · Studio Maaijen</span>
             <span className="h-mono">AVG / GDPR Compliant</span>
           </div>
 

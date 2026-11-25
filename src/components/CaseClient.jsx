@@ -221,7 +221,7 @@ export default function CaseClient({ project, nextProject, index = 0, total = 0 
   const renderHead = (block, no, theme) => (
     <div className="h-cs-head">
       <div className="h-cs-meta" data-h="up">
-        {no != null && <span className="h-mono h-cs-no">({pad(no)})</span>}
+        {no != null && <span className="h-mono h-cs-no">{pad(no)}.</span>}
         {block.showSubtitle !== false && block.subtitle ? (
           <span className="h-mono h-cs-sub">{block.subtitle}</span>
         ) : null}
@@ -246,7 +246,7 @@ export default function CaseClient({ project, nextProject, index = 0, total = 0 
         <div className="h-wrap">
           <div className="h-label" data-h="up">
             <span className="h-mono">
-              Case {total ? `${pad(index + 1)} / ${pad(total)}` : ''} — {discipline}
+              Case {total ? `${pad(index + 1)} van ${pad(total)} · ` : ''}{discipline}
             </span>
             <Link href="/work" className="h-mono h-chero-back">
               <CharSwap text="← Alle cases" />
@@ -443,7 +443,7 @@ export default function CaseClient({ project, nextProject, index = 0, total = 0 
             <div className="h-wrap h-cnext-grid">
               <div className="h-cnext-text">
                 <span className="h-mono h-cnext-label" data-h="up">
-                  Volgende case{total ? ` — ${pad(((index + 1) % total) + 1)} / ${pad(total)}` : ''}
+                  Volgende case{total ? ` · ${pad(((index + 1) % total) + 1)} van ${pad(total)}` : ''}
                 </span>
                 <span className="h-cnext-title" data-h-lines>
                   {nextProject.client || nextProject.title}
@@ -470,11 +470,11 @@ export default function CaseClient({ project, nextProject, index = 0, total = 0 
       {/* ───────── CONTACT ───────── */}
       <section className="h-contact h-cs-contact h-dark" data-theme="dark">
         <div className="h-wrap">
-          <p className="h-contact-eyebrow" data-h="up">
-            Een vergelijkbaar project in gedachten?
+          <p className="waas-eyebrow" data-h="up">
+            Kennismaken
           </p>
-          <h2 className="h-contact-title" data-h-lines>
-            Laten we iets moois maken.
+          <h2 className="h-contact-title">
+            <SplitChars text="Bespreek jouw project." attr="data-m-sec-char" />
           </h2>
           <div className="h-contact-actions" data-h="up">
             <Link href="/contact" className="h-btn h-btn--spot" data-h-magnet>
