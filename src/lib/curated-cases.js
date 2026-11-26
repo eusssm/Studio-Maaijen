@@ -12,6 +12,7 @@ export const CURATED_ORDER = [
   'studiochair',
   'de-kindertelefoon',
   'calathea',
+  'wooncompas',
   'ontdeklab',
   'enova',
   'spotta',
@@ -118,10 +119,72 @@ const CURATED_SUMMARIES = {
     introText:
       'Levendig UX/UI-redesign voor de grootste Calathea-community: van gebruikersonderzoek en Before & After tot wireframes, verzorgingstips en winacties.',
   },
+  wooncompas: {
+    title: 'Wooncompas',
+    client: 'Wooncompas',
+    projectType: 'UX/UI & Werkenbij Website',
+    categories: [{ name: 'UX/UI Design' }, { name: 'Design Systems' }],
+    introText:
+      'Sollicitantgerichte werken-bij website voor woningcorporatie Wooncompas in Ridderkerk: van persona’s en user flows tot een toegankelijk design system en vacatureplatform.',
+  },
 };
 
 /* Standalone cases (niet in gedeelde DatoCMS, wel in het CV) */
 export const STANDALONE_CASES = {
+  wooncompas: {
+    id: 'local-wooncompas',
+    slug: 'wooncompas',
+    title: 'Wooncompas',
+    client: 'Wooncompas',
+    projectType: 'UX/UI & Werkenbij Website',
+    categories: [{ name: 'UX/UI Design' }, { name: 'Design Systems' }],
+    introText: CURATED_SUMMARIES.wooncompas.introText,
+    coverImage: {
+      url: '/images/cases/wooncompas/01-hero-macbook.webp',
+      alt: 'Wooncompas werken-bij website — MacBook Pro mockup',
+    },
+    pageBuilder: [
+      {
+        id: 'wooncompas-1',
+        _modelApiKey: 'block_text',
+        title: 'De opdracht: een menselijke werken-bij ervaring',
+        subtitle: 'Context & doelstelling',
+        darkTheme: false,
+        content:
+          '<p>Woningcorporatie Wooncompas uit Ridderkerk zocht een nieuwe werken-bij website waarop vacatures, de maatschappelijke missie en de persoonlijke werkcultuur direct samenkomen. Sollicitanten moeten snel zien waar Wooncompas voor staat en zonder drempels kunnen reageren.</p>',
+      },
+      {
+        id: 'wooncompas-2',
+        _modelApiKey: 'block_text',
+        title: 'Onderzoek, persona’s en informatiearchitectuur',
+        subtitle: 'UX Research & structuur',
+        darkTheme: true,
+        content:
+          '<p>Het traject startte met doelgroeponderzoek, persona’s en user stories om de belangrijkste behoeften van sollicitanten scherp te krijgen. Op basis daarvan zijn een overzichtelijke sitemap, user flows en wireframes opgebouwd rond vier kernroutes:</p><ul><li><strong>Direct naar vacatures:</strong> snel filteren en direct inzicht in functie-eisen, arbeidsvoorwaarden en het sollicitatieproces.</li><li><strong>Verhalen van collega’s:</strong> echte medewerkers aan het woord voor een authentiek beeld van de werkvloer.</li><li><strong>Over de organisatie:</strong> missie, visie en maatschappelijke impact helder gepresenteerd.</li><li><strong>Open sollicitatie &amp; contact:</strong> laagdrempelige instap zonder onnodige formulierdrempels.</li></ul>',
+      },
+      {
+        id: 'wooncompas-3',
+        _modelApiKey: 'block_double_image',
+        imageLeft: {
+          url: '/images/cases/wooncompas/02-mobile-screens.webp',
+          alt: 'Mobiele schermen van de Wooncompas werken-bij website in iPhone-mockups',
+        },
+        imageRight: {
+          url: '/images/cases/wooncompas/03-macbook-vacature.webp',
+          alt: 'MacBook Pro mockup van de Wooncompas vacaturedetailpagina',
+        },
+      },
+      {
+        id: 'wooncompas-4',
+        _modelApiKey: 'block_text',
+        title: 'Design system & visuele uitvoering',
+        subtitle: 'UI Design & resultaat',
+        darkTheme: false,
+        content:
+          '<p>Voor de visuele laag is een herkenbaar design system opgezet waarin het krachtige Wooncompas-magenta en frisse groenaccenten samenkomen met heldere Montserrat-typografie en authentieke fotografie. Door iteratieve feedbackloops ontstond een toegankelijk, responsief platform dat op tijd en klaar voor gebruik is opgeleverd.</p>',
+      },
+    ],
+  },
   calathea: {
     id: 'local-calathea',
     slug: 'calathea',
