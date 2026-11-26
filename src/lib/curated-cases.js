@@ -263,51 +263,23 @@ export const STANDALONE_CASES = {
       },
       {
         id: 'calathea-2',
-        _modelApiKey: 'block_image',
-        image: {
-          url: '/images/cases/calathea/02-research.webp',
-          alt: 'Calathea UX-onderzoek, rol, bevindingen en mobiele hero',
-        },
+        _modelApiKey: 'block_text',
+        title: 'Van gebruikersonderzoek naar heldere structuur',
+        subtitle: 'UX Research & aanpak',
+        darkTheme: true,
+        content:
+          '<p>Op basis van enquêtes en een analyse van de oude site kwamen vijf concrete verbeterpunten naar voren: overzichtelijkere navigatie, meer speelsheid en beleving, ruimte voor community, directe verzorgingsinspiratie en laagdrempelige interactie via winacties.</p><ul><li><strong>Directe navigatie:</strong> duidelijke routes naar Winacties, Verzorgingstips en Blogverhalen.</li><li><strong>Botanische merkbeleving:</strong> diep olijfgroen, warm terracotta en crème gecombineerd met zachte illustraties en echte community-portretten.</li><li><strong>Mobile-first schaalbaar:</strong> ontworpen voor zowel snelle mobiele inspiratie als uitgebreid lezen op tablet en desktop.</li></ul>',
       },
       {
         id: 'calathea-3',
-        _modelApiKey: 'block_text',
-        title: 'Van gebruikersonderzoek naar Before & After',
-        subtitle: 'UX Research & structuur',
-        darkTheme: true,
-        content:
-          '<p>Op basis van enquêtes en een analyse van de oude site kwamen vijf duidelijke verbeterpunten naar voren: overzichtelijkere navigatie, meer speelsheid en beleving, ruimte voor community, directe verzorgingsinspiratie en laagdrempelige interactie via winacties.</p>',
-      },
-      {
-        id: 'calathea-4',
-        _modelApiKey: 'block_image',
-        image: {
-          url: '/images/cases/calathea/03-before-after.webp',
-          alt: 'Calathea homepage Before & After vergelijking',
+        _modelApiKey: 'block_double_image',
+        imageLeft: {
+          url: '/images/cases/calathea/02-iphone-hero.webp',
+          alt: 'Calathea mobiele hero in iPhone-mockup',
         },
-      },
-      {
-        id: 'calathea-5',
-        _modelApiKey: 'block_image',
-        image: {
-          url: '/images/cases/calathea/04-wireframes-ui.webp',
-          alt: 'Calathea desktop en mobiele wireframes en uitgewerkte User Interface',
-        },
-      },
-      {
-        id: 'calathea-6',
-        _modelApiKey: 'block_image',
-        image: {
-          url: '/images/cases/calathea/05-screens.webp',
-          alt: 'Calathea schermen voor Winacties, Voedingstips en Blogverhalen',
-        },
-      },
-      {
-        id: 'calathea-7',
-        _modelApiKey: 'block_image',
-        image: {
-          url: '/images/cases/calathea/06-conclusion.webp',
-          alt: 'Calathea tablet en mobiele schermen en conclusie',
+        imageRight: {
+          url: '/images/cases/calathea/03-tablet-duo.webp',
+          alt: 'Calathea tablet-mockups van community en winactie-schermen',
         },
       },
     ],
