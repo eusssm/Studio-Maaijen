@@ -7,10 +7,11 @@
    ───────────────────────────────────────────────────────────── */
 
 export const CURATED_ORDER = [
-  'de-kindertelefoon',
   'twelve-turns',
   'vodafoneziggo-ztv',
   'studiochair',
+  'de-kindertelefoon',
+  'calathea',
   'ontdeklab',
   'enova',
   'spotta',
@@ -109,10 +110,91 @@ const CURATED_SUMMARIES = {
     introText:
       'Van eigen straatfotografie en interieurresearch op locatie naar een toegankelijke 2D-voorlichtingsanimatie in After Effects over veiligheid voor sekswerkers.',
   },
+  calathea: {
+    title: 'Calathea',
+    client: 'Calathea',
+    projectType: 'UX/UI & Website Redesign',
+    categories: [{ name: 'UX/UI Design' }, { name: 'User Research' }],
+    introText:
+      'Levendig UX/UI-redesign voor de grootste Calathea-community: van gebruikersonderzoek en Before & After tot wireframes, verzorgingstips en winacties.',
+  },
 };
 
 /* Standalone cases (niet in gedeelde DatoCMS, wel in het CV) */
 export const STANDALONE_CASES = {
+  calathea: {
+    id: 'local-calathea',
+    slug: 'calathea',
+    title: 'Calathea',
+    client: 'Calathea',
+    projectType: 'UX/UI & Website Redesign',
+    categories: [{ name: 'UX/UI Design' }, { name: 'User Research' }],
+    introText: CURATED_SUMMARIES.calathea.introText,
+    coverImage: {
+      url: '/images/cases/calathea/01-hero.webp',
+      alt: 'Calathea website redesign — iMac mockup',
+    },
+    pageBuilder: [
+      {
+        id: 'calathea-1',
+        _modelApiKey: 'block_text',
+        title: 'De opdracht: een levendig community-platform',
+        subtitle: 'Context & doelstelling',
+        darkTheme: false,
+        content:
+          '<p>De bestaande website van Calathea oogde vlak en bood weinig inspiratie of interactie. De opdracht: ontwerp een frisse, speelse en toegankelijke online omgeving waar plantenliefhebbers terechtkunnen voor verzorgingstips, verhalen, winacties en community-gevoel.</p>',
+      },
+      {
+        id: 'calathea-2',
+        _modelApiKey: 'block_image',
+        image: {
+          url: '/images/cases/calathea/02-research.webp',
+          alt: 'Calathea UX-onderzoek, rol, bevindingen en mobiele hero',
+        },
+      },
+      {
+        id: 'calathea-3',
+        _modelApiKey: 'block_text',
+        title: 'Van gebruikersonderzoek naar Before & After',
+        subtitle: 'UX Research & structuur',
+        darkTheme: true,
+        content:
+          '<p>Op basis van enquêtes en een analyse van de oude site kwamen vijf duidelijke verbeterpunten naar voren: overzichtelijkere navigatie, meer speelsheid en beleving, ruimte voor community, directe verzorgingsinspiratie en laagdrempelige interactie via winacties.</p>',
+      },
+      {
+        id: 'calathea-4',
+        _modelApiKey: 'block_image',
+        image: {
+          url: '/images/cases/calathea/03-before-after.webp',
+          alt: 'Calathea homepage Before & After vergelijking',
+        },
+      },
+      {
+        id: 'calathea-5',
+        _modelApiKey: 'block_image',
+        image: {
+          url: '/images/cases/calathea/04-wireframes-ui.webp',
+          alt: 'Calathea desktop en mobiele wireframes en uitgewerkte User Interface',
+        },
+      },
+      {
+        id: 'calathea-6',
+        _modelApiKey: 'block_image',
+        image: {
+          url: '/images/cases/calathea/05-screens.webp',
+          alt: 'Calathea schermen voor Winacties, Voedingstips en Blogverhalen',
+        },
+      },
+      {
+        id: 'calathea-7',
+        _modelApiKey: 'block_image',
+        image: {
+          url: '/images/cases/calathea/06-conclusion.webp',
+          alt: 'Calathea tablet en mobiele schermen en conclusie',
+        },
+      },
+    ],
+  },
   'vodafoneziggo-ztv': {
     id: 'local-vodafoneziggo-ztv',
     slug: 'vodafoneziggo-ztv',

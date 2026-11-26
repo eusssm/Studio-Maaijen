@@ -142,7 +142,7 @@ const STATEMENT = MANIFESTO_TEXT.split(' ').map((w, i) => {
 const SUB_COL_1 =
   'Goed ontwerp heeft geen schreeuwerige effecten nodig. Door ruis weg te laten ontstaat ruimte voor wat je bedrijf écht onderscheidt: een glashelder verhaal, sterke visuele keuzes en techniek die direct vertrouwen wekt.';
 const SUB_COL_2 =
-  'Al ruim twintig jaar combineer ik UX/UI-design, merkidentiteit, front-end development en videoproductie. Zo sluit je nieuwe website naadloos aan op je merk én het bewegende beeld.';
+  'Al ruim dertien jaar combineer ik UX/UI-design, merkidentiteit, front-end development en videoproductie. Zo sluit je nieuwe website naadloos aan op je merk én het bewegende beeld.';
 
 const FAQ_ITEMS = [
   {
@@ -200,8 +200,16 @@ const DEFAULT_TESTIMONIALS = [
 
 const pad = n => String(n).padStart(2, '0');
 
+function parseStatValue(raw, fallbackValue, fallbackSuffix) {
+  const trimmed = raw != null ? String(raw).trim() : '';
+  if (!trimmed) return { v: fallbackValue, suffix: fallbackSuffix };
+  const match = trimmed.match(/^(\d+)(.*)$/);
+  if (!match) return { v: fallbackValue, suffix: fallbackSuffix };
+  return { v: match[1], suffix: match[2].trim() };
+}
+
 /* Möbius Vertical Slot-Machine Digit Roller (Digit A / Digit B: 0..9) */
-function SlotNumber({ value = '20', suffix = '+' }) {
+function SlotNumber({ value = '13', suffix = '' }) {
   const digits = String(value).replace(/\D/g, '').split('');
   return (
     <span className="m-slot-number" aria-label={`${value}${suffix}`}>
@@ -400,22 +408,19 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
 
   const stats = [
     {
-      v: h.stat1Value || '20',
-      suffix: '+',
-      l: h.stat1Label || 'Jaar ervaring in digital design, merkidentiteit & media',
-      s: h.stat1Sub || 'Van strategie en concept tot pixel-perfecte uitvoering.',
+      ...parseStatValue(h.stat1Value, '13', '+'),
+      l: h.stat1Label || 'Jaar ervaring',
+      s: h.stat1Sub || 'UX/UI, merkidentiteit & video',
     },
     {
-      v: h.stat2Value || '50',
-      suffix: '+',
-      l: h.stat2Label || 'Websites, digitale producten en campagnes opgeleverd',
-      s: h.stat2Sub || 'Voor ambitieuze MKB-bedrijven, stichtingen en landelijke merken.',
+      ...parseStatValue(h.stat2Value, '3', ''),
+      l: h.stat2Label || 'Disciplines in één hand',
+      s: h.stat2Sub || 'Design, development & montage',
     },
     {
-      v: h.stat3Value || '30',
-      suffix: '+',
-      l: h.stat3Label || 'Merkidentiteiten, rebrandings en videoproducties',
-      s: h.stat3Sub || 'Eén herkenbare handtekening over al je kanalen heen.',
+      ...parseStatValue(h.stat3Value, '100', '%'),
+      l: h.stat3Label || 'Maatwerk',
+      s: h.stat3Sub || 'Geen standaard templates',
     },
   ];
 
@@ -493,9 +498,15 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
       <section id="start" className="m-hero no-print" data-theme="paper" data-m-hero>
         {/* Bovenste balk: Intro links + 4 ultra-clean nav kolommen rechts */}
         <div className="m-hero-top">
-          <p className="m-hero-intro" data-h-hero-fade>
-            <strong>Studio Maaijen<sup>®</sup></strong> — een ontwerpstudio die merken en digitale ervaringen vormgeeft met rust, helderheid en tijdloos vakmanschap. Vanuit Ridderkerk help ik ambitieuze bedrijven laten zien wie ze zijn en waar ze voor staan.
-          </p>
+          <div className="m-hero-intro-col" data-h-hero-fade>
+            <p className="m-hero-intro">
+              <strong>Studio Maaijen<sup>®</sup></strong> — een ontwerpstudio die merken en digitale ervaringen vormgeeft met rust, helderheid en tijdloos vakmanschap. Vanuit Ridderkerk help ik ambitieuze bedrijven laten zien wie ze zijn en waar ze voor staan.
+            </p>
+            <Link href="/start?bron=hero" className="m-hero-cta" data-h-magnet>
+              <CharSwap text="Gratis website-preview" />
+              <i aria-hidden="true">→</i>
+            </Link>
+          </div>
 
           <nav className="m-hero-topnav" aria-label="Snelnavigatie" data-h-hero-fade>
             {HERO_NAV_ITEMS.map(item => (
@@ -735,7 +746,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
               <div className="m-slash-bar" aria-hidden="true">
                 <span className="m-slash-line" data-h-rule />
                 <div className="m-slash-track">
-                  <span>////////////////////////////////////////////////</span>
+                  <span>Drie disciplines · Eén lijn</span>
                   <span>→</span>
                 </div>
               </div>
@@ -778,7 +789,7 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
                 <SplitChars text="In cijfers" attr="data-m-sec-char" />
               </h2>
             </div>
-            <span className="m-sec-note">Bewezen vakmanschap sinds 2006</span>
+            <span className="m-sec-note">Onafhankelijke ontwerpstudio sinds 2013</span>
           </div>
 
           <div className="m-numbers-grid">
@@ -787,16 +798,19 @@ export default function HomeClient({ homepage, projects = [], testimonials = [],
                 <div className="m-number-top">
                   <span className="m-number-idx">0{i + 1}</span>
                   <div className="m-number-thumbs" aria-hidden="true">
-                    {reelSlides.slice(0, 3).map((sl, ti) => (
-                      <img
-                        key={ti}
-                        src={sl.src}
-                        alt=""
-                        className="m-number-thumb"
-                        data-m-thumb={ti}
-                        loading="lazy"
-                      />
-                    ))}
+                    {reelSlides
+                      .map((_, ti) => reelSlides[(i + ti) % reelSlides.length])
+                      .slice(0, 3)
+                      .map((sl, ti) => (
+                        <img
+                          key={ti}
+                          src={sl.src}
+                          alt=""
+                          className="m-number-thumb"
+                          data-m-thumb={ti}
+                          loading="lazy"
+                        />
+                      ))}
                   </div>
                 </div>
 

@@ -147,17 +147,17 @@ export function SplitChars({ text = '', className = '', attr = 'data-m-char' }) 
 
 /* Live Ridderkerk klok voor de Möbius Hero & Footer */
 export function LiveClock({ className = '' }) {
-  const [timeStr, setTimeStr] = useState('10:30 AM');
+  const [timeStr, setTimeStr] = useState('09:00');
 
   useEffect(() => {
     const update = () => {
       try {
         const now = new Date();
-        const formatted = new Intl.DateTimeFormat('en-US', {
+        const formatted = new Intl.DateTimeFormat('nl-NL', {
           timeZone: 'Europe/Amsterdam',
           hour: '2-digit',
           minute: '2-digit',
-          hour12: true,
+          hour12: false,
         }).format(now);
         setTimeStr(formatted);
       } catch {

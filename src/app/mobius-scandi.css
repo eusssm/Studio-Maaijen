@@ -261,9 +261,16 @@ body:has(.h-root) {
   width: 100%;
 }
 
-.m-hero-intro {
+.m-hero-intro-col {
   grid-column: 1 / 5;
   max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.m-hero-intro {
   margin: 0;
   font-family: var(--ff-sans);
   font-size: clamp(14.5px, 1.08vw, 17px);
@@ -271,6 +278,24 @@ body:has(.h-root) {
   line-height: 1.48;
   letter-spacing: -0.015em;
   color: #1A1A1A;
+}
+
+.m-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ff-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0E0E0E;
+  padding-bottom: 3px;
+  border-bottom: 1.5px solid #0E0E0E;
+}
+
+.m-hero-cta i {
+  font-style: normal;
 }
 
 .m-hero-intro strong {
@@ -339,7 +364,7 @@ body:has(.h-root) {
 .m-hero-stack-stage {
   position: absolute;
   left: 50%;
-  top: 52%;
+  top: 46%;
   transform: translate(-50%, -50%);
   z-index: 12; /* Ligt bewust vóór het monumentale woordmerk (z-index 5), exact zoals in Möbius */
   pointer-events: auto;
@@ -348,8 +373,8 @@ body:has(.h-root) {
 
 .m-hero-stack {
   position: relative;
-  /* Een flinke maat groter, exact in de krachtige verhouding van mobius.framer.website (tot ~530px) */
-  width: clamp(320px, 33.5vw, 530px);
+  /* Krachtige centrale verhouding zonder het woordmerk onderin te verbergen */
+  width: clamp(290px, 28vw, 440px);
   aspect-ratio: 4 / 4.55;
   transform-style: preserve-3d;
   will-change: transform;
@@ -1160,7 +1185,7 @@ body:has(.h-root) {
 
 .m-number-value {
   font-family: var(--ff-sans);
-  font-size: clamp(64px, 7.5vw, 120px);
+  font-size: clamp(56px, 6.2vw, 108px);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.06em;
@@ -1174,6 +1199,7 @@ body:has(.h-root) {
   display: inline-flex;
   align-items: baseline;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .m-slot-window {
@@ -1769,10 +1795,17 @@ body:has(.h-root) {
   border-bottom: 2px solid #111111;
   padding: 0 6px 2px;
   min-width: 170px;
-  max-width: 260px;
+  max-width: min(100%, 300px);
   border-radius: 0;
   outline: none;
   transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.m-madlibs-sentence select {
+  max-width: 100%;
+  width: auto;
+  min-width: 220px;
+  padding-right: 28px;
 }
 
 .m-madlibs-sentence input::placeholder {
@@ -1971,7 +2004,7 @@ body:has(.h-root) {
   display: block;
   margin: clamp(48px, 6vw, 88px) 0 clamp(20px, 3vw, 36px);
   font-family: var(--ff-sans);
-  font-size: clamp(50px, 11.4vw, 200px);
+  font-size: clamp(36px, 9.2vw, 162px);
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.06em;
@@ -1983,9 +2016,25 @@ body:has(.h-root) {
   padding: 0.08em 0;
 }
 
+.h-footer-mark .m-split-chars {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.h-root .h-footer-mark .m-split-word {
+  display: inline-flex;
+}
+
+.h-root .h-footer-mark .m-split-char {
+  display: inline-block;
+}
+
 .m-footer-wordmark-row {
   display: inline-flex;
-  align-items: baseline;
+  align-items: flex-start;
+  white-space: nowrap;
+  flex-wrap: nowrap;
   overflow: visible;
 }
 
@@ -2287,7 +2336,7 @@ body:has(.h-root) {
    RESPONSIVE BREAKPOINTS VOOR MÖBIUS HERO & SECTIES
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 1080px) {
-  .m-hero-intro {
+  .m-hero-intro-col {
     grid-column: 1 / 6;
   }
   .m-hero-topnav {
@@ -2338,8 +2387,10 @@ body:has(.h-root) {
     padding: 20px 18px 22px;
     gap: 28px;
   }
-  .m-hero-intro {
+  .m-hero-intro-col {
     grid-column: 1 / 10;
+  }
+  .m-hero-intro {
     font-size: 13.5px;
   }
   .m-hero-topnav {
