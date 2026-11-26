@@ -181,7 +181,7 @@ export const STANDALONE_CASES = {
         subtitle: 'UI Design & resultaat',
         darkTheme: false,
         content:
-          '<p>Voor de visuele laag is een herkenbaar design system opgezet waarin het krachtige Wooncompas-magenta en frisse groenaccenten samenkomen met heldere Montserrat-typografie en authentieke fotografie. Door iteratieve feedbackloops ontstond een toegankelijk, responsief platform dat op tijd en klaar voor gebruik is opgeleverd.</p>',
+          '<p>Voor de visuele laag is een herkenbaar design system opgezet waarin het krachtige Wooncompas-magenta en frisse groenaccenten samenkomen met heldere Montserrat-typografie en authentieke fotografie. Door iteratieve feedbackloops ontstond een toegankelijk, responsief platform dat op tijd en klaar voor gebruik is opgeleverd.</p><p>Bekijk het live eindresultaat op <a href="https://www.werkenbijwooncompas.nl/" target="_blank" rel="noopener noreferrer">werkenbijwooncompas.nl ↗</a>.</p>',
       },
     ],
   },
