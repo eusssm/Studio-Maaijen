@@ -13,6 +13,7 @@ export const CURATED_ORDER = [
   'de-kindertelefoon',
   'calathea',
   'wooncompas',
+  'dtl-coaching',
   'ontdeklab',
   'enova',
   'spotta',
@@ -127,10 +128,63 @@ const CURATED_SUMMARIES = {
     introText:
       'Sollicitantgerichte werken-bij website voor woningcorporatie Wooncompas in Ridderkerk: van persona’s en user flows tot een toegankelijk design system en vacatureplatform.',
   },
+  'dtl-coaching': {
+    title: 'DTL Coaching',
+    client: 'DTL Coaching — Dance Through Life',
+    projectType: 'Logo & Merkidentiteit',
+    categories: [{ name: 'Brand Identity' }, { name: 'Logo Design' }],
+    introText:
+      'Geometrisch monogram, warm kleurenpalet (#BDAE8E, #454545, #131C2E) en merkuitingen voor DTL Coaching — geïnspireerd op de beweging en balans van Kizomba.',
+  },
 };
 
 /* Standalone cases (niet in gedeelde DatoCMS, wel in het CV) */
 export const STANDALONE_CASES = {
+  'dtl-coaching': {
+    id: 'local-dtl-coaching',
+    slug: 'dtl-coaching',
+    title: 'DTL Coaching',
+    client: 'DTL Coaching — Dance Through Life',
+    projectType: 'Logo & Merkidentiteit',
+    categories: [{ name: 'Brand Identity' }, { name: 'Logo Design' }],
+    introText: CURATED_SUMMARIES['dtl-coaching'].introText,
+    coverImage: {
+      url: '/images/cases/dtl-coaching/01-businesscard.webp',
+      alt: 'DTL Coaching visitekaartje met geometrisch monogram op donker papier',
+    },
+    pageBuilder: [
+      {
+        id: 'dtl-1',
+        _modelApiKey: 'block_text',
+        title: 'Beweging, ondernemerschap en balans in één monogram',
+        subtitle: 'Merkverhaal & logo-concept',
+        darkTheme: false,
+        content:
+          '<p>Voor <strong>DTL Coaching — Dance Through Life</strong> ontwierp ik een logo en merkidentiteit die zelfexpressie, ondernemerschap en balans verbinden. Het geometrische DTL-monogram is geïnspireerd op de vloeiende beweging van Kizomba: parallelle lijnen die vrijheid en de balans tussen zakelijk succes en persoonlijke vervulling verbeelden.</p>',
+      },
+      {
+        id: 'dtl-2',
+        _modelApiKey: 'block_double_image',
+        imageLeft: {
+          url: '/images/cases/dtl-coaching/02-monogram-grid.webp',
+          alt: 'Geometrische constructie van het DTL Coaching monogram',
+        },
+        imageRight: {
+          url: '/images/cases/dtl-coaching/03-brand-photo.webp',
+          alt: 'DTL Coaching merkidentiteit toegepast op architectuurbeeld',
+        },
+      },
+      {
+        id: 'dtl-3',
+        _modelApiKey: 'block_text',
+        title: 'Kleurensysteem, typografie en merktoepassingen',
+        subtitle: 'Visuele richtlijnen',
+        darkTheme: true,
+        content:
+          '<p>De identiteit combineert een warm goud-taupe (<code>#BDAE8E</code>) met krachtig antraciet (<code>#454545</code>) en diep marineblauw (<code>#131C2E</code>), ondersteund door strakke <em>Helvetica Neue</em> typografie. Het systeem is direct doorvertaald naar visitekaartjes, kantoorbelettering en merchandise.</p>',
+      },
+    ],
+  },
   wooncompas: {
     id: 'local-wooncompas',
     slug: 'wooncompas',
